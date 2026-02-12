@@ -1,10 +1,8 @@
+import type { components } from '@/shared/api/schema';
 import { streamSSE } from '@/shared/api/sse-client';
 import env from '@/shared/config/env';
 
-export interface ChatRequest {
-  conversation_id?: string;
-  message: string;
-}
+export type ChatRequest = components['schemas']['ChatRequest'];
 
 export interface ChatCallbacks {
   onConversationId: (id: string) => void;
