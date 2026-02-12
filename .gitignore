@@ -23,6 +23,13 @@ venv/
 .env.local
 .env.*.local
 
+# Claude
+CLAUDE.md
+.claude/
+
+# Documentation
+docs/
+
 # Logs
 *.log
 npm-debug.log*
