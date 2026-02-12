@@ -1,0 +1,4 @@
+# Prettier ignore patterns
+
+/dist
+node_modules
