@@ -6,7 +6,7 @@ import { cn } from '@/shared/lib/utils';
 
 const NAV_ITEMS = [
   { to: '/', label: '대시보드', icon: LayoutDashboard },
-  { to: '/logs', label: 'LLM 로그', icon: FileText },
+  { to: '/conversations', label: 'LLM 로그', icon: FileText },
 ];
 
 const AdminSidebar = () => {

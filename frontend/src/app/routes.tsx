@@ -1,14 +1,16 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import AdminPage from '@/pages/admin/AdminPage';
-import LogsPage from '@/pages/logs/LogsPage';
+import ConversationDetailPage from '@/pages/conversations/ConversationDetailPage';
+import ConversationsPage from '@/pages/conversations/ConversationsPage';
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<AdminPage />} />
-        <Route path='/logs' element={<LogsPage />} />
+        <Route path='/conversations' element={<ConversationsPage />} />
+        <Route path='/conversations/:id' element={<ConversationDetailPage />} />
       </Routes>
     </BrowserRouter>
   );
