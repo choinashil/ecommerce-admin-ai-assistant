@@ -2,12 +2,12 @@ import { streamSSE } from '@/shared/api/sse-client';
 import env from '@/shared/config/env';
 
 export interface ChatRequest {
-  conversation_id?: number;
+  conversation_id?: string;
   message: string;
 }
 
 export interface ChatCallbacks {
-  onConversationId: (id: number) => void;
+  onConversationId: (id: string) => void;
   onContent: (token: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -20,7 +20,7 @@ export const streamChat = async (request: ChatRequest, callbacks: ChatCallbacks)
     onEvent: (event) => {
       switch (event.type) {
         case 'conversation_id':
-          callbacks.onConversationId(Number(event.data));
+          callbacks.onConversationId(event.data);
           break;
         case 'content':
           callbacks.onContent(event.data);

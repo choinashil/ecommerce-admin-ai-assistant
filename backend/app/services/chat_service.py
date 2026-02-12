@@ -5,6 +5,7 @@ from openai import OpenAI
 from sqlalchemy.orm import Session
 
 from app.config import settings
+from app.display_id import parse_pk, to_display_id
 from app.models.conversation import Conversation
 from app.models.message import Message, MessageRole
 
@@ -52,11 +53,12 @@ def _sse_event(event_type: str, data: str) -> str:
     return f"data: {payload}\n\n"
 
 
-async def stream_chat(db: Session, message: str, conversation_id: int | None) -> AsyncGenerator[str, None]:
-    conversation = create_or_get_conversation(db, conversation_id)
+async def stream_chat(db: Session, message: str, conversation_display_id: str | None) -> AsyncGenerator[str, None]:
+    pk = parse_pk(conversation_display_id, "conversations") if conversation_display_id else None
+    conversation = create_or_get_conversation(db, pk)
     save_message(db, conversation.id, MessageRole.USER, message)
 
-    yield _sse_event("conversation_id", str(conversation.id))
+    yield _sse_event("conversation_id", to_display_id("conversations", conversation.id))
 
     history = get_conversation_history(db, conversation.id)
     openai_messages = [{"role": "system", "content": SYSTEM_PROMPT}] + history

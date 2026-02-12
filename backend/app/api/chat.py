@@ -12,6 +12,6 @@ router = APIRouter()
 @router.post("/api/chat")
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     return StreamingResponse(
-        stream_chat(db, request.message, request.conversation_id),
+        stream_chat(db, request.message, conversation_display_id=request.conversation_id),
         media_type="text/event-stream",
     )
