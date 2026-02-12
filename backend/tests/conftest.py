@@ -27,4 +27,16 @@ def db():
 
     session.close()
     transaction.rollback()
+
+    # PostgreSQL 시퀀스는 트랜잭션과 독립적이므로, 롤백 후 시퀀스를 max(id) 기준으로 리셋
+    with engine.connect() as reset_conn:
+        for table in ("conversations", "messages", "orders", "products"):
+            reset_conn.execute(
+                text(
+                    f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), "
+                    f"COALESCE((SELECT MAX(id) FROM {table}), 0) + 1, false)"
+                )
+            )
+        reset_conn.commit()
+
     connection.close()
