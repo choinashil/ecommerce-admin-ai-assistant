@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.config import APP_NAME, settings
 from app.database import Base, engine, get_db
 from app.models import Product, Order, Conversation, Message  # noqa: F401
+from app.api.chat import router as chat_router
 
 
 @asynccontextmanager
@@ -16,6 +17,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title=APP_NAME, lifespan=lifespan)
+app.include_router(chat_router)
 
 
 @app.get("/")
