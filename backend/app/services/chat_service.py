@@ -1,4 +1,5 @@
 import json
+import time
 from collections.abc import AsyncGenerator
 
 from openai import OpenAI
@@ -27,11 +28,18 @@ def create_or_get_conversation(db: Session, conversation_id: int | None) -> Conv
     return conversation
 
 
-def save_message(db: Session, conversation_id: int, role: MessageRole, content: str) -> Message:
+def save_message(
+    db: Session,
+    conversation_id: int,
+    role: MessageRole,
+    content: str,
+    metadata: dict | None = None,
+) -> Message:
     message = Message(
         conversation_id=conversation_id,
         role=role,
         content=content,
+        metadata_=metadata,
     )
     db.add(message)
     db.commit()
@@ -67,14 +75,41 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
         model=settings.openai_model,
         messages=openai_messages,
         stream=True,
+        stream_options={"include_usage": True},
     )
 
     full_response = ""
-    for chunk in stream:
-        delta = chunk.choices[0].delta
-        if delta.content:
-            full_response += delta.content
-            yield _sse_event("content", delta.content)
+    usage = None
+    start_time = time.time()
 
-    save_message(db, conversation.id, MessageRole.ASSISTANT, full_response)
+    try:
+        for chunk in stream:
+            if chunk.usage:
+                usage = chunk.usage
+            if chunk.choices and chunk.choices[0].delta.content:
+                full_response += chunk.choices[0].delta.content
+                yield _sse_event("content", chunk.choices[0].delta.content)
+
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        metadata = {
+            "model": settings.openai_model,
+            "input_tokens": usage.prompt_tokens if usage else None,
+            "output_tokens": usage.completion_tokens if usage else None,
+            "response_time_ms": elapsed_ms,
+            "system_prompt": SYSTEM_PROMPT,
+            "error": None,
+        }
+    except Exception as e:
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        metadata = {
+            "model": settings.openai_model,
+            "input_tokens": None,
+            "output_tokens": None,
+            "response_time_ms": elapsed_ms,
+            "system_prompt": SYSTEM_PROMPT,
+            "error": str(e),
+        }
+        yield _sse_event("error", str(e))
+
+    save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
     yield _sse_event("done", "")
