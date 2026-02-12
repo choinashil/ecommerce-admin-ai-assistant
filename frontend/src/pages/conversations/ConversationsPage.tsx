@@ -6,7 +6,7 @@ const LogsPage = () => {
   const { data: conversations = [], isLoading, error } = useQuery(conversationQueries.list());
 
   return (
-    <div className='p-6'>
+    <div className='flex-1 overflow-auto p-6'>
       <h1 className='text-2xl font-bold'>LLM 로그</h1>
       <p className='mt-2 mb-6 text-muted-foreground'>대화 내역 및 LLM 호출 메타데이터</p>
 

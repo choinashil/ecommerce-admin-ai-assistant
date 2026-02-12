@@ -11,7 +11,7 @@ const ConversationDetailPage = () => {
   const { data: messages = [], isLoading, error } = useQuery(messageQueries.list(id!));
 
   return (
-    <div className='p-6'>
+    <div className='flex-1 overflow-auto p-6'>
       <button
         className='mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground'
         onClick={() => navigate('/conversations')}

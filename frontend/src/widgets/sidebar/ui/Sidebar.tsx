@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { to: '/conversations', label: 'LLM 로그', icon: FileText },
 ];
 
-const AdminSidebar = () => {
+const Sidebar = () => {
   return (
     <aside className='flex w-52 flex-col border-r bg-muted/40 p-4'>
       <h2 className='mb-6 text-lg font-semibold'>Admin</h2>
@@ -34,4 +34,4 @@ const AdminSidebar = () => {
   );
 };
 
-export default AdminSidebar;
+export default Sidebar;
