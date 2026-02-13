@@ -10,6 +10,7 @@ from app.database import Base, engine, get_db
 from app.models import Product, Order, Conversation, Message  # noqa: F401
 from app.api.chat import router as chat_router
 from app.api.conversations import router as conversations_router
+from app.api.products import router as products_router
 
 
 @asynccontextmanager
@@ -28,6 +29,7 @@ app.add_middleware(
 )
 app.include_router(chat_router)
 app.include_router(conversations_router)
+app.include_router(products_router)
 
 
 @app.get("/")
