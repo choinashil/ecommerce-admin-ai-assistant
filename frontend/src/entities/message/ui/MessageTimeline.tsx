@@ -4,7 +4,11 @@ import type { MessageDetail } from '@/entities/message';
 import { formatDate } from '@/shared/lib/format';
 import { Badge } from '@/shared/ui/badge';
 
+import { isSearchFaqToolCall } from '../model/tool-calls';
+
+import FaqSearchResult from './FaqSearchResult';
 import SystemPromptCard from './SystemPromptCard';
+import ToolCallDefaultResult from './ToolCallDefaultResult';
 
 interface MessageTimelineProps {
   messages: MessageDetail[];
@@ -58,27 +62,20 @@ const MessageTimeline = ({ messages }: MessageTimelineProps) => {
 
           {message.metadata?.tool_calls && message.metadata.tool_calls.length > 0 && (
             <div className='mt-2 space-y-1'>
-              {message.metadata.tool_calls.map((tc, idx) => (
-                <details key={idx} className='group rounded border bg-muted/30 text-xs'>
+              {message.metadata.tool_calls.map((toolCall, index) => (
+                <details key={index} className='group rounded border bg-muted/30 text-xs'>
                   <summary className='flex cursor-pointer items-center gap-1.5 px-2 py-1.5'>
                     <ChevronRight className='h-3 w-3 text-muted-foreground group-open:hidden' />
                     <ChevronDown className='hidden h-3 w-3 text-muted-foreground group-open:block' />
                     <Wrench className='h-3 w-3 text-muted-foreground' />
-                    <span className='font-medium'>{tc.name}</span>
+                    <span className='font-medium'>{toolCall.name}</span>
                   </summary>
-                  <div className='space-y-1.5 border-t px-2 py-1.5'>
-                    <div>
-                      <span className='font-medium text-muted-foreground'>Arguments</span>
-                      <pre className='mt-0.5 overflow-auto rounded bg-muted p-1.5'>
-                        {JSON.stringify(tc.arguments, null, 2)}
-                      </pre>
-                    </div>
-                    <div>
-                      <span className='font-medium text-muted-foreground'>Result</span>
-                      <pre className='mt-0.5 overflow-auto rounded bg-muted p-1.5'>
-                        {JSON.stringify(tc.result, null, 2)}
-                      </pre>
-                    </div>
+                  <div className='border-t px-2 py-1.5'>
+                    {isSearchFaqToolCall(toolCall) ? (
+                      <FaqSearchResult toolCall={toolCall} />
+                    ) : (
+                      <ToolCallDefaultResult toolCall={toolCall} />
+                    )}
                   </div>
                 </details>
               ))}
