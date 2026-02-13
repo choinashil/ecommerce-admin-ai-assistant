@@ -4,6 +4,10 @@ import { streamChat } from '../api/chat-api';
 
 import type { ChatAction, ChatState } from './types';
 
+interface UseChatOptions {
+  onToolResult?: (toolName: string) => void;
+}
+
 const initialState: ChatState = {
   messages: [],
   conversationId: null,
@@ -65,7 +69,7 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
   }
 };
 
-export const useChat = () => {
+export const useChat = (options?: UseChatOptions) => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
 
   const sendMessage = useCallback(
@@ -97,6 +101,7 @@ export const useChat = () => {
           onContent: (token) => {
             dispatch({ type: 'APPEND_TOKEN', payload: { token } });
           },
+          onToolResult: options?.onToolResult,
           onDone: () => {
             dispatch({
               type: 'SET_STREAMING',
@@ -116,7 +121,7 @@ export const useChat = () => {
         },
       );
     },
-    [state.conversationId],
+    [state.conversationId, options?.onToolResult],
   );
 
   return {

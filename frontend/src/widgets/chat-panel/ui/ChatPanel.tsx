@@ -4,8 +4,12 @@ import MessageList from '@/entities/message/ui/MessageList';
 import { useChat } from '@/features/send-message';
 import MessageInput from '@/features/send-message/ui/MessageInput';
 
-const ChatPanel = () => {
-  const { messages, isStreaming, error, sendMessage } = useChat();
+interface ChatPanelProps {
+  onToolResult?: (toolName: string) => void;
+}
+
+const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
+  const { messages, isStreaming, error, sendMessage } = useChat({ onToolResult });
 
   return (
     <aside className='flex w-[400px] flex-col border-l bg-background'>
