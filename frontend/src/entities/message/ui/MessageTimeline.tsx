@@ -3,6 +3,7 @@ import { Bot, ChevronDown, ChevronRight, Clock, Cpu, User, Wrench, Zap } from 'l
 import type { MessageDetail } from '@/entities/message';
 import { formatDate } from '@/shared/lib/format';
 import { Badge } from '@/shared/ui/badge';
+import MarkdownContent from '@/shared/ui/markdown-content';
 
 import { isSearchFaqToolCall } from '../model/tool-calls';
 
@@ -34,7 +35,11 @@ const MessageTimeline = ({ messages }: MessageTimelineProps) => {
             <span className='text-xs text-muted-foreground'>{formatDate(message.created_at)}</span>
           </div>
 
-          <p className='text-sm whitespace-pre-wrap'>{message.content}</p>
+          {message.role === 'user' ? (
+            <p className='text-sm whitespace-pre-wrap'>{message.content}</p>
+          ) : (
+            <MarkdownContent content={message.content} />
+          )}
 
           {message.role === 'assistant' && message.metadata && (
             <div className='mt-3 flex flex-wrap gap-2 border-t pt-3'>

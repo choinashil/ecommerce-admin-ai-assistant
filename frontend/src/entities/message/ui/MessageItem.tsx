@@ -2,6 +2,7 @@ import { Bot, User } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import MarkdownContent from '@/shared/ui/markdown-content';
 
 import type { Message } from '../model/types';
 
@@ -26,7 +27,11 @@ const MessageItem = ({ message }: MessageItemProps) => {
           isUser ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground',
         )}
       >
-        <p className='whitespace-pre-wrap'>{message.content}</p>
+        {isUser ? (
+          <p className='whitespace-pre-wrap'>{message.content}</p>
+        ) : (
+          <MarkdownContent content={message.content} />
+        )}
       </div>
     </div>
   );
