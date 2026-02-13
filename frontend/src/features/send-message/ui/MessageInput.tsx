@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 
 import { Send } from 'lucide-react';
 
@@ -11,7 +11,14 @@ interface MessageInputProps {
 }
 
 const MessageInput = ({ onSend, isDisabled }: MessageInputProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState('');
+
+  useEffect(() => {
+    if (!isDisabled) {
+      inputRef.current?.focus();
+    }
+  }, [isDisabled]);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -33,6 +40,7 @@ const MessageInput = ({ onSend, isDisabled }: MessageInputProps) => {
   return (
     <form onSubmit={handleSubmit} className='flex items-center gap-2 border-t px-4 py-3'>
       <Input
+        ref={inputRef}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
