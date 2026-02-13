@@ -1,6 +1,7 @@
-import { Bot, ChevronDown, ChevronRight, Clock, Cpu, Wrench, User, Zap } from 'lucide-react';
+import { Bot, ChevronDown, ChevronRight, Clock, Cpu, User, Wrench, Zap } from 'lucide-react';
 
 import type { MessageDetail } from '@/entities/message';
+import { formatDate } from '@/shared/lib/format';
 import { Badge } from '@/shared/ui/badge';
 
 import SystemPromptCard from './SystemPromptCard';
@@ -8,15 +9,6 @@ import SystemPromptCard from './SystemPromptCard';
 interface MessageTimelineProps {
   messages: MessageDetail[];
 }
-
-const formatTime = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('ko-KR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-};
 
 const MessageTimeline = ({ messages }: MessageTimelineProps) => {
   const systemPrompt = messages.find((m) => m.role === 'assistant' && m.metadata?.system_prompt)
@@ -35,7 +27,7 @@ const MessageTimeline = ({ messages }: MessageTimelineProps) => {
               <Bot className='h-4 w-4 text-green-500' />
             )}
             <span className='text-sm font-medium uppercase'>{message.role}</span>
-            <span className='text-xs text-muted-foreground'>{formatTime(message.created_at)}</span>
+            <span className='text-xs text-muted-foreground'>{formatDate(message.created_at)}</span>
           </div>
 
           <p className='text-sm whitespace-pre-wrap'>{message.content}</p>
