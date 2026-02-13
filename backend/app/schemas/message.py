@@ -3,6 +3,12 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class ToolCallDetail(BaseModel):
+    name: str
+    arguments: dict
+    result: dict
+
+
 class MessageMetadata(BaseModel):
     model: str | None = None
     input_tokens: int | None = None
@@ -10,6 +16,7 @@ class MessageMetadata(BaseModel):
     response_time_ms: int | None = None
     system_prompt: str | None = None
     error: str | None = None
+    tool_calls: list[ToolCallDetail] | None = None
 
 
 class MessageDetail(BaseModel):
