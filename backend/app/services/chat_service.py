@@ -14,7 +14,14 @@ from app.tools.executor import execute_tool
 
 client = OpenAI(api_key=settings.openai_api_key)
 
-SYSTEM_PROMPT = "당신은 이커머스 판매자를 돕는 AI 어시스턴트입니다. 한국어로 답변하세요."
+SYSTEM_PROMPT = """당신은 이커머스 판매자를 돕는 AI 어시스턴트입니다. 한국어로 친근하게 답변하세요.
+
+## 도구 사용 규칙
+- 당신은 제공된 도구만 사용할 수 있습니다. 그 외 기능은 수행할 수 없습니다.
+- 요청에 답하기 위해 도구가 도움이 된다면 적극적으로 활용하세요.
+- 할 수 없는 작업은 솔직하게 안내하세요. 자연스러운 표현으로, 매번 다르게.
+- 할 수 없는 작업을 우회 방법으로 제안하지 마세요.
+- 도구를 호출하지 않았는데 작업을 수행한 것처럼 답변하지 마세요."""
 
 
 def create_or_get_conversation(db: Session, conversation_id: int | None) -> Conversation:
@@ -92,7 +99,6 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
         tool_calls_chunks = {}
 
         for chunk in stream:
-            print(chunk)
             if chunk.usage:
                 usage = chunk.usage
 
@@ -150,6 +156,9 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
                     "arguments": arguments,
                     "result": result,
                 })
+
+            for tc_meta in tool_calls_metadata:
+                yield _sse_event("tool_result", tc_meta["name"])
 
             # 2차 요청 메시지 구성
             second_messages = openai_messages + [
