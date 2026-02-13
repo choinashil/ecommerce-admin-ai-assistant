@@ -23,7 +23,7 @@ const MessageList = ({ messages, isStreaming }: MessageListProps) => {
   const isWaitingForResponse = isStreaming && lastMessage?.content === '';
 
   return (
-    <ScrollArea className='flex-1 px-4'>
+    <ScrollArea className='flex-1 overflow-hidden px-4'>
       <div className='flex flex-col gap-4 py-4'>
         {messages.length === 0 && (
           <div className='flex flex-col items-center justify-center py-12 text-center text-muted-foreground'>
