@@ -4,6 +4,7 @@ from pgvector.sqlalchemy import Vector
 from sqlalchemy import DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
+from app.config import settings
 from app.database import Base
 
 
@@ -15,7 +16,7 @@ class FaqDocument(Base):
     title: Mapped[str] = mapped_column(String(500))
     content: Mapped[str] = mapped_column(Text)
     breadcrumb: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    embedding: Mapped[list[float]] = mapped_column(Vector(1536))
+    embedding: Mapped[list[float]] = mapped_column(Vector(settings.openai_embedding_dimension))
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now()
     )
