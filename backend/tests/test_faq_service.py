@@ -2,7 +2,8 @@ from unittest.mock import MagicMock, patch
 
 from app.shared.crawling.parsers.base import ParseResult
 from app.shared.crawling.crawler import CrawlResult
-from app.faq.service import crawl_faq_site
+from app.faq.model import FaqDocument
+from app.faq.service import crawl_faq_site, search_faq
 
 _HTML = "<html><body><h1>제목</h1><p>본문</p></body></html>"
 
@@ -80,3 +81,68 @@ class TestCrawlFaqSite:
 
         assert result.total_pages == 0
         assert result.failed_urls == ["https://example.com/fail"]
+
+
+def _make_embedding(index: int) -> list[float]:
+    """1536차원 단위 벡터를 생성한다. index 위치만 1.0, 나머지 0.0."""
+    vec = [0.0] * 1536
+    vec[index] = 1.0
+    return vec
+
+
+class TestSearchFaq:
+    """search_faq의 유사도 검색 동작을 테스트한다."""
+
+    def _insert_doc(self, db, *, url: str, title: str, content: str, embedding: list[float]):
+        doc = FaqDocument(
+            url=url, title=title, content=content, embedding=embedding,
+        )
+        db.add(doc)
+        db.flush()
+        return doc
+
+    @patch("app.faq.service.embed_text")
+    def test_returns_documents_ordered_by_similarity(self, mock_embed, db):
+        self._insert_doc(db, url="https://ex.com/a", title="A", content="내용A", embedding=_make_embedding(0))
+        self._insert_doc(db, url="https://ex.com/b", title="B", content="내용B", embedding=_make_embedding(1))
+
+        mock_embed.return_value = _make_embedding(0)
+
+        results = search_faq(db, "질문")
+
+        assert len(results) == 2
+        assert results[0]["title"] == "A"
+        assert results[0]["similarity"] > results[1]["similarity"]
+
+    @patch("app.faq.service.embed_text")
+    def test_respects_top_k(self, mock_embed, db):
+        for i in range(3):
+            self._insert_doc(
+                db, url=f"https://ex.com/{i}", title=f"Doc{i}",
+                content=f"내용{i}", embedding=_make_embedding(i),
+            )
+
+        mock_embed.return_value = _make_embedding(0)
+
+        results = search_faq(db, "질문", top_k=1)
+
+        assert len(results) == 1
+
+    @patch("app.faq.service.embed_text")
+    def test_returns_correct_format(self, mock_embed, db):
+        self._insert_doc(
+            db, url="https://ex.com/page", title="FAQ 제목",
+            content="FAQ 내용", embedding=_make_embedding(0),
+        )
+
+        mock_embed.return_value = _make_embedding(0)
+
+        results = search_faq(db, "질문")
+
+        assert len(results) == 1
+        doc = results[0]
+        assert doc["id"].startswith("FAQ-")
+        assert doc["title"] == "FAQ 제목"
+        assert doc["content"] == "FAQ 내용"
+        assert doc["url"] == "https://ex.com/page"
+        assert doc["similarity"] == 1.0
