@@ -1,5 +1,5 @@
-from app.services.product_service import create_product
-from app.tools.executor import execute_tool
+from app.product.service import create_product
+from app.chat.tools.executor import execute_tool
 
 
 class TestExecuteTool:

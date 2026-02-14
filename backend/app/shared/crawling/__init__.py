@@ -1,5 +1,4 @@
-from app.parsers.base import BaseParser, ParseResult, normalize_url
-from app.parsers.oopy_parser import OopyParser
+from app.shared.crawling.parsers import BaseParser, ParseResult, normalize_url, OopyParser
 
 _OOPY_PARSER = OopyParser()
 

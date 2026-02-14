@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.display_id import to_display_id
-from app.services.faq_service import search_faq
-from app.services.product_service import create_product, list_products
+from app.shared.display_id import to_display_id
+from app.faq.service import search_faq
+from app.product.service import create_product, list_products
 
 
 def execute_tool(db: Session, tool_name: str, arguments: dict) -> dict:

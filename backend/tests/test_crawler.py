@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from app.services.crawler import crawl_site
+from app.shared.crawling.crawler import crawl_site
 
 
 def _no_redirect(url):
@@ -17,8 +17,8 @@ def _make_html_with_links(links: list[str]) -> str:
 class TestCrawlSite:
     """crawl_site의 BFS 오케스트레이션을 테스트한다."""
 
-    @patch("app.services.crawler._resolve_url", side_effect=_no_redirect)
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler._resolve_url", side_effect=_no_redirect)
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_crawls_root_page(self, mock_get_parser, mock_resolve):
         mock_parser = MagicMock()
         mock_parser.fetch_html.return_value = _make_html_with_links([])
@@ -33,8 +33,8 @@ class TestCrawlSite:
         assert result.total_pages == 1
         on_page.assert_called_once()
 
-    @patch("app.services.crawler._resolve_url", side_effect=_no_redirect)
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler._resolve_url", side_effect=_no_redirect)
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_follows_internal_links(self, mock_get_parser, mock_resolve):
         mock_parser = MagicMock()
         mock_parser.fetch_html.return_value = _make_html_with_links([])
@@ -56,8 +56,8 @@ class TestCrawlSite:
         assert result.total_pages == 3
         assert on_page.call_count == 3
 
-    @patch("app.services.crawler._resolve_url", side_effect=_no_redirect)
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler._resolve_url", side_effect=_no_redirect)
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_respects_max_pages(self, mock_get_parser, mock_resolve):
         mock_parser = MagicMock()
         mock_parser.fetch_html.return_value = _make_html_with_links([])
@@ -75,8 +75,8 @@ class TestCrawlSite:
 
         assert result.total_pages == 3
 
-    @patch("app.services.crawler._resolve_url", side_effect=_no_redirect)
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler._resolve_url", side_effect=_no_redirect)
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_respects_max_depth(self, mock_get_parser, mock_resolve):
         mock_parser = MagicMock()
         mock_parser.fetch_html.return_value = _make_html_with_links([])
@@ -94,8 +94,8 @@ class TestCrawlSite:
 
         assert result.total_pages == 2
 
-    @patch("app.services.crawler._resolve_url", side_effect=_no_redirect)
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler._resolve_url", side_effect=_no_redirect)
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_skips_visited_urls(self, mock_get_parser, mock_resolve):
         mock_parser = MagicMock()
         mock_parser.fetch_html.return_value = _make_html_with_links([])
@@ -113,8 +113,8 @@ class TestCrawlSite:
 
         assert result.total_pages == 2
 
-    @patch("app.services.crawler._resolve_url", side_effect=_no_redirect)
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler._resolve_url", side_effect=_no_redirect)
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_follows_all_same_domain_links(
         self, mock_get_parser, mock_resolve
     ):
@@ -137,8 +137,8 @@ class TestCrawlSite:
 
         assert result.total_pages == 3
 
-    @patch("app.services.crawler._resolve_url", side_effect=_no_redirect)
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler._resolve_url", side_effect=_no_redirect)
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_records_failed_urls(self, mock_get_parser, mock_resolve):
         mock_parser = MagicMock()
         mock_parser.fetch_html.side_effect = Exception("네트워크 오류")
@@ -153,7 +153,7 @@ class TestCrawlSite:
         assert len(result.failed_urls) == 1
         on_page.assert_not_called()
 
-    @patch("app.services.crawler.get_parser")
+    @patch("app.shared.crawling.crawler.get_parser")
     def test_deduplicates_redirected_urls(self, mock_get_parser):
         """UUID URL이 이미 방문한 slug URL로 리다이렉트되면 건너뛴다."""
         mock_parser = MagicMock()
@@ -171,7 +171,7 @@ class TestCrawlSite:
             return url
 
         with patch(
-            "app.services.crawler._resolve_url", side_effect=redirect_to_root
+            "app.shared.crawling.crawler._resolve_url", side_effect=redirect_to_root
         ):
             result = crawl_site(
                 "https://example.com/docs", on_page=on_page, delay=0

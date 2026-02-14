@@ -1,14 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
-from app.database import get_db
-from app.display_id import parse_pk
-from app.models.conversation import Conversation
-from app.schemas.conversation import ConversationSummary
-from app.schemas.message import MessageDetail
-from app.services.conversation_service import get_conversations, get_messages
+from app.shared.database import get_db
+from app.shared.display_id import parse_pk
+from app.chat.models import Conversation
+from app.chat.schemas import ChatRequest, ConversationSummary, MessageDetail
+from app.chat.service import stream_chat
+from app.chat.history import get_conversations, get_messages
 
 router = APIRouter()
+
+
+@router.post("/api/chat")
+async def chat(request: ChatRequest, db: Session = Depends(get_db)):
+    return StreamingResponse(
+        stream_chat(db, request.message, conversation_display_id=request.conversation_id),
+        media_type="text/event-stream",
+    )
 
 
 @router.get("/api/conversations", response_model=list[ConversationSummary])

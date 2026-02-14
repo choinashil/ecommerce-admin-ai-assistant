@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from app.parsers import get_parser
-from app.parsers.oopy_parser import OopyParser
+from app.shared.crawling import get_parser
+from app.shared.crawling.parsers.oopy import OopyParser
 
 
 def _make_html(body_content: str) -> str:
@@ -144,7 +144,7 @@ class TestFetchHtml:
     _EXPANDED_HTML = "<html><body><div>토글 펼쳐진 내용</div></body></html>"
 
     @patch.object(OopyParser, "_expand_toggles")
-    @patch("app.parsers.base.httpx.get")
+    @patch("app.shared.crawling.parsers.base.httpx.get")
     def test_skips_playwright_when_no_toggle(self, mock_get, mock_expand):
         mock_get.return_value.text = self._STATIC_HTML
         mock_get.return_value.raise_for_status = lambda: None
@@ -156,7 +156,7 @@ class TestFetchHtml:
         mock_expand.assert_not_called()
 
     @patch.object(OopyParser, "_expand_toggles")
-    @patch("app.parsers.base.httpx.get")
+    @patch("app.shared.crawling.parsers.base.httpx.get")
     def test_calls_playwright_when_toggle_exists(self, mock_get, mock_expand):
         mock_get.return_value.text = self._TOGGLE_HTML
         mock_get.return_value.raise_for_status = lambda: None

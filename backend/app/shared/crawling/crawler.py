@@ -6,7 +6,7 @@ from typing import Callable
 
 import httpx
 
-from app.parsers import get_parser, normalize_url
+from app.shared.crawling import get_parser, normalize_url
 
 logger = logging.getLogger(__name__)
 

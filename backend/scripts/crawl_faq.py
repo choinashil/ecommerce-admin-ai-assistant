@@ -16,9 +16,9 @@ import argparse
 import logging
 import sys
 
-from app.database import SessionLocal
-from app.display_id import to_display_id
-from app.services.faq_service import crawl_and_ingest, crawl_faq_site
+from app.shared.database import SessionLocal
+from app.shared.display_id import to_display_id
+from app.faq.service import crawl_and_ingest, crawl_faq_site
 
 
 def main():

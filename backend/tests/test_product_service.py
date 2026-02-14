@@ -1,5 +1,5 @@
-from app.models.product import ProductStatus
-from app.services.product_service import create_product, list_products
+from app.product.model import ProductStatus
+from app.product.service import create_product, list_products
 
 
 class TestCreateProduct:

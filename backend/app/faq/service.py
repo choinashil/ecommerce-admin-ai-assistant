@@ -4,11 +4,11 @@ from dataclasses import dataclass, field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.display_id import to_display_id
-from app.models.faq_document import FaqDocument
-from app.parsers import get_parser
-from app.services.crawler import crawl_site
-from app.services.embedding_service import embed_text
+from app.shared.display_id import to_display_id
+from app.faq.model import FaqDocument
+from app.shared.crawling import get_parser
+from app.shared.crawling.crawler import crawl_site
+from app.shared.embedding import embed_text
 
 logger = logging.getLogger(__name__)
 

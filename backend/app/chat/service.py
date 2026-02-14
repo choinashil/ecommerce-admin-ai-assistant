@@ -5,12 +5,11 @@ from collections.abc import AsyncGenerator
 from openai import OpenAI
 from sqlalchemy.orm import Session
 
-from app.config import settings
-from app.display_id import parse_pk, to_display_id
-from app.models.conversation import Conversation
-from app.models.message import Message, MessageRole
-from app.tools.definitions import TOOL_DEFINITIONS
-from app.tools.executor import execute_tool
+from app.shared.config import settings
+from app.shared.display_id import parse_pk, to_display_id
+from app.chat.models import Conversation, Message, MessageRole
+from app.chat.tools.definitions import TOOL_DEFINITIONS
+from app.chat.tools.executor import execute_tool
 
 client = OpenAI(api_key=settings.openai_api_key)
 

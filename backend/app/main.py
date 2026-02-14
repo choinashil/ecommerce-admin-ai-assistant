@@ -5,12 +5,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.config import APP_NAME, settings
-from app.database import Base, engine, get_db
-from app.models import Product, Order, Conversation, Message  # noqa: F401
-from app.api.chat import router as chat_router
-from app.api.conversations import router as conversations_router
-from app.api.products import router as products_router
+from app.shared.config import APP_NAME, settings
+from app.shared.database import Base, engine, get_db
+from app.product.model import Product  # noqa: F401
+from app.order.model import Order  # noqa: F401
+from app.chat.models import Conversation, Message  # noqa: F401
+from app.faq.model import FaqDocument  # noqa: F401
+from app.chat.router import router as chat_router
+from app.product.router import router as products_router
 
 
 @asynccontextmanager
@@ -28,7 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(chat_router)
-app.include_router(conversations_router)
 app.include_router(products_router)
 
 

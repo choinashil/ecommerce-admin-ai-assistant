@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import Integer, Enum, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database import Base
+from app.shared.database import Base
 
 
 class ProductStatus(str, enum.Enum):

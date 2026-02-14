@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import String, Integer, Enum, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database import Base
+from app.shared.database import Base
 
 
 class OrderStatus(str, enum.Enum):

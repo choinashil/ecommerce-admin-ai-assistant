@@ -1,6 +1,5 @@
-from app.models.conversation import Conversation
-from app.models.message import Message, MessageRole
-from app.services.conversation_service import get_conversations, get_messages
+from app.chat.models import Conversation, Message, MessageRole
+from app.chat.history import get_conversations, get_messages
 
 
 def _create_conversation_with_messages(db, metadata=None):

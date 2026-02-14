@@ -4,8 +4,8 @@ from pgvector.sqlalchemy import Vector
 from sqlalchemy import DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.config import settings
-from app.database import Base
+from app.shared.config import settings
+from app.shared.database import Base
 
 
 class FaqDocument(Base):

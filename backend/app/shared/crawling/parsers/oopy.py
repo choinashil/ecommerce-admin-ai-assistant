@@ -3,7 +3,7 @@ import asyncio
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
-from app.parsers.base import BaseParser, ParseResult
+from app.shared.crawling.parsers.base import BaseParser, ParseResult
 
 
 class OopyParser(BaseParser):
@@ -70,21 +70,16 @@ class OopyParser(BaseParser):
         text = body.get_text(separator="\n", strip=True)
         lines = [line.strip() for line in text.split("\n") if line.strip()]
 
-        # breadcrumb + "Search" 줄 제거 (순서 중요: "Search"를 구분자로 사용하므로 noise 제거보다 먼저)
         lines = self._remove_breadcrumb_lines(lines)
 
-        # OOPY UI 텍스트 제거 ("Search", "로 돌아가기", "/" 등)
         _HEADER_NOISE = {"Search", "로 돌아가기"}
         lines = [line for line in lines if line not in _HEADER_NOISE and line != "/"]
 
-        # 제목 중복 제거 (content 첫 줄이 title과 같으면 제거)
         if lines and lines[0] == title:
             lines = lines[1:]
 
-        # TOC(목차) 제거
         lines = self._remove_toc(lines)
 
-        # OOPY footer UI 텍스트 제거 ("TOP" 등)
         _FOOTER_NOISE = {"TOP"}
         while lines and lines[-1] in _FOOTER_NOISE:
             lines.pop()
@@ -92,11 +87,7 @@ class OopyParser(BaseParser):
         return "\n".join(lines)
 
     def _extract_breadcrumb(self, soup: BeautifulSoup) -> str | None:
-        """OOPY 페이지에서 breadcrumb을 추출한다.
-
-        OOPY는 aria-label 없이 breadcrumb을 렌더링하므로,
-        '/' 구분자 패턴으로 첫 몇 줄에서 추출한다.
-        """
+        """OOPY 페이지에서 breadcrumb을 추출한다."""
         body = soup.find("body")
         if not body:
             return None
@@ -104,7 +95,6 @@ class OopyParser(BaseParser):
         text = body.get_text(separator="\n", strip=True)
         lines = [line.strip() for line in text.split("\n") if line.strip()]
 
-        # 첫 줄들이 breadcrumb 조각인 경우 ('홈', '/', 'FAQ', ...)
         breadcrumb_parts = []
         for line in lines:
             if line == "/":
@@ -119,11 +109,7 @@ class OopyParser(BaseParser):
         return None
 
     def _remove_breadcrumb_lines(self, lines: list[str]) -> list[str]:
-        """content 앞부분의 breadcrumb 줄들을 제거한다.
-
-        OOPY breadcrumb은 '/' 구분자와 경로 조각이 별개 줄로 렌더링된다.
-        'Search' 줄 직전까지가 breadcrumb 영역이다.
-        """
+        """content 앞부분의 breadcrumb 줄들을 제거한다."""
         start_idx = 0
         for i, line in enumerate(lines):
             if line == "Search":
@@ -133,24 +119,16 @@ class OopyParser(BaseParser):
         return lines[start_idx:]
 
     def _remove_toc(self, lines: list[str]) -> list[str]:
-        """본문 시작 전의 목차(TOC)를 제거한다.
-
-        OOPY에서 Notion의 TOC 블록은 소제목 목록으로 렌더링된다.
-        본문은 소제목이 아닌 일반 텍스트로 시작하므로,
-        첫 줄부터 연속된 소제목들이 본문에 다시 등장하면 TOC로 판단한다.
-        """
+        """본문 시작 전의 목차(TOC)를 제거한다."""
         if len(lines) < 3:
             return lines
 
-        # 첫 줄부터 연속된 짧은 줄들이 뒤에서 소제목으로 재등장하는지 확인
         toc_end = 0
-        remaining = lines[1:]  # 첫 줄 이후 텍스트에서 재등장 검사
+        remaining = lines[1:]
 
         for i, line in enumerate(lines):
-            # 소제목은 보통 짧고 (50자 이하), 불렛(•◦▪)이 아님
             if len(line) > 50 or line.startswith(("•", "◦", "▪")):
                 break
-            # 이 줄이 나중에 다시 등장하면 TOC 항목
             if line in remaining[i:]:
                 toc_end = i + 1
             else:

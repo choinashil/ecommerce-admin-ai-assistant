@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models.product import Product, ProductStatus
+from app.product.model import Product, ProductStatus
 
 
 def create_product(db: Session, name: str, price: int) -> Product:

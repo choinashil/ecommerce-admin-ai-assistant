@@ -2,8 +2,8 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-from app.config import settings
-from app.database import Base
+from app.shared.config import settings
+from app.shared.database import Base
 
 
 @pytest.fixture()

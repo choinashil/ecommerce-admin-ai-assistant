@@ -1,6 +1,6 @@
 import pytest
 
-from app.display_id import to_display_id, from_display_id, parse_pk
+from app.shared.display_id import to_display_id, from_display_id, parse_pk
 
 
 class TestToDisplayId:

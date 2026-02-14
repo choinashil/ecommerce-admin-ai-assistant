@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock, patch
 
-from app.parsers.base import ParseResult
-from app.services.crawler import CrawlResult
-from app.services.faq_service import crawl_faq_site
+from app.shared.crawling.parsers.base import ParseResult
+from app.shared.crawling.crawler import CrawlResult
+from app.faq.service import crawl_faq_site
 
 _HTML = "<html><body><h1>제목</h1><p>본문</p></body></html>"
 
@@ -14,9 +14,9 @@ def _make_parse_result(title: str = "제목", content: str = "본문") -> ParseR
 class TestCrawlFaqSite:
     """crawl_faq_site의 FAQ 도메인 로직(new/updated 추적)을 테스트한다."""
 
-    @patch("app.services.faq_service.crawl_site")
-    @patch("app.services.faq_service.embed_text", return_value=[0.0] * 1536)
-    @patch("app.services.faq_service.get_parser")
+    @patch("app.faq.service.crawl_site")
+    @patch("app.faq.service.embed_text", return_value=[0.0] * 1536)
+    @patch("app.faq.service.get_parser")
     def test_tracks_new_pages(
         self, mock_get_parser, mock_embed, mock_crawl_site, db
     ):
@@ -36,9 +36,9 @@ class TestCrawlFaqSite:
         assert result.new_pages == 1
         assert result.updated_pages == 0
 
-    @patch("app.services.faq_service.crawl_site")
-    @patch("app.services.faq_service.embed_text", return_value=[0.0] * 1536)
-    @patch("app.services.faq_service.get_parser")
+    @patch("app.faq.service.crawl_site")
+    @patch("app.faq.service.embed_text", return_value=[0.0] * 1536)
+    @patch("app.faq.service.get_parser")
     def test_tracks_updated_pages(
         self, mock_get_parser, mock_embed, mock_crawl_site, db
     ):
@@ -61,9 +61,9 @@ class TestCrawlFaqSite:
         assert result.updated_pages == 1
         assert result.new_pages == 0
 
-    @patch("app.services.faq_service.crawl_site")
-    @patch("app.services.faq_service.embed_text", return_value=[0.0] * 1536)
-    @patch("app.services.faq_service.get_parser")
+    @patch("app.faq.service.crawl_site")
+    @patch("app.faq.service.embed_text", return_value=[0.0] * 1536)
+    @patch("app.faq.service.get_parser")
     def test_propagates_failed_urls(
         self, mock_get_parser, mock_embed, mock_crawl_site, db
     ):

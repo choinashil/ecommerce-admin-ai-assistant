@@ -3,6 +3,11 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class ChatRequest(BaseModel):
+    message: str
+    conversation_id: str | None = None
+
+
 class ToolCallDetail(BaseModel):
     name: str
     arguments: dict
@@ -25,3 +30,11 @@ class MessageDetail(BaseModel):
     content: str
     created_at: datetime
     metadata: MessageMetadata | None = None
+
+
+class ConversationSummary(BaseModel):
+    id: str
+    first_message: str
+    message_count: int
+    total_tokens: int
+    created_at: datetime
