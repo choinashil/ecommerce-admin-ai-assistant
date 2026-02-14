@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from app.parsers import get_parser
 from app.parsers.oopy_parser import OopyParser
 
@@ -148,6 +150,39 @@ class TestOopyParserContent:
         parser = OopyParser()
         result = parser.parse("<html></html>")
         assert result.content == ""
+
+
+class TestFetchHtml:
+    """fetch_html의 토글 감지 분기를 테스트한다."""
+
+    _STATIC_HTML = "<html><body><p>정적 페이지</p></body></html>"
+    _TOGGLE_HTML = '<html><body><div class="notion-toggle-block">토글</div></body></html>'
+    _EXPANDED_HTML = "<html><body><div>토글 펼쳐진 내용</div></body></html>"
+
+    @patch.object(OopyParser, "_expand_toggles")
+    @patch("app.parsers.base.httpx.get")
+    def test_skips_playwright_when_no_toggle(self, mock_get, mock_expand):
+        mock_get.return_value.text = self._STATIC_HTML
+        mock_get.return_value.raise_for_status = lambda: None
+
+        parser = OopyParser()
+        result = parser.fetch_html("https://example.com/page")
+
+        assert result == self._STATIC_HTML
+        mock_expand.assert_not_called()
+
+    @patch.object(OopyParser, "_expand_toggles")
+    @patch("app.parsers.base.httpx.get")
+    def test_calls_playwright_when_toggle_exists(self, mock_get, mock_expand):
+        mock_get.return_value.text = self._TOGGLE_HTML
+        mock_get.return_value.raise_for_status = lambda: None
+        mock_expand.return_value = self._EXPANDED_HTML
+
+        parser = OopyParser()
+        result = parser.fetch_html("https://example.com/page")
+
+        assert result == self._EXPANDED_HTML
+        mock_expand.assert_called_once_with("https://example.com/page")
 
 
 class TestGetParser:

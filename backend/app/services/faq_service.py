@@ -1,4 +1,3 @@
-import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -10,11 +9,9 @@ from app.services.embedding_service import embed_text
 
 def crawl_and_ingest(db: Session, url: str) -> FaqDocument:
     """URL에서 FAQ 문서를 크롤링하여 DB에 저장한다. 이미 존재하면 업데이트한다."""
-    response = httpx.get(url, timeout=30.0)
-    response.raise_for_status()
-
     parser = get_parser(url)
-    result = parser.parse(response.text)
+    html = parser.fetch_html(url)
+    result = parser.parse(html)
 
     embedding_text = f"{result.title}\n\n{result.content}"
     embedding_vector = embed_text(embedding_text)

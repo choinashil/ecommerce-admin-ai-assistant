@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+import httpx
+
 
 @dataclass
 class ParseResult:
@@ -13,6 +15,12 @@ class ParseResult:
 
 class BaseParser(ABC):
     """HTML 파서의 기본 인터페이스."""
+
+    def fetch_html(self, url: str) -> str:
+        """URL에서 HTML을 가져온다.."""
+        response = httpx.get(url, timeout=30.0)
+        response.raise_for_status()
+        return response.text
 
     @abstractmethod
     def parse(self, html: str) -> ParseResult:

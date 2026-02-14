@@ -1,4 +1,7 @@
+import asyncio
+
 from bs4 import BeautifulSoup
+from playwright.async_api import async_playwright
 
 from app.parsers.base import BaseParser, ParseResult
 
@@ -6,8 +9,30 @@ from app.parsers.base import BaseParser, ParseResult
 class OopyParser(BaseParser):
     """OOPY(Notion 기반) 페이지 파서."""
 
-    # OOPY 공통 UI 텍스트
-    _NOISE = {"Search", "로 돌아가기"}
+    @staticmethod
+    async def _expand_toggles(url: str) -> str:
+        """Playwright로 페이지를 열고 모든 토글을 펼친 뒤 HTML을 반환한다."""
+        _TOGGLE_EXPAND_DELAY_MS = 800
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            await page.goto(url, wait_until="networkidle")
+
+            buttons = await page.query_selector_all('[aria-label="unfold"]')
+            for button in buttons:
+                await button.click()
+                await page.wait_for_timeout(_TOGGLE_EXPAND_DELAY_MS)
+
+            html = await page.content()
+            await browser.close()
+            return html
+
+    def fetch_html(self, url: str) -> str:
+        """정적 HTML을 가져오고, 토글이 있으면 Playwright로 재크롤링한다."""
+        html = super().fetch_html(url)
+        if "notion-toggle-block" in html:
+            html = asyncio.run(self._expand_toggles(url))
+        return html
 
     def parse(self, html: str) -> ParseResult:
         soup = BeautifulSoup(html, "lxml")
@@ -48,8 +73,11 @@ class OopyParser(BaseParser):
         # breadcrumb + "Search" 줄 제거 (순서 중요: "Search"를 구분자로 사용하므로 noise 제거보다 먼저)
         lines = self._remove_breadcrumb_lines(lines)
 
-        # OOPY UI 텍스트 제거 ("/" 구분자, "로 돌아가기" 등)
-        lines = [line for line in lines if line not in self._NOISE and line != "/"]
+        # OOPY UI 텍스트 제거 ("/" 구분자, "로 돌아가기", 등)
+        _HEADER_NOISE = {"Search", "로 돌아가기"}
+        _TOGGLE_HINT = "(클릭) "
+        lines = [line for line in lines if line not in _HEADER_NOISE and line != "/"]
+        lines = [line.replace(_TOGGLE_HINT, "") for line in lines]
 
         # 제목 중복 제거 (content 첫 줄이 title과 같으면 제거)
         if lines and lines[0] == title:
@@ -58,9 +86,10 @@ class OopyParser(BaseParser):
         # TOC(목차) 제거
         lines = self._remove_toc(lines)
 
-        # 마지막 줄 사이트명 제거 (footer 잔재)
-        if lines and lines[-1] == "식스샵 프로 가이드":
-            lines = lines[:-1]
+        # 마지막 footer 잔재 제거 ("식스샵 프로 가이드", "TOP" 등)
+        _FOOTER_NOISE = {"식스샵 프로 가이드", "TOP"}
+        while lines and lines[-1] in _FOOTER_NOISE:
+            lines.pop()
 
         return "\n".join(lines)
 
