@@ -1,4 +1,4 @@
-from app.parsers.base import BaseParser, ParseResult
+from app.parsers.base import BaseParser, ParseResult, normalize_url
 from app.parsers.oopy_parser import OopyParser
 
 _OOPY_PARSER = OopyParser()
@@ -10,4 +10,4 @@ def get_parser(url: str) -> BaseParser:
     return _OOPY_PARSER
 
 
-__all__ = ["BaseParser", "ParseResult", "get_parser"]
+__all__ = ["BaseParser", "ParseResult", "get_parser", "normalize_url"]

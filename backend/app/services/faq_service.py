@@ -1,11 +1,16 @@
+import logging
+from dataclasses import dataclass, field
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.display_id import to_display_id
 from app.models.faq_document import FaqDocument
 from app.parsers import get_parser
+from app.services.crawler import crawl_site
 from app.services.embedding_service import embed_text
 
+logger = logging.getLogger(__name__)
 
 _SITE_NOISE = {"식스샵 프로 가이드", "(클릭) "}
 
@@ -18,10 +23,13 @@ def _remove_noise(content: str, noise: set[str]) -> str:
     return "\n".join(line for line in lines if line.strip())
 
 
-def crawl_and_ingest(db: Session, url: str) -> FaqDocument:
+def crawl_and_ingest(
+    db: Session, url: str, *, html: str | None = None
+) -> FaqDocument:
     """URL에서 FAQ 문서를 크롤링하여 DB에 저장한다. 이미 존재하면 업데이트한다."""
     parser = get_parser(url)
-    html = parser.fetch_html(url)
+    if html is None:
+        html = parser.fetch_html(url)
     result = parser.parse(html)
     content = _remove_noise(result.content, _SITE_NOISE)
 
@@ -52,6 +60,49 @@ def crawl_and_ingest(db: Session, url: str) -> FaqDocument:
     db.commit()
     db.refresh(doc)
     return doc
+
+
+@dataclass
+class FaqCrawlResult:
+    """FAQ 사이트 크롤링 결과 요약."""
+
+    total_pages: int = 0
+    new_pages: int = 0
+    updated_pages: int = 0
+    failed_urls: list[str] = field(default_factory=list)
+
+
+def crawl_faq_site(
+    db: Session,
+    root_url: str,
+    *,
+    max_pages: int = 50,
+    max_depth: int = 3,
+    delay: float = 1.0,
+) -> FaqCrawlResult:
+    """루트 URL에서 FAQ 페이지를 재귀 크롤링하여 DB에 저장한다."""
+    faq_result = FaqCrawlResult()
+
+    def on_page(url: str, html: str):
+        is_existing = db.execute(
+            select(FaqDocument).where(FaqDocument.url == url)
+        ).scalar_one_or_none()
+        crawl_and_ingest(db, url, html=html)
+        if is_existing:
+            faq_result.updated_pages += 1
+        else:
+            faq_result.new_pages += 1
+
+    crawl_result = crawl_site(
+        root_url,
+        on_page=on_page,
+        max_pages=max_pages,
+        max_depth=max_depth,
+        delay=delay,
+    )
+    faq_result.total_pages = crawl_result.total_pages
+    faq_result.failed_urls = crawl_result.failed_urls
+    return faq_result
 
 
 def search_faq(db: Session, query: str, top_k: int = 3) -> list[dict]:
