@@ -7,13 +7,25 @@ from app.parsers import get_parser
 from app.services.embedding_service import embed_text
 
 
+_SITE_NOISE = {"식스샵 프로 가이드", "(클릭) "}
+
+
+def _remove_noise(content: str, noise: set[str]) -> str:
+    """파싱된 콘텐츠에서 사이트 고유의 불필요한 텍스트를 제거한다."""
+    lines = content.split("\n")
+    for n in noise:
+        lines = [line.replace(n, "") for line in lines]
+    return "\n".join(line for line in lines if line.strip())
+
+
 def crawl_and_ingest(db: Session, url: str) -> FaqDocument:
     """URL에서 FAQ 문서를 크롤링하여 DB에 저장한다. 이미 존재하면 업데이트한다."""
     parser = get_parser(url)
     html = parser.fetch_html(url)
     result = parser.parse(html)
+    content = _remove_noise(result.content, _SITE_NOISE)
 
-    embedding_text = f"{result.title}\n\n{result.content}"
+    embedding_text = f"{result.title}\n\n{content}"
     embedding_vector = embed_text(embedding_text)
 
     existing = db.execute(
@@ -22,7 +34,7 @@ def crawl_and_ingest(db: Session, url: str) -> FaqDocument:
 
     if existing:
         existing.title = result.title
-        existing.content = result.content
+        existing.content = content
         existing.breadcrumb = result.breadcrumb
         existing.embedding = embedding_vector
         db.commit()
@@ -32,7 +44,7 @@ def crawl_and_ingest(db: Session, url: str) -> FaqDocument:
     doc = FaqDocument(
         url=url,
         title=result.title,
-        content=result.content,
+        content=content,
         breadcrumb=result.breadcrumb,
         embedding=embedding_vector,
     )

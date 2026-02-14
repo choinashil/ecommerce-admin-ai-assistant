@@ -73,11 +73,9 @@ class OopyParser(BaseParser):
         # breadcrumb + "Search" 줄 제거 (순서 중요: "Search"를 구분자로 사용하므로 noise 제거보다 먼저)
         lines = self._remove_breadcrumb_lines(lines)
 
-        # OOPY UI 텍스트 제거 ("/" 구분자, "로 돌아가기", 등)
+        # OOPY UI 텍스트 제거 ("Search", "로 돌아가기", "/" 등)
         _HEADER_NOISE = {"Search", "로 돌아가기"}
-        _TOGGLE_HINT = "(클릭) "
         lines = [line for line in lines if line not in _HEADER_NOISE and line != "/"]
-        lines = [line.replace(_TOGGLE_HINT, "") for line in lines]
 
         # 제목 중복 제거 (content 첫 줄이 title과 같으면 제거)
         if lines and lines[0] == title:
@@ -86,8 +84,8 @@ class OopyParser(BaseParser):
         # TOC(목차) 제거
         lines = self._remove_toc(lines)
 
-        # 마지막 footer 잔재 제거 ("식스샵 프로 가이드", "TOP" 등)
-        _FOOTER_NOISE = {"식스샵 프로 가이드", "TOP"}
+        # OOPY footer UI 텍스트 제거 ("TOP" 등)
+        _FOOTER_NOISE = {"TOP"}
         while lines and lines[-1] in _FOOTER_NOISE:
             lines.pop()
 

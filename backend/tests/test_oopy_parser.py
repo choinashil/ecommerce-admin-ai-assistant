@@ -35,9 +35,6 @@ def _make_oopy_html(
     for line in body_lines:
         parts.append(f"<div>{line}</div>")
 
-    # footer 잔재
-    parts.append("<div>식스샵 프로 가이드</div>")
-
     return _make_html("\n".join(parts))
 
 
@@ -88,7 +85,6 @@ class TestOopyParserContent:
         )
         parser = OopyParser()
         result = parser.parse(html)
-        assert "가이드" not in result.content
         assert "고객" not in result.content.split("\n")[0]
 
     def test_removes_title_duplicate(self):
@@ -111,19 +107,7 @@ class TestOopyParserContent:
         )
         parser = OopyParser()
         result = parser.parse(html)
-        # TOC의 "등급 추가", "등급 삭제"는 제거되고, 본문의 것은 남아야 함
         assert result.content.startswith("설명 텍스트")
-
-    def test_removes_footer_site_name(self):
-        html = _make_oopy_html(
-            breadcrumb_parts=["가이드", "고객"],
-            title="등급 관리",
-            toc=[],
-            body_lines=["본문"],
-        )
-        parser = OopyParser()
-        result = parser.parse(html)
-        assert not result.content.endswith("식스샵 프로 가이드")
 
     def test_removes_noise_text(self):
         html = _make_html(
