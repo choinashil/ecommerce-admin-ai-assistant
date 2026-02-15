@@ -1,9 +1,17 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from enum import Enum
 from urllib.parse import urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
+
+
+class ContentFormat(str, Enum):
+    """파서 출력 형식."""
+
+    TEXT = "text"
+    MARKDOWN = "markdown"
 
 
 def normalize_url(url: str) -> str:
@@ -31,7 +39,9 @@ class BaseParser(ABC):
         return response.text
 
     @abstractmethod
-    def parse(self, html: str) -> ParseResult:
+    def parse(
+        self, html: str, *, content_format: ContentFormat = ContentFormat.TEXT
+    ) -> ParseResult:
         """HTML 문자열을 파싱하여 구조화된 결과를 반환한다."""
         ...
 

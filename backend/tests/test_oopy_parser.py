@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from app.shared.crawling.parsers.base import ContentFormat
 from app.shared.crawling.parsers.oopy import OopyParser
 
 
@@ -133,6 +134,73 @@ class TestOopyParserContent:
         parser = OopyParser()
         result = parser.parse("<html></html>")
         assert result.content == ""
+
+
+class TestOopyParserMarkdown:
+    """마크다운 출력 형식을 테스트한다."""
+
+    def test_preserves_h2_headings(self):
+        html = _make_html(
+            "<span>Search</span><h1>제목</h1>"
+            "<h2>섹션 A</h2><p>내용 A</p>"
+            "<h2>섹션 B</h2><p>내용 B</p>"
+        )
+        parser = OopyParser()
+        result = parser.parse(html, content_format=ContentFormat.MARKDOWN)
+        assert "## 섹션 A" in result.content
+        assert "## 섹션 B" in result.content
+
+    def test_preserves_h3_headings(self):
+        html = _make_html(
+            "<span>Search</span><h1>제목</h1>"
+            "<h2>옵션</h2><h3>세부 설정</h3><p>설명</p>"
+        )
+        parser = OopyParser()
+        result = parser.parse(html, content_format=ContentFormat.MARKDOWN)
+        assert "## 옵션" in result.content
+        assert "### 세부 설정" in result.content
+
+    def test_removes_h1_title_duplicate(self):
+        html = _make_html(
+            "<span>Search</span><h1>등급 관리</h1>"
+            "<h2>등급 추가</h2><p>본문</p>"
+        )
+        parser = OopyParser()
+        result = parser.parse(html, content_format=ContentFormat.MARKDOWN)
+        assert "# 등급 관리" not in result.content
+        assert "## 등급 추가" in result.content
+
+    def test_preserves_list_items(self):
+        html = _make_html(
+            "<span>Search</span><h1>제목</h1>"
+            "<ul><li>항목 1</li><li>항목 2</li></ul>"
+        )
+        parser = OopyParser()
+        result = parser.parse(html, content_format=ContentFormat.MARKDOWN)
+        assert "항목 1" in result.content
+        assert "항목 2" in result.content
+
+    def test_removes_breadcrumb_in_markdown(self):
+        html = _make_oopy_html(
+            breadcrumb_parts=["가이드", "고객"],
+            title="등급 관리",
+            toc=[],
+            body_lines=["<h2>등급 추가</h2>", "추가 방법"],
+        )
+        parser = OopyParser()
+        result = parser.parse(html, content_format=ContentFormat.MARKDOWN)
+        assert "가이드" not in result.content
+
+    def test_text_format_unchanged(self):
+        """기존 텍스트 모드가 변경되지 않았는지 확인한다."""
+        html = _make_html(
+            "<span>Search</span><h1>제목</h1>"
+            "<h2>섹션</h2><p>본문</p>"
+        )
+        parser = OopyParser()
+        result = parser.parse(html, content_format=ContentFormat.TEXT)
+        assert "##" not in result.content
+        assert "섹션" in result.content
 
 
 class TestFetchHtml:

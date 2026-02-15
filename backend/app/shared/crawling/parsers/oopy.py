@@ -1,9 +1,10 @@
 import asyncio
 
+import markdownify
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
-from app.shared.crawling.parsers.base import BaseParser, ParseResult
+from app.shared.crawling.parsers.base import BaseParser, ContentFormat, ParseResult
 
 
 class OopyParser(BaseParser):
@@ -34,11 +35,13 @@ class OopyParser(BaseParser):
             html = asyncio.run(self._expand_toggles(url))
         return html
 
-    def parse(self, html: str) -> ParseResult:
+    def parse(
+        self, html: str, *, content_format: ContentFormat = ContentFormat.TEXT
+    ) -> ParseResult:
         soup = BeautifulSoup(html, "lxml")
         title = self._extract_title(soup)
         breadcrumb = self._extract_breadcrumb(soup)
-        content = self._extract_content(soup, title)
+        content = self._extract_content(soup, title, content_format)
         return ParseResult(title=title, content=content, breadcrumb=breadcrumb)
 
     def _extract_title(self, soup: BeautifulSoup) -> str:
@@ -53,10 +56,16 @@ class OopyParser(BaseParser):
 
         return "제목 없음"
 
-    def _extract_content(self, soup: BeautifulSoup, title: str) -> str:
+    def _extract_content(
+        self,
+        soup: BeautifulSoup,
+        title: str,
+        content_format: ContentFormat = ContentFormat.TEXT,
+    ) -> str:
         """본문 내용을 추출한다.
 
         breadcrumb, 제목 중복, TOC(목차), OOPY UI 텍스트를 제거한다.
+        content_format에 따라 텍스트 또는 마크다운으로 출력한다.
         """
         for tag in soup.find_all(
             ["nav", "header", "footer", "script", "style", "noscript"]
@@ -67,8 +76,14 @@ class OopyParser(BaseParser):
         if not body:
             return ""
 
-        text = body.get_text(separator="\n", strip=True)
-        lines = [line.strip() for line in text.split("\n") if line.strip()]
+        if content_format == ContentFormat.MARKDOWN:
+            raw = markdownify.markdownify(
+                str(body), heading_style="ATX", bullets="-"
+            )
+        else:
+            raw = body.get_text(separator="\n", strip=True)
+
+        lines = [line.strip() for line in raw.split("\n") if line.strip()]
 
         lines = self._remove_breadcrumb_lines(lines)
 
@@ -77,6 +92,10 @@ class OopyParser(BaseParser):
 
         if lines and lines[0] == title:
             lines = lines[1:]
+
+        if content_format == ContentFormat.MARKDOWN:
+            if lines and lines[0].startswith("# ") and lines[0].lstrip("# ") == title:
+                lines = lines[1:]
 
         lines = self._remove_toc(lines)
 

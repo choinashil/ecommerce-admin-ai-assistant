@@ -1,4 +1,10 @@
-from app.shared.crawling.parsers import BaseParser, ParseResult, normalize_url, OopyParser
+from app.shared.crawling.parsers import (
+    BaseParser,
+    ContentFormat,
+    ParseResult,
+    normalize_url,
+    OopyParser,
+)
 
 _OOPY_PARSER = OopyParser()
 
@@ -9,4 +15,4 @@ def get_parser(url: str) -> BaseParser:
     return _OOPY_PARSER
 
 
-__all__ = ["BaseParser", "ParseResult", "get_parser", "normalize_url"]
+__all__ = ["BaseParser", "ContentFormat", "ParseResult", "get_parser", "normalize_url"]
