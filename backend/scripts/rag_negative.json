@@ -1,0 +1,52 @@
+[
+  {
+    "question": "고객이 주문 취소를 요청하는데 환불 처리는 어떻게 해야 하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "주문 상태를 일괄 변경하는 방법이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "쇼핑몰 디자인 테마 변경 어떻게 해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "다국어 설정 영어 일본어 지원",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "세금계산서 자동 발행 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "회원 탈퇴 처리 어떻게 해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "매출 통계 리포트 확인 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "고객 문의 게시판 답변은 어디서 하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "적립금 자동 지급 설정",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "상품 리뷰에 악성 댓글이 달렸는데 삭제하거나 숨길 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  }
+]
