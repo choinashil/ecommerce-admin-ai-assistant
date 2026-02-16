@@ -10,7 +10,7 @@ from app.shared.database import Base, engine, get_db
 from app.product.model import Product  # noqa: F401
 from app.order.model import Order  # noqa: F401
 from app.chat.models import Conversation, Message  # noqa: F401
-from app.faq.model import FaqDocument  # noqa: F401
+from app.guide.model import GuideDocument  # noqa: F401
 from app.chat.router import router as chat_router
 from app.product.router import router as products_router
 

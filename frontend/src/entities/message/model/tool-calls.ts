@@ -2,20 +2,19 @@ import type { components } from '@/shared/api/schema';
 
 export type ToolCallDetail = components['schemas']['ToolCallDetail'];
 
-interface FaqResult {
-  id: string;
+interface GuideResult {
   title: string;
   url: string;
   breadcrumb: string;
   similarity: number;
 }
 
-export interface SearchFaqToolCall {
-  name: 'search_faq';
+export interface SearchGuideToolCall {
+  name: 'search_guide';
   arguments: { query: string };
-  result: { results: FaqResult[]; total: number };
+  result: { results: GuideResult[]; total: number };
 }
 
-export const isSearchFaqToolCall = (toolCall: ToolCallDetail): toolCall is SearchFaqToolCall => {
-  return toolCall.name === 'search_faq';
+export const isSearchGuideToolCall = (toolCall: ToolCallDetail): toolCall is SearchGuideToolCall => {
+  return toolCall.name === 'search_guide';
 };

@@ -1,15 +1,15 @@
 """
-FAQ 문서 크롤링 스크립트.
+가이드 문서 크롤링 스크립트.
 
 Usage:
     cd backend
-    python -m scripts.crawl_faq <URL>
-    python -m scripts.crawl_faq <URL> --recursive
-    python -m scripts.crawl_faq <URL> --recursive --max-pages 100 --max-depth 5
+    python -m scripts.crawl_guide <URL>
+    python -m scripts.crawl_guide <URL> --recursive
+    python -m scripts.crawl_guide <URL> --recursive --max-pages 100 --max-depth 5
 
 Example:
-    python -m scripts.crawl_faq https://help.pro.sixshop.com/customers/grade
-    python -m scripts.crawl_faq https://help.pro.sixshop.com --recursive
+    python -m scripts.crawl_guide https://help.pro.sixshop.com/customers/grade
+    python -m scripts.crawl_guide https://help.pro.sixshop.com --recursive
 """
 
 import argparse
@@ -17,12 +17,11 @@ import logging
 import sys
 
 from app.shared.database import SessionLocal
-from app.shared.display_id import to_display_id
-from app.faq.service import crawl_and_ingest, crawl_faq_site
+from app.guide.service import crawl_and_ingest, crawl_guide_site
 
 
 def main():
-    parser = argparse.ArgumentParser(description="FAQ 문서 크롤링")
+    parser = argparse.ArgumentParser(description="가이드 문서 크롤링")
     parser.add_argument("url", help="크롤링할 URL")
     parser.add_argument(
         "--recursive", action="store_true", help="하위 페이지 재귀 크롤링"
@@ -44,7 +43,7 @@ def main():
     db = SessionLocal()
     try:
         if args.recursive:
-            result = crawl_faq_site(
+            result = crawl_guide_site(
                 db,
                 args.url,
                 max_pages=args.max_pages,
@@ -62,8 +61,7 @@ def main():
                     print(f"    - {url}")
         else:
             doc = crawl_and_ingest(db, args.url)
-            display_id = to_display_id("faq_documents", doc.id)
-            print(f"완료: {display_id}")
+            print(f"완료: {doc.id}")
             print(f"  제목: {doc.title}")
             print(f"  내용 길이: {len(doc.content)} 문자")
             print(f"  Breadcrumb: {doc.breadcrumb or '(없음)'}")

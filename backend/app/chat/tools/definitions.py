@@ -2,7 +2,7 @@ TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
-            "name": "search_faq",
+            "name": "search_guide",
             "description": "쇼핑몰 운영 방법, 기능 사용법 등에 대한 도움말을 검색한다.",
             "parameters": {
                 "type": "object",

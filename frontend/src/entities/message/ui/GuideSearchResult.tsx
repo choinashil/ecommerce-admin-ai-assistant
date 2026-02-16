@@ -2,18 +2,18 @@ import { ExternalLink, FileText, Search } from 'lucide-react';
 
 import { Badge } from '@/shared/ui/badge';
 
-import type { SearchFaqToolCall } from '../model/tool-calls';
+import type { SearchGuideToolCall } from '../model/tool-calls';
 
-interface FaqSearchResultProps {
-  toolCall: SearchFaqToolCall;
+interface GuideSearchResultProps {
+  toolCall: SearchGuideToolCall;
 }
 
-const FaqSearchResult = ({
+const GuideSearchResult = ({
   toolCall: {
     arguments: { query },
     result: { results },
   },
-}: FaqSearchResultProps) => {
+}: GuideSearchResultProps) => {
   return (
     <div className='space-y-1.5'>
       <div className='flex items-center gap-1.5 text-muted-foreground'>
@@ -32,7 +32,7 @@ const FaqSearchResult = ({
       <div className='rounded bg-muted p-2'>
         <ul className='list-disc space-y-1 pl-4 marker:text-muted-foreground'>
           {results.map((result) => (
-            <li key={result.id}>
+            <li key={result.url}>
               <div className='flex items-center gap-2'>
                 <a
                   href={result.url}
@@ -55,4 +55,4 @@ const FaqSearchResult = ({
   );
 };
 
-export default FaqSearchResult;
+export default GuideSearchResult;

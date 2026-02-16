@@ -5,9 +5,9 @@ import { formatDate } from '@/shared/lib/format';
 import { Badge } from '@/shared/ui/badge';
 import MarkdownContent from '@/shared/ui/markdown-content';
 
-import { isSearchFaqToolCall } from '../model/tool-calls';
+import { isSearchGuideToolCall } from '../model/tool-calls';
 
-import FaqSearchResult from './FaqSearchResult';
+import GuideSearchResult from './GuideSearchResult';
 import SystemPromptCard from './SystemPromptCard';
 import ToolCallDefaultResult from './ToolCallDefaultResult';
 
@@ -76,8 +76,8 @@ const MessageTimeline = ({ messages }: MessageTimelineProps) => {
                     <span className='font-medium'>{toolCall.name}</span>
                   </summary>
                   <div className='border-t px-2 py-1.5'>
-                    {isSearchFaqToolCall(toolCall) ? (
-                      <FaqSearchResult toolCall={toolCall} />
+                    {isSearchGuideToolCall(toolCall) ? (
+                      <GuideSearchResult toolCall={toolCall} />
                     ) : (
                       <ToolCallDefaultResult toolCall={toolCall} />
                     )}

@@ -1,10 +1,10 @@
 """
-FAQ 문서를 JSON으로 추출하는 스크립트.
+가이드 문서를 JSON으로 추출하는 스크립트.
 
 Usage:
     cd backend
-    python -m scripts.export_faq
-    python -m scripts.export_faq --format markdown --output faq_documents_md.json
+    python -m scripts.export_guide
+    python -m scripts.export_guide --format markdown --output guide_documents_md.json
 """
 
 import argparse
@@ -14,8 +14,8 @@ import time
 
 from sqlalchemy import select
 
-from app.faq.model import FaqDocument
-from app.faq.service import _remove_noise, _SITE_NOISE
+from app.guide.model import GuideDocument
+from app.guide.service import _remove_noise, _SITE_NOISE
 from app.shared.crawling import ContentFormat, get_parser
 from app.shared.database import SessionLocal
 
@@ -26,7 +26,7 @@ def _export_from_db(output: str) -> None:
     """DB에 저장된 텍스트 콘텐츠를 그대로 JSON으로 추출한다."""
     db = SessionLocal()
     try:
-        docs = db.execute(select(FaqDocument)).scalars().all()
+        docs = db.execute(select(GuideDocument)).scalars().all()
 
         data = [
             {
@@ -51,7 +51,7 @@ def _export_as_markdown(output: str, delay: float) -> None:
     """DB의 URL 목록을 기반으로 각 페이지를 re-fetch하여 마크다운으로 추출한다."""
     db = SessionLocal()
     try:
-        docs = db.execute(select(FaqDocument)).scalars().all()
+        docs = db.execute(select(GuideDocument)).scalars().all()
         urls = [(doc.url, doc.breadcrumb) for doc in docs]
     finally:
         db.close()
@@ -87,11 +87,11 @@ def _export_as_markdown(output: str, delay: float) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="FAQ 문서 JSON 추출")
+    parser = argparse.ArgumentParser(description="가이드 문서 JSON 추출")
     parser.add_argument(
         "--output",
-        default="faq_documents.json",
-        help="출력 파일 경로 (기본: faq_documents.json)",
+        default="guide_documents.json",
+        help="출력 파일 경로 (기본: guide_documents.json)",
     )
     parser.add_argument(
         "--format",

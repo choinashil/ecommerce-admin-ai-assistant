@@ -17,7 +17,7 @@ def db():
     session = sessionmaker(bind=connection)()
 
     # 기존 데이터 삭제 (트랜잭션 내부이므로 테스트 후 rollback으로 원복)
-    session.execute(text("DELETE FROM faq_documents"))
+    session.execute(text("DELETE FROM guide_documents"))
     session.execute(text("DELETE FROM messages"))
     session.execute(text("DELETE FROM orders"))
     session.execute(text("DELETE FROM products"))
@@ -31,7 +31,7 @@ def db():
 
     # PostgreSQL 시퀀스는 트랜잭션과 독립적이므로, 롤백 후 시퀀스를 max(id) 기준으로 리셋
     with engine.connect() as reset_conn:
-        for table in ("conversations", "faq_documents", "messages", "orders", "products"):
+        for table in ("conversations", "guide_documents", "messages", "orders", "products"):
             reset_conn.execute(
                 text(
                     f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), "

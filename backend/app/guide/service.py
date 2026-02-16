@@ -4,8 +4,7 @@ from dataclasses import dataclass, field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.shared.display_id import to_display_id
-from app.faq.model import FaqDocument
+from app.guide.model import GuideDocument
 from app.shared.crawling import get_parser
 from app.shared.crawling.crawler import crawl_site
 from app.shared.embedding import embed_text
@@ -25,8 +24,8 @@ def _remove_noise(content: str, noise: set[str]) -> str:
 
 def crawl_and_ingest(
     db: Session, url: str, *, html: str | None = None
-) -> FaqDocument:
-    """URL에서 FAQ 문서를 크롤링하여 DB에 저장한다. 이미 존재하면 업데이트한다."""
+) -> GuideDocument:
+    """URL에서 가이드 문서를 크롤링하여 DB에 저장한다. 이미 존재하면 업데이트한다."""
     parser = get_parser(url)
     if html is None:
         html = parser.fetch_html(url)
@@ -37,7 +36,7 @@ def crawl_and_ingest(
     embedding_vector = embed_text(embedding_text)
 
     existing = db.execute(
-        select(FaqDocument).where(FaqDocument.url == url)
+        select(GuideDocument).where(GuideDocument.url == url)
     ).scalar_one_or_none()
 
     if existing:
@@ -49,7 +48,7 @@ def crawl_and_ingest(
         db.refresh(existing)
         return existing
 
-    doc = FaqDocument(
+    doc = GuideDocument(
         url=url,
         title=result.title,
         content=content,
@@ -63,8 +62,8 @@ def crawl_and_ingest(
 
 
 @dataclass
-class FaqCrawlResult:
-    """FAQ 사이트 크롤링 결과 요약."""
+class GuideCrawlResult:
+    """가이드 사이트 크롤링 결과 요약."""
 
     total_pages: int = 0
     new_pages: int = 0
@@ -72,26 +71,26 @@ class FaqCrawlResult:
     failed_urls: list[str] = field(default_factory=list)
 
 
-def crawl_faq_site(
+def crawl_guide_site(
     db: Session,
     root_url: str,
     *,
     max_pages: int = 50,
     max_depth: int = 3,
     delay: float = 1.0,
-) -> FaqCrawlResult:
-    """루트 URL에서 FAQ 페이지를 재귀 크롤링하여 DB에 저장한다."""
-    faq_result = FaqCrawlResult()
+) -> GuideCrawlResult:
+    """루트 URL에서 가이드 페이지를 재귀 크롤링하여 DB에 저장한다."""
+    guide_result = GuideCrawlResult()
 
     def on_page(url: str, html: str):
         is_existing = db.execute(
-            select(FaqDocument).where(FaqDocument.url == url)
+            select(GuideDocument).where(GuideDocument.url == url)
         ).scalar_one_or_none()
         crawl_and_ingest(db, url, html=html)
         if is_existing:
-            faq_result.updated_pages += 1
+            guide_result.updated_pages += 1
         else:
-            faq_result.new_pages += 1
+            guide_result.new_pages += 1
 
     crawl_result = crawl_site(
         root_url,
@@ -100,19 +99,19 @@ def crawl_faq_site(
         max_depth=max_depth,
         delay=delay,
     )
-    faq_result.total_pages = crawl_result.total_pages
-    faq_result.failed_urls = crawl_result.failed_urls
-    return faq_result
+    guide_result.total_pages = crawl_result.total_pages
+    guide_result.failed_urls = crawl_result.failed_urls
+    return guide_result
 
 
-def search_faq(db: Session, query: str, top_k: int = 3) -> list[dict]:
-    """사용자 질문과 유사한 FAQ 문서를 검색한다."""
+def search_guide(db: Session, query: str, top_k: int = 3) -> list[dict]:
+    """사용자 질문과 유사한 가이드 문서를 검색한다."""
     query_vector = embed_text(query)
 
     results = db.execute(
         select(
-            FaqDocument,
-            FaqDocument.embedding.cosine_distance(query_vector).label("distance"),
+            GuideDocument,
+            GuideDocument.embedding.cosine_distance(query_vector).label("distance"),
         )
         .order_by("distance")
         .limit(top_k)
@@ -120,7 +119,6 @@ def search_faq(db: Session, query: str, top_k: int = 3) -> list[dict]:
 
     return [
         {
-            "id": to_display_id("faq_documents", doc.id),
             "title": doc.title,
             "content": doc.content,
             "url": doc.url,

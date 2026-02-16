@@ -28,7 +28,7 @@ const MessageList = ({ messages, isStreaming }: MessageListProps) => {
         {messages.length === 0 && (
           <div className='flex flex-col items-center justify-center py-12 text-center text-muted-foreground'>
             <p className='text-sm'>무엇이든 물어보세요!</p>
-            <p className='mt-1 text-xs'>상품 등록, 매출 조회, FAQ 등을 도와드립니다.</p>
+            <p className='mt-1 text-xs'>상품 등록, 매출 조회, 가이드 검색 등을 도와드립니다.</p>
           </div>
         )}
         {messages.map((message) => (

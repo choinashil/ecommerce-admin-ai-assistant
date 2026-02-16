@@ -8,8 +8,8 @@ from app.shared.config import settings
 from app.shared.database import Base
 
 
-class FaqDocument(Base):
-    __tablename__ = "faq_documents"
+class GuideDocument(Base):
+    __tablename__ = "guide_documents"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     url: Mapped[str] = mapped_column(String(500), unique=True, index=True)

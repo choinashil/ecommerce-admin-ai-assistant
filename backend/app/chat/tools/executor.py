@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.shared.display_id import to_display_id
-from app.faq.service import search_faq
+from app.guide.service import search_guide
 from app.product.service import create_product, list_products
 
 
@@ -15,9 +15,9 @@ def execute_tool(db: Session, tool_name: str, arguments: dict) -> dict:
     return handler(db, arguments)
 
 
-def _handle_search_faq(db: Session, arguments: dict) -> dict:
+def _handle_search_guide(db: Session, arguments: dict) -> dict:
     query = arguments["query"]
-    results = search_faq(db, query)
+    results = search_guide(db, query)
     return {"results": results, "total": len(results)}
 
 
@@ -49,7 +49,7 @@ def _handle_list_products(db: Session, arguments: dict) -> dict:
 
 
 _TOOL_HANDLERS = {
-    "search_faq": _handle_search_faq,
+    "search_guide": _handle_search_guide,
     "create_product": _handle_create_product,
     "list_products": _handle_list_products,
 }
