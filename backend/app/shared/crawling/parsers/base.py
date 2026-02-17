@@ -32,11 +32,16 @@ class ParseResult:
 class BaseParser(ABC):
     """HTML 파서의 기본 인터페이스."""
 
-    def fetch_html(self, url: str) -> str:
-        """URL에서 HTML을 가져온다."""
+    def fetch_html(self, url: str) -> tuple[str, str]:
+        """URL에서 HTML을 가져온다.
+
+        Returns:
+            (html, resolved_url) — 리다이렉트가 있으면 최종 URL이 다를 수 있다.
+        """
         response = httpx.get(url, timeout=30.0, follow_redirects=True)
         response.raise_for_status()
-        return response.text
+        resolved_url = normalize_url(str(response.url))
+        return response.text, resolved_url
 
     @abstractmethod
     def parse(

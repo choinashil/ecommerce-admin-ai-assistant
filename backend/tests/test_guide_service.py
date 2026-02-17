@@ -3,13 +3,92 @@ from unittest.mock import MagicMock, patch
 from app.shared.crawling.parsers.base import ParseResult
 from app.shared.crawling.crawler import CrawlResult
 from app.guide.model import GuideDocument
-from app.guide.service import crawl_guide_site, search_guide
+from app.guide.service import (
+    _is_guide_content,
+    crawl_and_ingest,
+    crawl_guide_site,
+    search_guide,
+)
 
 _HTML = "<html><body><h1>제목</h1><p>본문</p></body></html>"
 
+_GUIDE_BREADCRUMB = "식스샵 프로 가이드 > 식스샵 프로 활용하기 > 상품 > 상품 추가하기"
+_INDEX_BREADCRUMB = "식스샵 프로 가이드 > 식스샵 프로 활용하기 > 상품"
+_NON_GUIDE_BREADCRUMB = "식스샵 프로 가이드 > 플랜 안내"
 
-def _make_parse_result(title: str = "제목", content: str = "본문") -> ParseResult:
-    return ParseResult(title=title, content=content, breadcrumb=None)
+
+def _make_parse_result(
+    title: str = "제목",
+    content: str = "가이드 본문 내용 " * 10,
+    breadcrumb: str | None = _GUIDE_BREADCRUMB,
+) -> ParseResult:
+    return ParseResult(title=title, content=content, breadcrumb=breadcrumb)
+
+
+class TestIsGuideContent:
+    """_is_guide_content 브레드크럼 필터를 테스트한다."""
+
+    def test_accepts_content_page(self):
+        assert _is_guide_content(_GUIDE_BREADCRUMB) is True
+
+    def test_rejects_index_page(self):
+        assert _is_guide_content(_INDEX_BREADCRUMB) is False
+
+    def test_rejects_non_guide_page(self):
+        assert _is_guide_content(_NON_GUIDE_BREADCRUMB) is False
+
+    def test_rejects_none_breadcrumb(self):
+        assert _is_guide_content(None) is False
+
+    def test_accepts_deep_page(self):
+        deep = "식스샵 프로 가이드 > 식스샵 프로 활용하기 > 고객 > 세그먼트 > 상세"
+        assert _is_guide_content(deep) is True
+
+
+class TestCrawlAndIngest:
+    """crawl_and_ingest의 브레드크럼 기반 필터를 테스트한다."""
+
+    @patch("app.guide.service.embed_text", return_value=[0.0] * 1536)
+    @patch("app.guide.service.get_parser")
+    def test_skips_non_guide_page(self, mock_get_parser, mock_embed, db):
+        mock_parser = MagicMock()
+        mock_parser.parse.return_value = _make_parse_result(
+            breadcrumb=_NON_GUIDE_BREADCRUMB
+        )
+        mock_get_parser.return_value = mock_parser
+
+        result = crawl_and_ingest(db, "https://example.com/policy", html=_HTML)
+
+        assert result is None
+        mock_embed.assert_not_called()
+
+    @patch("app.guide.service.embed_text", return_value=[0.0] * 1536)
+    @patch("app.guide.service.get_parser")
+    def test_skips_index_page(self, mock_get_parser, mock_embed, db):
+        mock_parser = MagicMock()
+        mock_parser.parse.return_value = _make_parse_result(
+            breadcrumb=_INDEX_BREADCRUMB
+        )
+        mock_get_parser.return_value = mock_parser
+
+        result = crawl_and_ingest(db, "https://example.com/products", html=_HTML)
+
+        assert result is None
+        mock_embed.assert_not_called()
+
+    @patch("app.guide.service.embed_text", return_value=[0.0] * 1536)
+    @patch("app.guide.service.get_parser")
+    def test_saves_guide_content(self, mock_get_parser, mock_embed, db):
+        mock_parser = MagicMock()
+        mock_parser.parse.return_value = _make_parse_result()
+        mock_get_parser.return_value = mock_parser
+
+        result = crawl_and_ingest(
+            db, "https://example.com/products/add-product", html=_HTML
+        )
+
+        assert result is not None
+        assert result.breadcrumb == _GUIDE_BREADCRUMB
 
 
 class TestCrawlGuideSite:
@@ -81,6 +160,30 @@ class TestCrawlGuideSite:
 
         assert result.total_pages == 0
         assert result.failed_urls == ["https://example.com/fail"]
+
+    @patch("app.guide.service.crawl_site")
+    @patch("app.guide.service.embed_text", return_value=[0.0] * 1536)
+    @patch("app.guide.service.get_parser")
+    def test_skips_non_guide_pages(
+        self, mock_get_parser, mock_embed, mock_crawl_site, db
+    ):
+        """브레드크럼이 가이드 콘텐츠가 아닌 페이지는 skipped_pages로 카운트된다."""
+        mock_parser = MagicMock()
+        mock_parser.parse.return_value = _make_parse_result(
+            breadcrumb=_NON_GUIDE_BREADCRUMB
+        )
+        mock_get_parser.return_value = mock_parser
+
+        def fake_crawl(root_url, *, on_page, **kwargs):
+            on_page("https://example.com/policy", _HTML)
+            return CrawlResult(total_pages=1)
+
+        mock_crawl_site.side_effect = fake_crawl
+
+        result = crawl_guide_site(db, "https://example.com/docs", delay=0)
+
+        assert result.skipped_pages == 1
+        assert result.new_pages == 0
 
 
 def _make_embedding(index: int) -> list[float]:

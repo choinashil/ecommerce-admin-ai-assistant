@@ -1,10 +1,20 @@
 import asyncio
+import time
 
 import markdownify
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
 from app.shared.crawling.parsers.base import BaseParser, ContentFormat, ParseResult
+
+# OOPY 플랫폼 공통 상수
+_OOPY_CDN_DOMAIN = "lazyrockets.com"
+_OOPY_TOC_CLASS = "notion-table_of_contents-block"
+_META_REFRESH_WAIT = 3  # OOPY 로딩 페이지의 meta refresh 대기 시간(초)
+_SEARCH_MARKER = "Search"
+_BACK_LINK_TEXT = "로 돌아가기"
+_HEADER_NOISE = {_SEARCH_MARKER, _BACK_LINK_TEXT}
+_FOOTER_NOISE = {"TOP"}
 
 
 class OopyParser(BaseParser):
@@ -28,12 +38,23 @@ class OopyParser(BaseParser):
             await browser.close()
             return html
 
-    def fetch_html(self, url: str) -> str:
-        """정적 HTML을 가져오고, 토글이 있으면 Playwright로 재크롤링한다."""
-        html = super().fetch_html(url)
+    def fetch_html(self, url: str) -> tuple[str, str]:
+        """정적 HTML을 가져오고, 필요시 재시도/Playwright 확장한다.
+
+        OOPY는 일부 페이지에서 meta-refresh 로딩 페이지를 먼저 반환한다.
+        이를 감지하면 대기 후 재요청하여 실제 콘텐츠를 가져온다.
+        """
+        html, resolved_url = super().fetch_html(url)
+
+        # OOPY 로딩 페이지 감지: meta refresh + 로딩 스피너만 있는 1KB 미만 응답
+        if 'http-equiv="refresh"' in html and len(html) < 2000:
+            time.sleep(_META_REFRESH_WAIT)
+            html, resolved_url = super().fetch_html(resolved_url)
+
         if "notion-toggle-block" in html:
-            html = asyncio.run(self._expand_toggles(url))
-        return html
+            html = asyncio.run(self._expand_toggles(resolved_url))
+
+        return html, resolved_url
 
     def parse(
         self, html: str, *, content_format: ContentFormat = ContentFormat.TEXT
@@ -76,6 +97,15 @@ class OopyParser(BaseParser):
         if not body:
             return ""
 
+        for img in body.find_all("img"):
+            src = img.get("src", "")
+            if not src or _OOPY_CDN_DOMAIN in src or src.startswith("data:image"):
+                img.decompose()
+
+        toc_block = body.find(class_=_OOPY_TOC_CLASS)
+        if toc_block:
+            toc_block.decompose()
+
         if content_format == ContentFormat.MARKDOWN:
             raw = markdownify.markdownify(
                 str(body), heading_style="ATX", bullets="-"
@@ -87,7 +117,6 @@ class OopyParser(BaseParser):
 
         lines = self._remove_breadcrumb_lines(lines)
 
-        _HEADER_NOISE = {"Search", "로 돌아가기"}
         lines = [line for line in lines if line not in _HEADER_NOISE and line != "/"]
 
         if lines and lines[0] == title:
@@ -97,10 +126,10 @@ class OopyParser(BaseParser):
             if lines and lines[0].startswith("# ") and lines[0].lstrip("# ") == title:
                 lines = lines[1:]
 
-        lines = self._remove_toc(lines)
-
-        _FOOTER_NOISE = {"TOP"}
         while lines and lines[-1] in _FOOTER_NOISE:
+            lines.pop()
+
+        while lines and _BACK_LINK_TEXT in lines[-1]:
             lines.pop()
 
         return "\n".join(lines)
@@ -118,7 +147,7 @@ class OopyParser(BaseParser):
         for line in lines:
             if line == "/":
                 continue
-            if line == "Search":
+            if line == _SEARCH_MARKER:
                 break
             breadcrumb_parts.append(line)
 
@@ -131,26 +160,9 @@ class OopyParser(BaseParser):
         """content 앞부분의 breadcrumb 줄들을 제거한다."""
         start_idx = 0
         for i, line in enumerate(lines):
-            if line == "Search":
+            if line == _SEARCH_MARKER:
                 start_idx = i
                 break
 
         return lines[start_idx:]
 
-    def _remove_toc(self, lines: list[str]) -> list[str]:
-        """본문 시작 전의 목차(TOC)를 제거한다."""
-        if len(lines) < 3:
-            return lines
-
-        toc_end = 0
-        remaining = lines[1:]
-
-        for i, line in enumerate(lines):
-            if len(line) > 50 or line.startswith(("•", "◦", "▪")):
-                break
-            if line in remaining[i:]:
-                toc_end = i + 1
-            else:
-                break
-
-        return lines[toc_end:]

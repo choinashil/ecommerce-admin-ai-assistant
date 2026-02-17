@@ -5,13 +5,29 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.guide.model import GuideDocument
-from app.shared.crawling import get_parser
+from app.shared.crawling import ContentFormat, get_parser
 from app.shared.crawling.crawler import crawl_site
 from app.shared.embedding import embed_text
 
 logger = logging.getLogger(__name__)
 
 _SITE_NOISE = {"식스샵 프로 가이드", "(클릭) "}
+_REQUIRED_BREADCRUMB_PREFIX = "식스샵 프로 활용하기"
+_MIN_BREADCRUMB_DEPTH = 4  # "가이드 > 활용하기 > 카테고리 > 페이지" = 콘텐츠
+
+
+def _is_guide_content(breadcrumb: str | None) -> bool:
+    """브레드크럼 기반으로 가이드 콘텐츠 페이지인지 판단한다.
+
+    - '식스샵 프로 활용하기' 하위 페이지만 허용
+    - 인덱스 페이지(3단계) 제외, 실제 콘텐츠(4단계+)만 포함
+    """
+    if not breadcrumb:
+        return False
+    parts = [p.strip() for p in breadcrumb.split(" > ")]
+    if len(parts) < 2 or parts[1] != _REQUIRED_BREADCRUMB_PREFIX:
+        return False
+    return len(parts) >= _MIN_BREADCRUMB_DEPTH
 
 
 def _remove_noise(content: str, noise: set[str]) -> str:
@@ -24,13 +40,20 @@ def _remove_noise(content: str, noise: set[str]) -> str:
 
 def crawl_and_ingest(
     db: Session, url: str, *, html: str | None = None
-) -> GuideDocument:
-    """URL에서 가이드 문서를 크롤링하여 DB에 저장한다. 이미 존재하면 업데이트한다."""
+) -> GuideDocument | None:
+    """URL에서 가이드 문서를 크롤링하여 DB에 저장한다. 이미 존재하면 업데이트한다.
+
+    브레드크럼 기반으로 가이드 콘텐츠가 아닌 페이지는 건너뛴다.
+    """
     parser = get_parser(url)
     if html is None:
-        html = parser.fetch_html(url)
-    result = parser.parse(html)
+        html, _ = parser.fetch_html(url)
+    result = parser.parse(html, content_format=ContentFormat.MARKDOWN)
     content = _remove_noise(result.content, _SITE_NOISE)
+
+    if not _is_guide_content(result.breadcrumb):
+        logger.info(f"  건너뜀 (비가이드): {url} (breadcrumb: {result.breadcrumb})")
+        return None
 
     embedding_text = f"{result.title}\n\n{content}"
     embedding_vector = embed_text(embedding_text)
@@ -68,6 +91,7 @@ class GuideCrawlResult:
     total_pages: int = 0
     new_pages: int = 0
     updated_pages: int = 0
+    skipped_pages: int = 0
     failed_urls: list[str] = field(default_factory=list)
 
 
@@ -75,8 +99,8 @@ def crawl_guide_site(
     db: Session,
     root_url: str,
     *,
-    max_pages: int = 50,
-    max_depth: int = 3,
+    max_pages: int = 200,
+    max_depth: int = 5,
     delay: float = 1.0,
 ) -> GuideCrawlResult:
     """루트 URL에서 가이드 페이지를 재귀 크롤링하여 DB에 저장한다."""
@@ -86,7 +110,10 @@ def crawl_guide_site(
         is_existing = db.execute(
             select(GuideDocument).where(GuideDocument.url == url)
         ).scalar_one_or_none()
-        crawl_and_ingest(db, url, html=html)
+        doc = crawl_and_ingest(db, url, html=html)
+        if doc is None:
+            guide_result.skipped_pages += 1
+            return
         if is_existing:
             guide_result.updated_pages += 1
         else:

@@ -27,10 +27,10 @@ def main():
         "--recursive", action="store_true", help="하위 페이지 재귀 크롤링"
     )
     parser.add_argument(
-        "--max-pages", type=int, default=50, help="최대 크롤링 페이지 수 (기본: 50)"
+        "--max-pages", type=int, default=200, help="최대 크롤링 페이지 수 (기본: 200)"
     )
     parser.add_argument(
-        "--max-depth", type=int, default=3, help="최대 크롤링 깊이 (기본: 3)"
+        "--max-depth", type=int, default=5, help="최대 크롤링 깊이 (기본: 5)"
     )
     parser.add_argument(
         "--delay", type=float, default=1.0, help="요청 간 딜레이 초 (기본: 1.0)"
@@ -53,7 +53,8 @@ def main():
             print(f"\n크롤링 완료:")
             print(
                 f"  총 {result.total_pages}페이지"
-                f" (신규: {result.new_pages}, 업데이트: {result.updated_pages})"
+                f" (신규: {result.new_pages}, 업데이트: {result.updated_pages},"
+                f" 건너뜀: {result.skipped_pages})"
             )
             if result.failed_urls:
                 print(f"  실패: {len(result.failed_urls)}건")
