@@ -2,7 +2,7 @@ import json
 import time
 from collections.abc import AsyncGenerator
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 from sqlalchemy.orm import Session
 
 from app.shared.config import settings
@@ -11,7 +11,7 @@ from app.chat.models import Conversation, Message, MessageRole
 from app.chat.tools.definitions import TOOL_DEFINITIONS
 from app.chat.tools.executor import execute_tool
 
-client = OpenAI(api_key=settings.openai_api_key)
+client = AsyncOpenAI(api_key=settings.openai_api_key)
 
 SYSTEM_PROMPT = """당신은 '식스샵 프로' 쇼핑몰 솔루션의 판매자를 돕는 AI 어시스턴트입니다. 한국어로 친근하게 답변하세요.
 
@@ -93,7 +93,7 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
 
     try:
         # --- 1차 LLM 호출 (tools 포함) ---
-        stream = client.chat.completions.create(
+        stream = await client.chat.completions.create(
             model=settings.openai_model,
             messages=openai_messages,
             tools=TOOL_DEFINITIONS,
@@ -103,7 +103,7 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
 
         tool_calls_chunks = {}
 
-        for chunk in stream:
+        async for chunk in stream:
             if chunk.usage:
                 usage = chunk.usage
 
@@ -174,14 +174,14 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
             # 2차 LLM 호출 (tools 제외 — 재귀 방지)
             first_usage = usage
             usage = None
-            second_stream = client.chat.completions.create(
+            second_stream = await client.chat.completions.create(
                 model=settings.openai_model,
                 messages=second_messages,
                 stream=True,
                 stream_options={"include_usage": True},
             )
 
-            for chunk in second_stream:
+            async for chunk in second_stream:
                 if chunk.usage:
                     usage = chunk.usage
                 if chunk.choices and chunk.choices[0].delta.content:
