@@ -5,6 +5,7 @@ export const formatPrice = (price: number) => {
 export const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
   return date.toLocaleString('ko-KR', {
+    timeZone: 'Asia/Seoul',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

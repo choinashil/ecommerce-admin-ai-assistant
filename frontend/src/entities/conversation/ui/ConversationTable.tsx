@@ -1,22 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 
 import type { ConversationSummary } from '@/entities/conversation';
+import { formatDate } from '@/shared/lib/format';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 
 interface ConversationTableProps {
   conversations: ConversationSummary[];
 }
-
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
 
 const formatTokens = (tokens: number) => {
   return tokens.toLocaleString('ko-KR');
