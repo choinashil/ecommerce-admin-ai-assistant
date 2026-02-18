@@ -1,19 +1,25 @@
 import logging
 from dataclasses import dataclass, field
 
-from sqlalchemy import select
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from app.guide.model import GuideDocument
+from app.guide.model import GuideChunk, GuideDocument
 from app.shared.crawling import ContentFormat, get_parser
 from app.shared.crawling.crawler import crawl_site
-from app.shared.embedding import embed_text
+from app.shared.embedding import embed_text, embed_texts
 
 logger = logging.getLogger(__name__)
 
 _SITE_NOISE = {"식스샵 프로 가이드", "(클릭) "}
 _REQUIRED_BREADCRUMB_PREFIX = "식스샵 프로 활용하기"
 _MIN_BREADCRUMB_DEPTH = 4  # "가이드 > 활용하기 > 카테고리 > 페이지" = 콘텐츠
+
+_text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=100,
+)
 
 
 def _is_guide_content(breadcrumb: str | None) -> bool:
@@ -38,6 +44,29 @@ def _remove_noise(content: str, noise: set[str]) -> str:
     return "\n".join(line for line in lines if line.strip())
 
 
+def _create_chunks(db: Session, doc: GuideDocument) -> list[GuideChunk]:
+    """문서를 청킹하고 임베딩하여 GuideChunk를 생성한다."""
+    chunks = _text_splitter.split_text(doc.content)
+    if not chunks:
+        return []
+
+    embedding_inputs = [f"{doc.title}\n\n{chunk}" for chunk in chunks]
+    embeddings = embed_texts(embedding_inputs)
+
+    guide_chunks = []
+    for i, (chunk_text, embedding) in enumerate(zip(chunks, embeddings)):
+        guide_chunk = GuideChunk(
+            document_id=doc.id,
+            content=chunk_text,
+            embedding=embedding,
+            chunk_index=i,
+        )
+        db.add(guide_chunk)
+        guide_chunks.append(guide_chunk)
+
+    return guide_chunks
+
+
 def crawl_and_ingest(
     db: Session, url: str, *, html: str | None = None
 ) -> GuideDocument | None:
@@ -55,9 +84,6 @@ def crawl_and_ingest(
         logger.info(f"  건너뜀 (비가이드): {url} (breadcrumb: {result.breadcrumb})")
         return None
 
-    embedding_text = f"{result.title}\n\n{content}"
-    embedding_vector = embed_text(embedding_text)
-
     existing = db.execute(
         select(GuideDocument).where(GuideDocument.url == url)
     ).scalar_one_or_none()
@@ -66,7 +92,12 @@ def crawl_and_ingest(
         existing.title = result.title
         existing.content = content
         existing.breadcrumb = result.breadcrumb
-        existing.embedding = embedding_vector
+        db.flush()
+        db.execute(
+            delete(GuideChunk).where(GuideChunk.document_id == existing.id)
+        )
+        db.flush()
+        _create_chunks(db, existing)
         db.commit()
         db.refresh(existing)
         return existing
@@ -76,9 +107,10 @@ def crawl_and_ingest(
         title=result.title,
         content=content,
         breadcrumb=result.breadcrumb,
-        embedding=embedding_vector,
     )
     db.add(doc)
+    db.flush()
+    _create_chunks(db, doc)
     db.commit()
     db.refresh(doc)
     return doc
@@ -132,14 +164,16 @@ def crawl_guide_site(
 
 
 def search_guide(db: Session, query: str, top_k: int = 3) -> list[dict]:
-    """사용자 질문과 유사한 가이드 문서를 검색한다."""
+    """사용자 질문과 유사한 가이드 청크를 검색한다."""
     query_vector = embed_text(query)
 
     results = db.execute(
         select(
+            GuideChunk,
             GuideDocument,
-            GuideDocument.embedding.cosine_distance(query_vector).label("distance"),
+            GuideChunk.embedding.cosine_distance(query_vector).label("distance"),
         )
+        .join(GuideDocument, GuideChunk.document_id == GuideDocument.id)
         .order_by("distance")
         .limit(top_k)
     ).all()
@@ -147,10 +181,10 @@ def search_guide(db: Session, query: str, top_k: int = 3) -> list[dict]:
     return [
         {
             "title": doc.title,
-            "content": doc.content,
+            "content": chunk.content,
             "url": doc.url,
             "breadcrumb": doc.breadcrumb,
             "similarity": round(1 - distance, 4),
         }
-        for doc, distance in results
+        for chunk, doc, distance in results
     ]
