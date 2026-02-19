@@ -10,7 +10,17 @@ interface MarkdownContentProps {
 const MarkdownContent = ({ content, className }: MarkdownContentProps) => {
   return (
     <div className={cn('prose prose-sm', className)}>
-      <Markdown>{content}</Markdown>
+      <Markdown
+        components={{
+          a: ({ children, ...props }) => (
+            <a target='_blank' rel='noopener noreferrer' {...props}>
+              {children}
+            </a>
+          ),
+        }}
+      >
+        {content}
+      </Markdown>
     </div>
   );
 };
