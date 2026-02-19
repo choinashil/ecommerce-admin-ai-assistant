@@ -38,6 +38,7 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
             id: action.payload.id,
             role: 'user',
             content: action.payload.content,
+            status: 'completed',
           },
         ],
       };
@@ -51,6 +52,7 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
             id: action.payload.id,
             role: 'assistant',
             content: '',
+            status: 'streaming',
           },
         ],
       };
@@ -62,6 +64,18 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
         messages[messages.length - 1] = {
           ...lastMessage,
           content: lastMessage.content + action.payload.token,
+        };
+      }
+      return { ...state, messages };
+    }
+
+    case 'SET_MESSAGE_STATUS': {
+      const messages = [...state.messages];
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage && lastMessage.role === 'assistant') {
+        messages[messages.length - 1] = {
+          ...lastMessage,
+          status: action.payload.status,
         };
       }
       return { ...state, messages };
@@ -130,21 +144,13 @@ export const useChat = (options?: UseChatOptions) => {
           },
           onDone: () => {
             dispatch({ type: 'SET_STATUS', payload: { statusMessage: null } });
-            dispatch({
-              type: 'SET_STREAMING',
-              payload: { isStreaming: false },
-            });
+            dispatch({ type: 'SET_MESSAGE_STATUS', payload: { status: 'completed' } });
+            dispatch({ type: 'SET_STREAMING', payload: { isStreaming: false } });
           },
           onError: (error) => {
             dispatch({ type: 'SET_STATUS', payload: { statusMessage: null } });
-            dispatch({
-              type: 'SET_ERROR',
-              payload: { error: error.message },
-            });
-            dispatch({
-              type: 'SET_STREAMING',
-              payload: { isStreaming: false },
-            });
+            dispatch({ type: 'SET_ERROR', payload: { error: error.message } });
+            dispatch({ type: 'SET_STREAMING', payload: { isStreaming: false } });
           },
         },
         abortControllerRef.current.signal,
@@ -156,6 +162,8 @@ export const useChat = (options?: UseChatOptions) => {
   const stopStreaming = useCallback(() => {
     abortControllerRef.current?.abort();
     dispatch({ type: 'SET_STREAMING', payload: { isStreaming: false } });
+    dispatch({ type: 'SET_STATUS', payload: { statusMessage: null } });
+    dispatch({ type: 'SET_MESSAGE_STATUS', payload: { status: 'aborted' } });
   }, []);
 
   return {

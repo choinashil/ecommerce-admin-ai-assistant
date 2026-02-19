@@ -1,4 +1,4 @@
-import type { Message } from '@/entities/message';
+import type { Message, MessageStatus } from '@/entities/message';
 
 export interface ChatState {
   messages: Message[];
@@ -12,6 +12,7 @@ export type ChatAction =
   | { type: 'ADD_USER_MESSAGE'; payload: { id: string; content: string } }
   | { type: 'ADD_ASSISTANT_MESSAGE'; payload: { id: string } }
   | { type: 'APPEND_TOKEN'; payload: { token: string } }
+  | { type: 'SET_MESSAGE_STATUS'; payload: { status: MessageStatus } }
   | { type: 'SET_CONVERSATION_ID'; payload: { id: string } }
   | { type: 'SET_STREAMING'; payload: { isStreaming: boolean } }
   | { type: 'SET_STATUS'; payload: { statusMessage: string | null } }

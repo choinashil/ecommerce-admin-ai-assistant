@@ -1,6 +1,6 @@
 import { useEffect, type KeyboardEvent, type RefObject } from 'react';
 
-import { Send } from 'lucide-react';
+import { Send, Square } from 'lucide-react';
 
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -9,21 +9,29 @@ interface MessageInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: (message: string) => void;
-  isDisabled: boolean;
+  onStop: () => void;
+  isStreaming: boolean;
   inputRef: RefObject<HTMLInputElement | null>;
 }
 
-const MessageInput = ({ value, onChange, onSend, isDisabled, inputRef }: MessageInputProps) => {
+const MessageInput = ({
+  value,
+  onChange,
+  onSend,
+  onStop,
+  isStreaming,
+  inputRef,
+}: MessageInputProps) => {
   useEffect(() => {
-    if (!isDisabled) {
+    if (!isStreaming) {
       inputRef.current?.focus();
     }
-  }, [isDisabled, inputRef]);
+  }, [isStreaming, inputRef]);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     const trimmed = value.trim();
-    if (!trimmed || isDisabled) {
+    if (!trimmed || isStreaming) {
       return;
     }
     onSend(trimmed);
@@ -44,12 +52,18 @@ const MessageInput = ({ value, onChange, onSend, isDisabled, inputRef }: Message
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder='메시지를 입력하세요...'
-        disabled={isDisabled}
+        disabled={isStreaming}
         className='flex-1'
       />
-      <Button type='submit' size='icon' disabled={isDisabled || !value.trim()}>
-        <Send className='h-4 w-4' />
-      </Button>
+      {isStreaming ? (
+        <Button type='button' size='icon' variant='destructive' onClick={onStop}>
+          <Square className='h-3 w-3' />
+        </Button>
+      ) : (
+        <Button type='submit' size='icon' disabled={!value.trim()}>
+          <Send className='h-4 w-4' />
+        </Button>
+      )}
     </form>
   );
 };

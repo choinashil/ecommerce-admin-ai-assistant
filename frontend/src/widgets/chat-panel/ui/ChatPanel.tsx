@@ -12,7 +12,9 @@ interface ChatPanelProps {
 }
 
 const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
-  const { messages, isStreaming, statusMessage, error, sendMessage } = useChat({ onToolResult });
+  const { messages, isStreaming, statusMessage, error, sendMessage, stopStreaming } = useChat({
+    onToolResult,
+  });
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,13 +41,14 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
         </div>
       )}
 
-      <MessageList messages={messages} isStreaming={isStreaming} statusMessage={statusMessage} />
+      <MessageList messages={messages} statusMessage={statusMessage} />
       <SuggestedPrompts onSelect={handleSelectPrompt} isDisabled={isStreaming} />
       <MessageInput
         value={inputValue}
         onChange={setInputValue}
         onSend={handleSend}
-        isDisabled={isStreaming}
+        onStop={stopStreaming}
+        isStreaming={isStreaming}
         inputRef={inputRef}
       />
     </aside>

@@ -100,6 +100,7 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
     first_usage = None
     tool_calls_metadata = None
     start_time = time.time()
+    is_done = False
 
     try:
         # --- 1차 LLM 호출 (tools 포함) ---
@@ -212,6 +213,9 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
             "error": None,
             "tool_calls": tool_calls_metadata,
         }
+        save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
+        is_done = True
+        yield _sse_event("done", "")
     except Exception as e:
         elapsed_ms = int((time.time() - start_time) * 1000)
         metadata = {
@@ -223,7 +227,20 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
             "error": str(e),
             "tool_calls": tool_calls_metadata,
         }
+        save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
+        is_done = True
         yield _sse_event("error", str(e))
-
-    save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
-    yield _sse_event("done", "")
+    finally:
+        if not is_done:
+            elapsed_ms = int((time.time() - start_time) * 1000)
+            metadata = {
+                "model": settings.openai_model,
+                "input_tokens": None,
+                "output_tokens": None,
+                "response_time_ms": elapsed_ms,
+                "system_prompt": SYSTEM_PROMPT,
+                "error": None,
+                "aborted": True,
+                "tool_calls": tool_calls_metadata,
+            }
+            save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)

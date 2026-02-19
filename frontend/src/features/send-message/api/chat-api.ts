@@ -50,7 +50,7 @@ export const streamChat = async (
     onError: callbacks.onError,
   });
 
-  if (!isDoneReceived) {
+  if (!isDoneReceived && !signal?.aborted) {
     callbacks.onError(new Error('Stream terminated unexpectedly'));
   }
 };
