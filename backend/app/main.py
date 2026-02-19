@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.shared.config import APP_NAME, settings
+from app.shared.schema import ErrorResponse
 from app.shared.database import Base, engine, get_db
 from app.product.model import Product  # noqa: F401
 from app.order.model import Order  # noqa: F401
@@ -21,7 +22,13 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title=APP_NAME, lifespan=lifespan)
+app = FastAPI(
+    title=APP_NAME,
+    lifespan=lifespan,
+    responses={
+        500: {"description": "Internal Server Error", "model": ErrorResponse},
+    },
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

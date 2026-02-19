@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.shared.database import get_db
 from app.shared.display_id import parse_pk
+from app.shared.schema import ErrorResponse
 from app.chat.model import Conversation
 from app.chat.schema import ChatRequest, ConversationSummary, MessageDetail
 from app.chat.service import stream_chat
@@ -28,6 +29,7 @@ def list_conversations(db: Session = Depends(get_db)):
 @router.get(
     "/api/conversations/{display_id}/messages",
     response_model=list[MessageDetail],
+    responses={404: {"description": "Conversation not found", "model": ErrorResponse}},
 )
 def list_messages(display_id: str, db: Session = Depends(get_db)):
     pk = parse_pk(display_id, "conversations")
