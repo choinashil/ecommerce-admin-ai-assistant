@@ -4,6 +4,7 @@ export interface ChatState {
   messages: Message[];
   conversationId: string | null;
   isStreaming: boolean;
+  statusMessage: string | null;
   error: string | null;
 }
 
@@ -13,4 +14,5 @@ export type ChatAction =
   | { type: 'APPEND_TOKEN'; payload: { token: string } }
   | { type: 'SET_CONVERSATION_ID'; payload: { id: string } }
   | { type: 'SET_STREAMING'; payload: { isStreaming: boolean } }
+  | { type: 'SET_STATUS'; payload: { statusMessage: string | null } }
   | { type: 'SET_ERROR'; payload: { error: string | null } };

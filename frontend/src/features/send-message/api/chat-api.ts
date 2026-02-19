@@ -7,6 +7,7 @@ export type ChatRequest = components['schemas']['ChatRequest'];
 export interface ChatCallbacks {
   onConversationId: (id: string) => void;
   onContent: (token: string) => void;
+  onToolCall?: (toolName: string) => void;
   onToolResult?: (toolName: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -30,6 +31,9 @@ export const streamChat = async (
           break;
         case 'content':
           callbacks.onContent(event.data);
+          break;
+        case 'tool_call':
+          callbacks.onToolCall?.(event.data);
           break;
         case 'tool_result':
           callbacks.onToolResult?.(event.data);

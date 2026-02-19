@@ -3,16 +3,17 @@ import { useEffect, useRef } from 'react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 
 import MessageItem from './MessageItem';
-import TypingIndicator from './TypingIndicator';
+import StreamingStatus from './StreamingStatus';
 
 import type { Message } from '../model/types';
 
 interface MessageListProps {
   messages: Message[];
   isStreaming: boolean;
+  statusMessage?: string | null;
 }
 
-const MessageList = ({ messages, isStreaming }: MessageListProps) => {
+const MessageList = ({ messages, isStreaming, statusMessage }: MessageListProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,7 +36,9 @@ const MessageList = ({ messages, isStreaming }: MessageListProps) => {
         {visibleMessages.map((message) => (
           <MessageItem key={message.id} message={message} />
         ))}
-        {isWaitingForResponse && <TypingIndicator />}
+        {isWaitingForResponse && statusMessage && (
+          <StreamingStatus statusMessage={statusMessage} />
+        )}
         <div ref={bottomRef} />
       </div>
     </ScrollArea>

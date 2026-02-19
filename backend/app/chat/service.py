@@ -139,7 +139,10 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
             for idx in sorted(tool_calls_chunks.keys()):
                 tc_data = tool_calls_chunks[idx]
                 arguments = json.loads(tc_data["arguments"])
+
+                yield _sse_event("tool_call", tc_data["name"])
                 result = execute_tool(db, tc_data["name"], arguments)
+                yield _sse_event("tool_result", tc_data["name"])
 
                 tool_results.append({
                     "tool_call_id": tc_data["id"],
@@ -161,9 +164,6 @@ async def stream_chat(db: Session, message: str, conversation_display_id: str | 
                     "arguments": arguments,
                     "result": result,
                 })
-
-            for tc_meta in tool_calls_metadata:
-                yield _sse_event("tool_result", tc_meta["name"])
 
             # 2차 요청 메시지 구성
             second_messages = openai_messages + [

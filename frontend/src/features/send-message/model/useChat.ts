@@ -8,10 +8,22 @@ interface UseChatOptions {
   onToolResult?: (toolName: string) => void;
 }
 
+const PHASE_STATUS = {
+  THINKING: '생각 중...',
+  DEFAULT: '처리 중...',
+} as const;
+
+const TOOL_STATUS_MAP: Record<string, string> = {
+  search_guide: '가이드 검색 중...',
+  create_product: '상품 등록 중...',
+  list_products: '상품 목록 조회 중...',
+};
+
 const initialState: ChatState = {
   messages: [],
   conversationId: null,
   isStreaming: false,
+  statusMessage: null,
   error: null,
 };
 
@@ -61,6 +73,9 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
     case 'SET_STREAMING':
       return { ...state, isStreaming: action.payload.isStreaming };
 
+    case 'SET_STATUS':
+      return { ...state, statusMessage: action.payload.statusMessage };
+
     case 'SET_ERROR':
       return { ...state, error: action.payload.error };
 
@@ -82,6 +97,7 @@ export const useChat = (options?: UseChatOptions) => {
       });
 
       dispatch({ type: 'SET_STREAMING', payload: { isStreaming: true } });
+      dispatch({ type: 'SET_STATUS', payload: { statusMessage: PHASE_STATUS.THINKING } });
       dispatch({ type: 'SET_ERROR', payload: { error: null } });
 
       const assistantMsgId = crypto.randomUUID();
@@ -102,16 +118,25 @@ export const useChat = (options?: UseChatOptions) => {
             dispatch({ type: 'SET_CONVERSATION_ID', payload: { id } });
           },
           onContent: (token) => {
+            dispatch({ type: 'SET_STATUS', payload: { statusMessage: null } });
             dispatch({ type: 'APPEND_TOKEN', payload: { token } });
           },
-          onToolResult: options?.onToolResult,
+          onToolCall: (toolName) => {
+            const statusMessage = TOOL_STATUS_MAP[toolName] ?? PHASE_STATUS.DEFAULT;
+            dispatch({ type: 'SET_STATUS', payload: { statusMessage } });
+          },
+          onToolResult: (toolName) => {
+            options?.onToolResult?.(toolName);
+          },
           onDone: () => {
+            dispatch({ type: 'SET_STATUS', payload: { statusMessage: null } });
             dispatch({
               type: 'SET_STREAMING',
               payload: { isStreaming: false },
             });
           },
           onError: (error) => {
+            dispatch({ type: 'SET_STATUS', payload: { statusMessage: null } });
             dispatch({
               type: 'SET_ERROR',
               payload: { error: error.message },
@@ -125,7 +150,7 @@ export const useChat = (options?: UseChatOptions) => {
         abortControllerRef.current.signal,
       );
     },
-    [state.conversationId, options?.onToolResult],
+    [state.conversationId, options],
   );
 
   const stopStreaming = useCallback(() => {
@@ -136,6 +161,7 @@ export const useChat = (options?: UseChatOptions) => {
   return {
     messages: state.messages,
     isStreaming: state.isStreaming,
+    statusMessage: state.statusMessage,
     error: state.error,
     conversationId: state.conversationId,
     sendMessage,
