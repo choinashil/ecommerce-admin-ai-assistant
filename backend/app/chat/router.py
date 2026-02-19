@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.shared.database import get_db
 from app.shared.display_id import parse_pk
-from app.chat.models import Conversation
-from app.chat.schemas import ChatRequest, ConversationSummary, MessageDetail
+from app.chat.model import Conversation
+from app.chat.schema import ChatRequest, ConversationSummary, MessageDetail
 from app.chat.service import stream_chat
 from app.chat.history import get_conversations, get_messages
 

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.shared.config import settings
 from app.shared.display_id import parse_pk, to_display_id
-from app.chat.models import Conversation, Message, MessageRole
+from app.chat.model import Conversation, Message, MessageRole
 from app.chat.tools.definitions import TOOL_DEFINITIONS
 from app.chat.tools.executor import execute_tool
 

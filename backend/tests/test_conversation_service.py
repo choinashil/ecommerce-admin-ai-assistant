@@ -1,4 +1,4 @@
-from app.chat.models import Conversation, Message, MessageRole
+from app.chat.model import Conversation, Message, MessageRole
 from app.chat.history import get_conversations, get_messages
 
 

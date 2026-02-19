@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
 from app.shared.display_id import to_display_id
-from app.chat.models import Conversation, Message, MessageRole
-from app.chat.schemas import ConversationSummary, MessageDetail, MessageMetadata
+from app.chat.model import Conversation, Message, MessageRole
+from app.chat.schema import ConversationSummary, MessageDetail, MessageMetadata
 
 
 def get_conversations(db: Session) -> list[ConversationSummary]:
