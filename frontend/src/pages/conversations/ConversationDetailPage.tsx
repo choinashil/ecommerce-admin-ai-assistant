@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useQuery } from '@tanstack/react-query';
+import { ErrorBoundary, Suspense } from '@suspensive/react';
+import { SuspenseQuery } from '@suspensive/react-query';
 import { ArrowLeft } from 'lucide-react';
 
 import { MessageTimeline, messageQueries } from '@/entities/message';
@@ -8,7 +9,6 @@ import { MessageTimeline, messageQueries } from '@/entities/message';
 const ConversationDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: messages = [], isLoading, error } = useQuery(messageQueries.list(id!));
 
   return (
     <div className='flex-1 overflow-auto p-6'>
@@ -20,11 +20,15 @@ const ConversationDetailPage = () => {
         목록으로
       </button>
 
-      <h1 className='mb-6 text-2xl font-bold'>{id}</h1>
+      <h2 className='mb-6 text-2xl font-bold'>{id}</h2>
 
-      {isLoading && <p className='text-muted-foreground'>로딩 중...</p>}
-      {error && <p className='text-destructive'>{error.message}</p>}
-      {!isLoading && !error && <MessageTimeline messages={messages} />}
+      <ErrorBoundary fallback={({ error }) => <p className='text-destructive'>{error.message}</p>}>
+        <Suspense fallback={<p className='text-muted-foreground'>로딩 중...</p>}>
+          <SuspenseQuery {...messageQueries.list(id!)}>
+            {({ data: messages }) => <MessageTimeline messages={messages} />}
+          </SuspenseQuery>
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 };
