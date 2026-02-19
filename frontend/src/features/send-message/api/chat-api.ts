@@ -12,10 +12,17 @@ export interface ChatCallbacks {
   onError: (error: Error) => void;
 }
 
-export const streamChat = async (request: ChatRequest, callbacks: ChatCallbacks): Promise<void> => {
+export const streamChat = async (
+  request: ChatRequest,
+  callbacks: ChatCallbacks,
+  signal?: AbortSignal,
+): Promise<void> => {
+  let isDoneReceived = false;
+
   await streamSSE({
     url: `${env.API_BASE_URL}/api/chat`,
     body: request,
+    signal,
     onEvent: (event) => {
       switch (event.type) {
         case 'conversation_id':
@@ -31,10 +38,15 @@ export const streamChat = async (request: ChatRequest, callbacks: ChatCallbacks)
           callbacks.onError(new Error(event.data));
           break;
         case 'done':
+          isDoneReceived = true;
           callbacks.onDone();
           break;
       }
     },
     onError: callbacks.onError,
   });
+
+  if (!isDoneReceived) {
+    callbacks.onError(new Error('Stream terminated unexpectedly'));
+  }
 };

@@ -1,24 +1,46 @@
+export interface SSEEvent {
+  type: string;
+  data: string;
+}
+
 export interface SSERequestOptions {
   url: string;
   body: unknown;
-  onEvent: (event: { type: string; data: string }) => void;
+  signal?: AbortSignal;
+  onEvent: (event: SSEEvent) => void;
   onError: (error: Error) => void;
 }
+
+const isAbortError = (error: unknown): boolean =>
+  error instanceof DOMException && error.name === 'AbortError';
 
 export const streamSSE = async ({
   url,
   body,
+  signal,
   onEvent,
   onError,
 }: SSERequestOptions): Promise<void> => {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal,
+    });
+  } catch (error) {
+    if (isAbortError(error)) {
+      return;
+    }
+    onError(error instanceof Error ? error : new Error(String(error)));
+    return;
+  }
 
   if (!response.ok) {
-    onError(new Error(`HTTP ${response.status}: ${response.statusText}`));
+    const text = await response.text().catch(() => '');
+    onError(new Error(`HTTP ${response.status}: ${text || response.statusText}`));
     return;
   }
 
@@ -54,7 +76,7 @@ export const streamSSE = async ({
         const jsonStr = line.slice('data: '.length);
 
         try {
-          const parsed = JSON.parse(jsonStr) as { type: string; data: string };
+          const parsed = JSON.parse(jsonStr) as SSEEvent;
           onEvent(parsed);
         } catch {
           // JSON 파싱 실패 시 무시
@@ -62,6 +84,9 @@ export const streamSSE = async ({
       }
     }
   } catch (error) {
+    if (isAbortError(error)) {
+      return;
+    }
     onError(error instanceof Error ? error : new Error(String(error)));
   } finally {
     reader.releaseLock();

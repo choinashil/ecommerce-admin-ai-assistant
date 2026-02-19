@@ -1,4 +1,4 @@
-import { useCallback, useReducer } from 'react';
+import { useCallback, useReducer, useRef } from 'react';
 
 import { streamChat } from '../api/chat-api';
 
@@ -71,6 +71,7 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
 
 export const useChat = (options?: UseChatOptions) => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -88,6 +89,8 @@ export const useChat = (options?: UseChatOptions) => {
         type: 'ADD_ASSISTANT_MESSAGE',
         payload: { id: assistantMsgId },
       });
+
+      abortControllerRef.current = new AbortController();
 
       await streamChat(
         {
@@ -119,10 +122,16 @@ export const useChat = (options?: UseChatOptions) => {
             });
           },
         },
+        abortControllerRef.current.signal,
       );
     },
     [state.conversationId, options?.onToolResult],
   );
+
+  const stopStreaming = useCallback(() => {
+    abortControllerRef.current?.abort();
+    dispatch({ type: 'SET_STREAMING', payload: { isStreaming: false } });
+  }, []);
 
   return {
     messages: state.messages,
@@ -130,5 +139,6 @@ export const useChat = (options?: UseChatOptions) => {
     error: state.error,
     conversationId: state.conversationId,
     sendMessage,
+    stopStreaming,
   };
 };
