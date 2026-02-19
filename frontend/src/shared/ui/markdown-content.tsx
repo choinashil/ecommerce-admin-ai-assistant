@@ -9,7 +9,7 @@ interface MarkdownContentProps {
 
 const MarkdownContent = ({ content, className }: MarkdownContentProps) => {
   return (
-    <div className={cn('prose prose-sm', className)}>
+    <div className={cn('prose prose-sm max-w-none [&_pre]:overflow-x-auto', className)}>
       <Markdown
         components={{
           a: ({ children, ...props }) => (

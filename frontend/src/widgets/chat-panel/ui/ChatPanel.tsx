@@ -9,10 +9,10 @@ interface ChatPanelProps {
 }
 
 const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
-  const { messages, isStreaming, error, sendMessage } = useChat({ onToolResult });
+  const { messages, isStreaming, statusMessage, error, sendMessage } = useChat({ onToolResult });
 
   return (
-    <aside className='flex w-100 flex-col border-l bg-background'>
+    <aside className='flex w-100 flex-col overflow-hidden border-l bg-background'>
       <header className='flex items-center gap-2 border-b px-4 py-3'>
         <Bot className='h-5 w-5 text-primary' />
         <h2 className='font-semibold'>AI 어시스턴트</h2>
@@ -24,7 +24,7 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
         </div>
       )}
 
-      <MessageList messages={messages} isStreaming={isStreaming} />
+      <MessageList messages={messages} isStreaming={isStreaming} statusMessage={statusMessage} />
       <MessageInput onSend={sendMessage} isDisabled={isStreaming} />
     </aside>
   );
