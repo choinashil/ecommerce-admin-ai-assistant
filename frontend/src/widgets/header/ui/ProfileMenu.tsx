@@ -1,5 +1,8 @@
+import { useState } from 'react';
+
 import { Check, ChevronDown } from 'lucide-react';
 
+import type { User } from '@/entities/user';
 import { USERS, useSwitchUser } from '@/entities/user';
 import { cn } from '@/shared/lib/utils';
 import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
@@ -7,9 +10,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 
 const ProfileMenu = () => {
   const { currentUser, switchUser } = useSwitchUser();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (user: User) => {
+    switchUser(user);
+    setIsOpen(false);
+  };
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button className='flex items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-muted'>
           <Avatar size='sm'>
@@ -26,7 +35,7 @@ const ProfileMenu = () => {
             return (
               <button
                 key={user.id}
-                onClick={() => switchUser(user)}
+                onClick={() => handleSelect(user)}
                 className={cn(
                   'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
                   isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
