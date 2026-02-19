@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
 
-import { Sidebar } from '@/widgets/sidebar';
+import { Header } from '@/widgets/header';
 
 const DefaultLayout = () => {
   return (
-    <div className='flex h-screen'>
-      <Sidebar />
+    <div className='flex h-screen flex-col'>
+      <Header />
       <main className='flex flex-1 overflow-hidden'>
         <Outlet />
       </main>
