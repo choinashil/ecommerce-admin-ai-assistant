@@ -1,8 +1,11 @@
+import { useRef, useState } from 'react';
+
 import { Bot } from 'lucide-react';
 
 import MessageList from '@/entities/message/ui/MessageList';
 import { useChat } from '@/features/send-message';
 import MessageInput from '@/features/send-message/ui/MessageInput';
+import { SuggestedPrompts } from '@/features/suggested-prompts';
 
 interface ChatPanelProps {
   onToolResult?: (toolName: string) => void;
@@ -10,6 +13,18 @@ interface ChatPanelProps {
 
 const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
   const { messages, isStreaming, statusMessage, error, sendMessage } = useChat({ onToolResult });
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSend = (message: string) => {
+    sendMessage(message);
+    setInputValue('');
+  };
+
+  const handleSelectPrompt = (prompt: string) => {
+    setInputValue(prompt);
+    inputRef.current?.focus();
+  };
 
   return (
     <aside className='flex w-100 flex-col overflow-hidden border-l bg-background'>
@@ -25,7 +40,14 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
       )}
 
       <MessageList messages={messages} isStreaming={isStreaming} statusMessage={statusMessage} />
-      <MessageInput onSend={sendMessage} isDisabled={isStreaming} />
+      <SuggestedPrompts onSelect={handleSelectPrompt} isDisabled={isStreaming} />
+      <MessageInput
+        value={inputValue}
+        onChange={setInputValue}
+        onSend={handleSend}
+        isDisabled={isStreaming}
+        inputRef={inputRef}
+      />
     </aside>
   );
 };

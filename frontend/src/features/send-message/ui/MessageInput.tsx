@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, type KeyboardEvent, type RefObject } from 'react';
 
 import { Send } from 'lucide-react';
 
@@ -6,19 +6,19 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 
 interface MessageInputProps {
+  value: string;
+  onChange: (value: string) => void;
   onSend: (message: string) => void;
   isDisabled: boolean;
+  inputRef: RefObject<HTMLInputElement | null>;
 }
 
-const MessageInput = ({ onSend, isDisabled }: MessageInputProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState('');
-
+const MessageInput = ({ value, onChange, onSend, isDisabled, inputRef }: MessageInputProps) => {
   useEffect(() => {
     if (!isDisabled) {
       inputRef.current?.focus();
     }
-  }, [isDisabled]);
+  }, [isDisabled, inputRef]);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -27,7 +27,6 @@ const MessageInput = ({ onSend, isDisabled }: MessageInputProps) => {
       return;
     }
     onSend(trimmed);
-    setValue('');
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -42,7 +41,7 @@ const MessageInput = ({ onSend, isDisabled }: MessageInputProps) => {
       <Input
         ref={inputRef}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder='메시지를 입력하세요...'
         disabled={isDisabled}
