@@ -21,6 +21,7 @@ const MessageList = ({ messages, isStreaming }: MessageListProps) => {
 
   const lastMessage = messages[messages.length - 1];
   const isWaitingForResponse = isStreaming && lastMessage?.content === '';
+  const visibleMessages = isWaitingForResponse ? messages.slice(0, -1) : messages;
 
   return (
     <ScrollArea className='flex-1 overflow-hidden px-4'>
@@ -31,7 +32,7 @@ const MessageList = ({ messages, isStreaming }: MessageListProps) => {
             <p className='mt-1 text-xs'>상품 등록, 매출 조회, 가이드 검색 등을 도와드립니다.</p>
           </div>
         )}
-        {messages.map((message) => (
+        {visibleMessages.map((message) => (
           <MessageItem key={message.id} message={message} />
         ))}
         {isWaitingForResponse && <TypingIndicator />}
