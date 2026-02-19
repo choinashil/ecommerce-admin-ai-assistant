@@ -1,0 +1,777 @@
+[
+  {
+    "question": "세금계산서 발행은 어떻게 하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "부가세 신고 자료를 다운로드하고 싶은데 어디서 받아?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "매출 부가가치세 정리 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "세금계산서 자동 발행 설정할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "부가세 신고 기간인데 식스샵에서 매출 자료 정산이 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "구독 상품 결제 주기를 2주로 설정할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "정기배송 서비스를 운영하고 싶은데 자동 반복 결제가 되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "쇼핑몰을 영어로도 운영하고 싶은데 다국어 설정이 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "달러 결제 받을 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "다국어 쇼핑몰 구축 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "일본어 버전 사이트를 별도로 만들 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "환율 자동 적용해서 해외 고객한테 현지 통화로 보여주는 기능 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "해외 배송 설정은 어떻게 하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "국제 배송비 테이블 설정 방법이 궁금합니다",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "해외 주문 시 관세 정보를 고객에게 안내할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "EMS나 DHL 같은 국제 택배사 연동 가능해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "직원별 업무 할당하고 관리하는 기능이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "직원 급여 관리 기능",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "파트타임 직원 출퇴근 기록을 식스샵에서 관리할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "직원별 주문 처리 실적을 확인하고 싶습니다",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "탈퇴한 회원의 개인정보는 언제 파기되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "회원 탈퇴 요청이 들어왔는데 어떻게 처리해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "개인정보 보유기간 설정하는 방법이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "탈퇴 회원 데이터 자동 삭제 설정",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "회원이 탈퇴하면 주문 내역도 같이 삭제되는 건가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "식스샵 API 연동 문서가 어디 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "주문 생성 시 웹훅 알림 받을 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "REST API로 상품 데이터를 가져오는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "개발자용 API 키 발급은 어디서 하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "웹훅 URL 등록해서 주문 상태 변경 알림 받고 싶은데 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "상품별 QR코드를 생성할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "QR코드 만들어서 오프라인 매장에 붙이고 싶어",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "QR코드 스캔하면 바로 상품 페이지로 이동하게 하려면 어떻게 하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "B2B 도매 가격을 별도로 설정할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "대량 구매 할인 적용하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "도매 거래처별로 다른 가격을 보여주고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "100개 이상 주문하면 자동으로 단가 낮아지게 설정 가능해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "B2B 전용 회원가 설정",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "라이브 커머스 방송을 식스샵에서 할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "실시간 방송 판매 기능 연동 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "라이브 방송 중에 상품 링크 띄우는 기능이 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "라이브 스트리밍하면서 실시간 주문 현황 확인 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "유료 멤버십 프로그램을 만들 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "프리미엄 회원 전용 상품 페이지 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "월정액 멤버십 가입 기능이 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "VIP 멤버십 가입비를 받고 싶은데 어떻게 설정하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "멤버십 회원에게만 특별 할인 자동 적용하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "POS 시스템이랑 식스샵 재고 연동되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "오프라인 매장 판매를 온라인 재고에 자동 반영하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "POS기에서 결제하면 식스샵 주문에도 들어와?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "오프라인 매장과 온라인 쇼핑몰 통합 관리 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "세일 시작할 때 앱 푸시로 고객한테 알려주고 싶어",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "신상품 등록하면 자동으로 뉴스레터 발송되게 할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "인스타그램에 상품 자동으로 포스팅할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "SNS 예약 게시 기능 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "트위터랑 인스타 동시에 자동 포스팅 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "SNS 자동 포스팅 예약 시간 설정",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "ERP 시스템이랑 식스샵 연동할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "회계 프로그램이랑 매출 데이터 자동 연동 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "더존 같은 회계 소프트웨어랑 연결 가능해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "식스샵 매출을 자동으로 회계 장부에 반영하고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "ERP 연동해서 재고 자동 동기화 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "어필리에이트 마케팅 프로그램을 운영할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "제휴 마케터한테 커미션 지급하는 기능",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "추천인 링크로 판매되면 수수료 자동 정산되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "인플루언서 제휴 프로그램 설정 방법이 궁금해",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "어필리에이트 링크별 판매 추적 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "사이트 전체 백업하는 방법이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "이전 버전으로 사이트를 복원하고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "디자인 변경 전에 백업해두는 기능 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "사이트 데이터 정기 백업 설정",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "실수로 삭제한 페이지 복구할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "여러 쇼핑몰을 하나의 계정에서 동시에 관리할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "멀티 쇼핑몰 운영 시 재고 통합 관리 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "브랜드별로 별도 쇼핑몰 운영하면서 주문은 한 곳에서 처리 가능해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "두 개 이상의 쇼핑몰 상품을 동기화하는 기능이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "식스샵으로 모바일 앱을 만들 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "네이티브 앱 빌더 기능 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "앱스토어에 올릴 수 있는 쇼핑 앱 제작 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "안드로이드/iOS 앱으로 쇼핑몰 운영하고 싶습니다",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "PWA나 모바일 앱 변환 기능이 지원되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "상품을 3D로 보여줄 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "AR로 상품 미리보기 기능 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "360도 회전 상품 이미지 올리는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "가구 상품을 AR로 집에 배치해보는 기능이 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "3D 모델 파일 업로드해서 상품 페이지에 넣을 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "반품 택배 자동 수거 예약이 되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "고객이 반품 신청하면 택배사에 자동으로 수거 요청 가는 기능 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "반품 수거 택배비 자동 청구 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "CJ대한통운 반품 수거 자동 연동 가능한가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "반품 접수하면 수거 기사가 바로 방문하게 하고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "재고가 일정 수량 이하로 떨어지면 자동 발주되는 기능 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "자동 재주문 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "거래처한테 자동으로 발주서 보내는 기능이 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "재고 소진 예측해서 미리 알려주는 기능 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "안전재고 수량 설정하고 자동 발주 연동하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "선물하기 기능을 추가할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "친구한테 상품 선물 보내는 기능 설정",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "카카오톡 선물하기처럼 받는 사람 주소 나중에 입력하게 할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "선물 포장 옵션이랑 메시지 카드 추가하는 방법이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "선물하기로 주문 들어온 건 따로 관리되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "여러 사이트에서 쌓인 포인트를 합산할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "포인트를 현금으로 전환할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "고객 포인트 이관 처리 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "상품 렌탈 서비스를 운영할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "렌탈 상품 월 납부금 설정 가능해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "장비 대여 쇼핑몰인데 대여 기간별 가격을 다르게 설정하고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "날짜 지정해서 예약 구매할 수 있는 상품을 만들고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "예약 상품 캘린더 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "숙박 예약처럼 체크인/체크아웃 날짜를 선택할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "클래스 예약 시스템 만들 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "특정 고객을 블랙리스트에 등록해서 구매를 막을 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "악성 고객 주문 차단 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "블랙리스트 고객이 주문하면 자동 취소되게 설정 가능해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "특정 IP에서 들어오는 주문을 차단하고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "고객별 구매 수량 제한을 개별적으로 설정하는 방법이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "월별 세금 정산 자료 다운로드 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "카드사별 정산 내역 확인하는 기능 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "PG사 수수료 제외한 실제 정산 금액을 확인하고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "특정 카드사 무이자 할부 프로모션 적용 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "카드사별로 할부 개월 수를 다르게 설정하는 기능이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "무이자 할부 수수료는 누가 부담하나요? 설정할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "고객이 여러 상품을 나란히 비교할 수 있는 페이지 만드는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "상품 스펙 비교표를 자동으로 만들어주는 기능 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "비교하기 버튼을 상품 목록에 넣을 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "장바구니에 담고 안 사는 고객한테 알림 보내는 기능 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "장바구니 유기 고객 리타겟팅 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "장바구니에 담아놓고 결제 안 한 고객한테 자동 문자 발송 가능해?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "장바구니 유기율 통계를 확인할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "경쟁사 가격에 맞춰 자동으로 가격 조정되는 기능이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "다이나믹 프라이싱 설정 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "재고 많으면 자동 할인, 적으면 가격 올리는 기능 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "시간대별로 상품 가격을 다르게 설정할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "AI 기반 자동 가격 최적화 기능이 지원되나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "정기결제 상품을 만들고 싶어요. 구독 모델로 판매하려면 어떻게 설정하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "월간 구독 박스 상품 등록 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "구독 해지한 고객 관리는 어디서 확인하나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "해외 배송 추적번호 입력하는 곳이 어디인가요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "직원 근태관리 연동 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "상품 QR코드 일괄 출력 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "QR코드에 할인 쿠폰 연결할 수 있어?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "그립이나 네이버 쇼핑라이브 같은 라이브 커머스 플랫폼 연동",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "바코드 스캐너로 재고 관리하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "신상품 등록하면 페이스북에 자동 게시되게 설정하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "멀티 스토어 대시보드에서 전체 매출 한 번에 보고 싶어요",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "오프라인 매장 포인트랑 온라인 적립금 통합하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "적립금을 다른 쇼핑몰 포인트로 교환하는 기능이 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "대여 상품 등록하고 반납일 관리하는 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "렌탈 상품 반납 스케줄 관리 기능",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "매출 세금 정산 리포트를 뽑을 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "분기별 부가세 신고용 매출 리포트 출력 방법",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "카드사 무이자 할부 이벤트를 설정할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "삼성카드 6개월 무이자 이벤트 진행하고 싶어",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "상품 비교 기능을 추가할 수 있나요?",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  },
+  {
+    "question": "장바구니 이탈 후 몇 시간 뒤에 리마인드 이메일 보내는 기능",
+    "relevant_doc_urls": [],
+    "difficulty": "negative"
+  }
+]
