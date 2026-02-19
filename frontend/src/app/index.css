@@ -122,6 +122,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  button,
+  select,
+  summary,
+  [role='button'] {
+    cursor: pointer;
+  }
 }
 
 @keyframes shimmer {
