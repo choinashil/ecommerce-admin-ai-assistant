@@ -5,10 +5,10 @@ import { fetchConversations, fetchMyConversations } from './conversation.api';
 export const conversationQueries = {
   all: () => ['conversations'] as const,
   lists: () => [...conversationQueries.all(), 'list'] as const,
-  list: () =>
+  list: (sellerId?: string) =>
     queryOptions({
-      queryKey: [...conversationQueries.lists()],
-      queryFn: fetchConversations,
+      queryKey: [...conversationQueries.lists(), { sellerId }],
+      queryFn: () => fetchConversations(sellerId),
     }),
   myLists: () => [...conversationQueries.lists(), 'my'] as const,
   myList: () =>

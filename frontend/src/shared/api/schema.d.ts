@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sellers/{seller_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Seller */
+        get: operations["get_seller_api_sellers__seller_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/chat": {
         parameters: {
             query?: never;
@@ -222,6 +239,8 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+            /** Seller Id */
+            seller_id?: string | null;
             /** Seller Nickname */
             seller_nickname?: string | null;
         };
@@ -284,6 +303,26 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** SellerDetail */
+        SellerDetail: {
+            /** Id */
+            id: string;
+            /** Nickname */
+            nickname: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Last Active At */
+            last_active_at: string | null;
+            /** Total Conversations */
+            total_conversations: number;
+            /** Total Messages */
+            total_messages: number;
+            /** Total Tokens */
+            total_tokens: number;
         };
         /** SellerResponse */
         SellerResponse: {
@@ -356,6 +395,55 @@ export interface operations {
             };
         };
     };
+    get_seller_api_sellers__seller_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seller_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SellerDetail"];
+                };
+            };
+            /** @description Seller not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     chat_api_chat_post: {
         parameters: {
             query?: never;
@@ -402,7 +490,9 @@ export interface operations {
     };
     list_conversations_api_conversations_get: {
         parameters: {
-            query?: never;
+            query?: {
+                seller_id?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -416,6 +506,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConversationSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
             /** @description Internal Server Error */
