@@ -84,8 +84,24 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
         </div>
       )}
 
-      <MessageList messages={messages} statusMessage={statusMessage} />
-      <SuggestedPrompts onSelect={handleSelectPrompt} isDisabled={isStreaming} />
+      {messages.length === 0 ? (
+        <div className='flex flex-1 flex-col items-center justify-center gap-4 px-4'>
+          <div className='flex flex-col items-center gap-1'>
+            <p className='text-sm font-medium text-foreground'>판매자님, 안녕하세요.</p>
+            <p className='text-base font-medium text-foreground'>무엇을 도와드릴까요?</p>
+          </div>
+          <SuggestedPrompts
+            variant='centered'
+            onSelect={handleSelectPrompt}
+            isDisabled={isStreaming}
+          />
+        </div>
+      ) : (
+        <>
+          <MessageList messages={messages} statusMessage={statusMessage} />
+          <SuggestedPrompts onSelect={handleSelectPrompt} isDisabled={isStreaming} />
+        </>
+      )}
       <MessageInput
         value={inputValue}
         onChange={setInputValue}
