@@ -26,9 +26,9 @@ const ConversationTable = ({ conversations }: ConversationTableProps) => {
         <TableRow>
           <TableHead>ID</TableHead>
           <TableHead>판매자</TableHead>
-          <TableHead>첫 메시지</TableHead>
-          <TableHead className='text-right'>메시지 수</TableHead>
-          <TableHead className='text-right'>총 토큰</TableHead>
+          <TableHead className='w-1/3'>첫 메시지</TableHead>
+          <TableHead>메시지 수</TableHead>
+          <TableHead>총 토큰</TableHead>
           <TableHead>생성일시</TableHead>
         </TableRow>
       </TableHeader>
@@ -41,10 +41,10 @@ const ConversationTable = ({ conversations }: ConversationTableProps) => {
           >
             <TableCell className='font-mono'>{conv.id}</TableCell>
             <TableCell>{conv.seller_nickname ?? '-'}</TableCell>
-            <TableCell className='max-w-xs truncate'>{conv.first_message}</TableCell>
-            <TableCell className='text-right'>{conv.message_count}</TableCell>
-            <TableCell className='text-right'>{formatTokens(conv.total_tokens)}</TableCell>
-            <TableCell className='text-muted-foreground'>{formatDate(conv.created_at)}</TableCell>
+            <TableCell>{conv.first_message}</TableCell>
+            <TableCell className='tabular-nums'>{conv.message_count}</TableCell>
+            <TableCell className='tabular-nums'>{formatTokens(conv.total_tokens)}</TableCell>
+            <TableCell>{formatDate(conv.created_at)}</TableCell>
           </TableRow>
         ))}
       </TableBody>

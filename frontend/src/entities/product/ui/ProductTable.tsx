@@ -17,8 +17,8 @@ const ProductTable = ({ products }: ProductTableProps) => {
       <TableHeader>
         <TableRow>
           <TableHead>ID</TableHead>
-          <TableHead>상품명</TableHead>
-          <TableHead className='text-right'>가격</TableHead>
+          <TableHead className='w-1/4'>상품명</TableHead>
+          <TableHead>가격</TableHead>
           <TableHead>상태</TableHead>
           <TableHead>등록일시</TableHead>
         </TableRow>
@@ -28,15 +28,15 @@ const ProductTable = ({ products }: ProductTableProps) => {
           <TableRow key={product.id}>
             <TableCell className='font-mono'>{product.id}</TableCell>
             <TableCell>{product.name}</TableCell>
-            <TableCell className='text-right'>{formatPrice(product.price)}원</TableCell>
+            <TableCell className='tabular-nums'>{formatPrice(product.price)}원</TableCell>
             <TableCell>
-              <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>
-                {product.status === 'active' ? '판매중' : '비활성'}
-              </Badge>
+              {product.status === 'active' ? (
+                <Badge variant='default'>판매중</Badge>
+              ) : (
+                <Badge variant='secondary'>비활성</Badge>
+              )}
             </TableCell>
-            <TableCell className='text-muted-foreground'>
-              {formatDate(product.created_at)}
-            </TableCell>
+            <TableCell>{formatDate(product.created_at)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
