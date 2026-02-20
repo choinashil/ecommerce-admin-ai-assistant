@@ -10,7 +10,7 @@ from app.shared.config import settings
 from app.shared.display_id import parse_pk, to_display_id
 from app.chat.model import Conversation, Message, MessageRole
 from app.chat.tools.definitions import TOOL_DEFINITIONS
-from app.chat.tools.executor import execute_tool
+from app.chat.tools.executor import ToolContext, execute_tool
 
 client = AsyncOpenAI(api_key=settings.openai_api_key)
 
@@ -167,7 +167,8 @@ async def stream_chat(
                 arguments = json.loads(tc_data["arguments"])
 
                 yield _sse_event("tool_call", tc_data["name"])
-                result = execute_tool(db, tc_data["name"], arguments)
+                ctx = ToolContext(db=db, seller_id=seller_id)
+                result = execute_tool(ctx, tc_data["name"], arguments)
                 yield _sse_event("tool_result", tc_data["name"])
 
                 tool_results.append({

@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import Integer, Enum, DateTime, String, func
+from sqlalchemy import Integer, Enum, DateTime, String, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.shared.database import Base
@@ -16,6 +16,7 @@ class Product(Base):
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    seller_id: Mapped[int] = mapped_column(Integer, ForeignKey("sellers.id"))
     name: Mapped[str] = mapped_column(String(200))
     price: Mapped[int] = mapped_column(Integer)
     status: Mapped[ProductStatus] = mapped_column(
