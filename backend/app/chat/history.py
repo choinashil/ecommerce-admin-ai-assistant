@@ -6,13 +6,16 @@ from app.chat.model import Conversation, Message, MessageRole
 from app.chat.schema import ConversationSummary, MessageDetail, MessageMetadata
 
 
-def get_conversations(db: Session) -> list[ConversationSummary]:
-    rows = (
+def get_conversations(
+    db: Session, seller_id: int | None = None
+) -> list[ConversationSummary]:
+    query = (
         db.query(Conversation, Seller.nickname)
         .outerjoin(Seller, Conversation.seller_id == Seller.id)
-        .order_by(Conversation.created_at.desc())
-        .all()
     )
+    if seller_id is not None:
+        query = query.filter(Conversation.seller_id == seller_id)
+    rows = query.order_by(Conversation.created_at.desc()).all()
 
     results = []
     for conv, seller_nickname in rows:

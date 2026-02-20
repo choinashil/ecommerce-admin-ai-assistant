@@ -50,3 +50,35 @@ def list_messages(display_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Conversation not found")
 
     return get_messages(db, pk)
+
+
+@router.get("/api/my/conversations", response_model=list[ConversationSummary])
+def list_my_conversations(
+    db: Session = Depends(get_db),
+    seller: Seller = Depends(require_seller),
+):
+    return get_conversations(db, seller_id=seller.id)
+
+
+@router.get(
+    "/api/my/conversations/{display_id}/messages",
+    response_model=list[MessageDetail],
+    responses={
+        403: {"description": "Forbidden", "model": ErrorResponse},
+        404: {"description": "Conversation not found", "model": ErrorResponse},
+    },
+)
+def list_my_messages(
+    display_id: str,
+    db: Session = Depends(get_db),
+    seller: Seller = Depends(require_seller),
+):
+    pk = parse_pk(display_id, "conversations")
+    conversation = db.get(Conversation, pk)
+
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    if conversation.seller_id != seller.id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    return get_messages(db, pk)
