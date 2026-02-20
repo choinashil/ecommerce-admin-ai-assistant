@@ -3,6 +3,7 @@ import time
 from collections.abc import AsyncGenerator
 
 from openai import AsyncOpenAI
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.shared.config import settings
@@ -69,6 +70,11 @@ def save_message(
         metadata_=metadata,
     )
     db.add(message)
+
+    conversation = db.get(Conversation, conversation_id)
+    if conversation:
+        conversation.updated_at = func.now()
+
     db.commit()
     return message
 

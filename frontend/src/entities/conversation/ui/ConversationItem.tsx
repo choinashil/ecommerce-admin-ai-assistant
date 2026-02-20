@@ -29,7 +29,7 @@ const ConversationItem = ({
           {conversation.first_message || '새 대화'}
         </span>
         <span className='shrink-0 text-[0.625rem] text-muted-foreground'>
-          {formatRelativeTime(conversation.created_at)}
+          {formatRelativeTime(conversation.updated_at)}
         </span>
       </div>
       <span className='text-[0.625rem] text-muted-foreground'>

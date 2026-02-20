@@ -15,7 +15,7 @@ def get_conversations(
     )
     if seller_id is not None:
         query = query.filter(Conversation.seller_id == seller_id)
-    rows = query.order_by(Conversation.created_at.desc()).all()
+    rows = query.order_by(Conversation.updated_at.desc()).all()
 
     results = []
     for conv, seller_nickname in rows:
@@ -45,6 +45,7 @@ def get_conversations(
                 message_count=len(messages),
                 total_tokens=total_tokens,
                 created_at=conv.created_at,
+                updated_at=conv.updated_at,
                 seller_nickname=seller_nickname,
             )
         )
