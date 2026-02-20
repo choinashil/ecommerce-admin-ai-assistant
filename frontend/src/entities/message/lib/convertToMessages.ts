@@ -1,12 +1,19 @@
-import type { Message, MessageDetail, MessageRole } from '../model/types';
+import type { Message, MessageDetail, MessageRole, MessageStatus } from '../model/types';
 
 const CHAT_ROLES: MessageRole[] = ['user', 'assistant'];
+
+const getStatus = (detail: MessageDetail): MessageStatus => {
+  if (detail.metadata?.aborted) {
+    return 'aborted';
+  }
+  return 'completed';
+};
 
 const convertToMessage = (detail: MessageDetail): Message => ({
   id: detail.id,
   role: detail.role as MessageRole,
   content: detail.content,
-  status: 'completed',
+  status: getStatus(detail),
 });
 
 export const convertToMessages = (details: MessageDetail[]): Message[] =>

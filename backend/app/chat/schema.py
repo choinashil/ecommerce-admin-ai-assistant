@@ -21,6 +21,7 @@ class MessageMetadata(BaseModel):
     response_time_ms: int | None = None
     system_prompt: str | None = None
     error: str | None = None
+    aborted: bool | None = None
     tool_calls: list[ToolCallDetail] | None = None
 
 
