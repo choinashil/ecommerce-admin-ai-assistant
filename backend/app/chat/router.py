@@ -38,12 +38,12 @@ def list_conversations(db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/api/conversations/{display_id}/messages",
+    "/api/conversations/{conversation_id}/messages",
     response_model=list[MessageDetail],
     responses={404: {"description": "Conversation not found", "model": ErrorResponse}},
 )
-def list_messages(display_id: str, db: Session = Depends(get_db)):
-    pk = parse_pk(display_id, "conversations")
+def list_messages(conversation_id: str, db: Session = Depends(get_db)):
+    pk = parse_pk(conversation_id, "conversations")
     conversation = db.get(Conversation, pk)
 
     if not conversation:
@@ -61,7 +61,7 @@ def list_my_conversations(
 
 
 @router.get(
-    "/api/my/conversations/{display_id}/messages",
+    "/api/my/conversations/{conversation_id}/messages",
     response_model=list[MessageDetail],
     responses={
         403: {"description": "Forbidden", "model": ErrorResponse},
@@ -69,11 +69,11 @@ def list_my_conversations(
     },
 )
 def list_my_messages(
-    display_id: str,
+    conversation_id: str,
     db: Session = Depends(get_db),
     seller: Seller = Depends(require_seller),
 ):
-    pk = parse_pk(display_id, "conversations")
+    pk = parse_pk(conversation_id, "conversations")
     conversation = db.get(Conversation, pk)
 
     if not conversation:
