@@ -1,5 +1,6 @@
 import { Navigate, useParams } from 'react-router-dom';
 
+import { ROUTES } from '@/shared/config/routes';
 import { useBackNavigation } from '@/shared/lib/useBackNavigation';
 import { ConversationDetailPanel } from '@/widgets/conversation-panel';
 
@@ -8,10 +9,10 @@ const ConversationDetailPage = () => {
   const { goBack } = useBackNavigation();
 
   if (!id) {
-    return <Navigate to="/conversations" replace />;
+    return <Navigate to={ROUTES.CONVERSATIONS} replace />;
   }
 
-  return <ConversationDetailPanel id={id} onBack={() => goBack('/conversations')} />;
+  return <ConversationDetailPanel id={id} onBack={() => goBack(ROUTES.CONVERSATIONS)} />;
 };
 
 export default ConversationDetailPage;

@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Check, ChevronDown, Settings, User } from 'lucide-react';
 
 import { useSessionStore } from '@/entities/seller';
+import { isAdminPath, ROUTES } from '@/shared/config/routes';
 import { cn } from '@/shared/lib/utils';
 import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
@@ -14,7 +15,7 @@ const ProfileMenu = () => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const isAdmin = pathname.startsWith('/conversations');
+  const isAdmin = isAdminPath(pathname);
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -37,7 +38,7 @@ const ProfileMenu = () => {
       <PopoverContent align='end' className='w-auto gap-0'>
         <div className='space-y-1'>
           <button
-            onClick={() => handleNavigate('/')}
+            onClick={() => handleNavigate(ROUTES.HOME)}
             className={cn(
               'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
               !isAdmin ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
@@ -52,7 +53,7 @@ const ProfileMenu = () => {
             {!isAdmin && <Check className='h-4 w-4' />}
           </button>
           <button
-            onClick={() => handleNavigate('/conversations')}
+            onClick={() => handleNavigate(ROUTES.CONVERSATIONS)}
             className={cn(
               'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
               isAdmin ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',

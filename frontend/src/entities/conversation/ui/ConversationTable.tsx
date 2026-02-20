@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
 import type { ConversationSummary } from '@/entities/conversation';
+import { ROUTES } from '@/shared/config/routes';
 import { formatDate } from '@/shared/lib/format';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 
@@ -36,7 +37,7 @@ const ConversationTable = ({ conversations }: ConversationTableProps) => {
           <TableRow
             key={conv.id}
             className='cursor-pointer'
-            onClick={() => navigate(`/conversations/${conv.id}`)}
+            onClick={() => navigate(ROUTES.CONVERSATION_DETAIL(conv.id))}
           >
             <TableCell className='font-mono'>{conv.id}</TableCell>
             <TableCell className='text-muted-foreground'>{conv.seller_nickname ?? '-'}</TableCell>
