@@ -1,16 +1,8 @@
-import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
-import { applyTheme } from '@/shared/lib/theme';
 import { Header } from '@/widgets/header';
 
 const DefaultLayout = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    applyTheme(pathname);
-  }, [pathname]);
-
   return (
     <div className='flex h-screen flex-col'>
       <Header />
