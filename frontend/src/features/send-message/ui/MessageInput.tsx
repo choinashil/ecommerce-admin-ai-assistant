@@ -56,11 +56,11 @@ const MessageInput = ({
         className='flex-1'
       />
       {isStreaming ? (
-        <Button type='button' size='icon' variant='destructive' onClick={onStop}>
+        <Button key='stop' type='button' size='icon' variant='destructive' onClick={onStop}>
           <Square className='h-3 w-3' />
         </Button>
       ) : (
-        <Button type='submit' size='icon' disabled={!value.trim()}>
+        <Button key='send' type='submit' size='icon' disabled={!value.trim()}>
           <Send className='h-4 w-4' />
         </Button>
       )}

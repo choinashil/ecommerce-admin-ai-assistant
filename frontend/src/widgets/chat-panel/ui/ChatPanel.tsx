@@ -12,20 +12,22 @@ interface ChatPanelProps {
 }
 
 const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
-  const { messages, isStreaming, statusMessage, error, sendMessage, stopStreaming } = useChat({
-    onToolResult,
-  });
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleSend = (message: string) => {
-    sendMessage(message);
-    setInputValue('');
-  };
 
   const handleSelectPrompt = (prompt: string) => {
     setInputValue(prompt);
     inputRef.current?.focus();
+  };
+
+  const { messages, isStreaming, statusMessage, error, sendMessage, stopStreaming } = useChat({
+    onToolResult,
+    onAbort: setInputValue,
+  });
+
+  const handleSend = (message: string) => {
+    sendMessage(message);
+    setInputValue('');
   };
 
   return (

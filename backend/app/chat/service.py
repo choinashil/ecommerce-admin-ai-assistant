@@ -78,7 +78,11 @@ def get_conversation_history(db: Session, conversation_id: int) -> list[dict]:
         .order_by(Message.created_at)
         .all()
     )
-    return [{"role": m.role.value, "content": m.content} for m in messages]
+    return [
+        {"role": m.role.value, "content": m.content}
+        for m in messages
+        if not (m.metadata_ and m.metadata_.get("aborted"))
+    ]
 
 
 def _sse_event(event_type: str, data: str) -> str:

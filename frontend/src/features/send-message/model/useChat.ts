@@ -6,6 +6,7 @@ import type { ChatAction, ChatState } from './types';
 
 interface UseChatOptions {
   onToolResult?: (toolName: string) => void;
+  onAbort?: (lastUserMessage: string) => void;
 }
 
 const PHASE_STATUS = {
@@ -164,7 +165,12 @@ export const useChat = (options?: UseChatOptions) => {
     dispatch({ type: 'SET_STREAMING', payload: { isStreaming: false } });
     dispatch({ type: 'SET_STATUS', payload: { statusMessage: null } });
     dispatch({ type: 'SET_MESSAGE_STATUS', payload: { status: 'aborted' } });
-  }, []);
+
+    const lastUserMessage = [...state.messages].reverse().find((m) => m.role === 'user');
+    if (lastUserMessage) {
+      options?.onAbort?.(lastUserMessage.content);
+    }
+  }, [state.messages, options]);
 
   return {
     messages: state.messages,
