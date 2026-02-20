@@ -1,12 +1,17 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
+import { useBackNavigation } from '@/shared/lib/useBackNavigation';
 import { ConversationDetailPanel } from '@/widgets/conversation-panel';
 
 const ConversationDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { goBack } = useBackNavigation();
 
-  return <ConversationDetailPanel id={id!} onBack={() => navigate('/conversations')} />;
+  if (!id) {
+    return <Navigate to="/conversations" replace />;
+  }
+
+  return <ConversationDetailPanel id={id} onBack={() => goBack('/conversations')} />;
 };
 
 export default ConversationDetailPage;
