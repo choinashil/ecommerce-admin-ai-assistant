@@ -2,8 +2,8 @@ import { useEffect, type KeyboardEvent, type RefObject } from 'react';
 
 import { Send, Square } from 'lucide-react';
 
-import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
+import { Button } from '@/shared/ui/Button';
+import { Input } from '@/shared/ui/Input';
 
 interface MessageInputProps {
   value: string;

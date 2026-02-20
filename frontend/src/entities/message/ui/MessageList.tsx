@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef } from 'react';
 
-import { ScrollArea } from '@/shared/ui/scroll-area';
+import { ScrollArea } from '@/shared/ui/ScrollArea';
 
 import AssistantMessage from './AssistantMessage';
 import StreamingStatus from './StreamingStatus';

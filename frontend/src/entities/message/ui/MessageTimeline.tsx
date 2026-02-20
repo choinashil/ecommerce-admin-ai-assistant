@@ -2,8 +2,8 @@ import { Bot, ChevronDown, ChevronRight, Clock, Cpu, User, Wrench, Zap } from 'l
 
 import type { MessageDetail } from '@/entities/message';
 import { formatDate } from '@/shared/lib/format';
-import { Badge } from '@/shared/ui/badge';
-import MarkdownContent from '@/shared/ui/markdown-content';
+import { Badge } from '@/shared/ui/Badge';
+import MarkdownContent from '@/shared/ui/MarkdownContent';
 
 import { isSearchGuideToolCall } from '../model/tool-calls';
 

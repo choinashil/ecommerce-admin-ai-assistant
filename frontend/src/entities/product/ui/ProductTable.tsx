@@ -1,7 +1,7 @@
 import type { Product } from '@/entities/product';
 import { formatDate, formatPrice } from '@/shared/lib/format';
-import { Badge } from '@/shared/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import { Badge } from '@/shared/ui/Badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/Table';
 
 import ProductTableSkeleton from './ProductTableSkeleton';
 

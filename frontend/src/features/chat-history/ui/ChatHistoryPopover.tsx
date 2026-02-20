@@ -8,15 +8,15 @@ import { History } from 'lucide-react';
 import { conversationQueries } from '@/entities/conversation';
 import type { Message } from '@/entities/message';
 import { convertToMessages, messageQueries } from '@/entities/message';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/Button';
 import {
   Popover,
   PopoverContent,
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-} from '@/shared/ui/popover';
-import { ScrollArea } from '@/shared/ui/scroll-area';
+} from '@/shared/ui/Popover';
+import { ScrollArea } from '@/shared/ui/ScrollArea';
 
 import ConversationList from './ConversationList';
 

@@ -1,7 +1,7 @@
 import { Shuffle } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/Button';
 
 import { useRandomPrompts } from '../model/useRandomPrompts';
 

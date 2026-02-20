@@ -6,8 +6,8 @@ import { Check, ChevronDown, Settings, User } from 'lucide-react';
 import { useSessionStore } from '@/entities/seller';
 import { isAdminPath, ROUTES } from '@/shared/config/routes';
 import { cn } from '@/shared/lib/utils';
-import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { Avatar, AvatarFallback } from '@/shared/ui/Avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/Popover';
 
 const ProfileMenu = () => {
   const nickname = useSessionStore((state) => state.session?.nickname) ?? '';

@@ -8,7 +8,7 @@ import { ChatHistoryPopover } from '@/features/chat-history';
 import { useChat } from '@/features/send-message';
 import MessageInput from '@/features/send-message/ui/MessageInput';
 import { SuggestedPrompts } from '@/features/suggested-prompts';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/Button';
 
 interface ChatPanelProps {
   onToolResult?: (toolName: string) => void;

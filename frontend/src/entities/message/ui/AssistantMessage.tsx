@@ -1,4 +1,4 @@
-import MarkdownContent from '@/shared/ui/markdown-content';
+import MarkdownContent from '@/shared/ui/MarkdownContent';
 
 interface AssistantMessageProps {
   content: string;

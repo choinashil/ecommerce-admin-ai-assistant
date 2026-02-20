@@ -1,6 +1,6 @@
 import { ExternalLink, FileText, Search } from 'lucide-react';
 
-import { Badge } from '@/shared/ui/badge';
+import { Badge } from '@/shared/ui/Badge';
 
 import type { SearchGuideToolCall } from '../model/tool-calls';
 

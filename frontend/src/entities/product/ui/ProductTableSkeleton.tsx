@@ -1,4 +1,4 @@
-import TableSkeleton from '@/shared/ui/table-skeleton';
+import TableSkeleton from '@/shared/ui/TableSkeleton';
 
 const ProductTableSkeleton = () => {
   return <TableSkeleton columns={5} />;

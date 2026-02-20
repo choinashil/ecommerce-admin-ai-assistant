@@ -1,4 +1,4 @@
-import TableSkeleton from '@/shared/ui/table-skeleton';
+import TableSkeleton from '@/shared/ui/TableSkeleton';
 
 const ConversationTableSkeleton = () => {
   return <TableSkeleton columns={6} />;
