@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from app.shared.database import get_db
 from app.shared.display_id import parse_pk
 from app.shared.schema import ErrorResponse
+from app.shared.auth import require_seller
+from app.seller.model import Seller
 from app.chat.model import Conversation
 from app.chat.schema import ChatRequest, ConversationSummary, MessageDetail
 from app.chat.service import stream_chat
@@ -14,9 +16,18 @@ router = APIRouter()
 
 
 @router.post("/api/chat")
-async def chat(request: ChatRequest, db: Session = Depends(get_db)):
+async def chat(
+    request: ChatRequest,
+    db: Session = Depends(get_db),
+    seller: Seller = Depends(require_seller),
+):
     return StreamingResponse(
-        stream_chat(db, request.message, conversation_display_id=request.conversation_id),
+        stream_chat(
+            db,
+            request.message,
+            conversation_display_id=request.conversation_id,
+            seller_id=seller.id,
+        ),
         media_type="text/event-stream",
     )
 

@@ -40,13 +40,15 @@ SYSTEM_PROMPT = """당신의 이름은 '식식이'이고, '식스샵 프로' 쇼
 - 답변할 수 없으면 식스샵 프로 가이드(https://help.pro.sixshop.com/)를 참고하거나 채널톡으로 문의하라고 안내하세요."""
 
 
-def create_or_get_conversation(db: Session, conversation_id: int | None) -> Conversation:
+def create_or_get_conversation(
+    db: Session, conversation_id: int | None, seller_id: int | None = None
+) -> Conversation:
     if conversation_id:
         conversation = db.get(Conversation, conversation_id)
         if conversation:
             return conversation
 
-    conversation = Conversation()
+    conversation = Conversation(seller_id=seller_id)
     db.add(conversation)
     db.commit()
     db.refresh(conversation)
@@ -90,9 +92,11 @@ def _sse_event(event_type: str, data: str) -> str:
     return f"data: {payload}\n\n"
 
 
-async def stream_chat(db: Session, message: str, conversation_display_id: str | None) -> AsyncGenerator[str, None]:
+async def stream_chat(
+    db: Session, message: str, conversation_display_id: str | None, seller_id: int | None = None
+) -> AsyncGenerator[str, None]:
     pk = parse_pk(conversation_display_id, "conversations") if conversation_display_id else None
-    conversation = create_or_get_conversation(db, pk)
+    conversation = create_or_get_conversation(db, pk, seller_id=seller_id)
     save_message(db, conversation.id, MessageRole.USER, message)
 
     yield _sse_event("conversation_id", to_display_id("conversations", conversation.id))

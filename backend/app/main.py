@@ -8,10 +8,12 @@ from sqlalchemy.orm import Session
 from app.shared.config import APP_NAME, settings
 from app.shared.schema import ErrorResponse
 from app.shared.database import Base, engine, get_db
+from app.seller.model import Seller  # noqa: F401
 from app.product.model import Product  # noqa: F401
 from app.order.model import Order  # noqa: F401
 from app.chat.model import Conversation, Message  # noqa: F401
 from app.guide.model import GuideDocument, GuideChunk  # noqa: F401
+from app.seller.router import router as seller_router
 from app.chat.router import router as chat_router
 from app.product.router import router as products_router
 
@@ -36,6 +38,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(seller_router)
 app.include_router(chat_router)
 app.include_router(products_router)
 

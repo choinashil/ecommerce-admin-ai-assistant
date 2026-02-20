@@ -1,17 +1,21 @@
 from sqlalchemy.orm import Session
 
 from app.shared.display_id import to_display_id
+from app.seller.model import Seller
 from app.chat.model import Conversation, Message, MessageRole
 from app.chat.schema import ConversationSummary, MessageDetail, MessageMetadata
 
 
 def get_conversations(db: Session) -> list[ConversationSummary]:
-    conversations = (
-        db.query(Conversation).order_by(Conversation.created_at.desc()).all()
+    rows = (
+        db.query(Conversation, Seller.nickname)
+        .outerjoin(Seller, Conversation.seller_id == Seller.id)
+        .order_by(Conversation.created_at.desc())
+        .all()
     )
 
     results = []
-    for conv in conversations:
+    for conv, seller_nickname in rows:
         messages = (
             db.query(Message)
             .filter(Message.conversation_id == conv.id)
@@ -38,6 +42,7 @@ def get_conversations(db: Session) -> list[ConversationSummary]:
                 message_count=len(messages),
                 total_tokens=total_tokens,
                 created_at=conv.created_at,
+                seller_nickname=seller_nickname,
             )
         )
 

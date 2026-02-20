@@ -38,3 +38,4 @@ class ConversationSummary(BaseModel):
     message_count: int
     total_tokens: int
     created_at: datetime
+    seller_nickname: str | None = None

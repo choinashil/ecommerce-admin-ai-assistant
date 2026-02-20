@@ -23,6 +23,7 @@ def db():
     session.execute(text("DELETE FROM orders"))
     session.execute(text("DELETE FROM products"))
     session.execute(text("DELETE FROM conversations"))
+    session.execute(text("DELETE FROM sellers"))
     session.flush()
 
     yield session
@@ -32,7 +33,7 @@ def db():
 
     # PostgreSQL 시퀀스는 트랜잭션과 독립적이므로, 롤백 후 시퀀스를 max(id) 기준으로 리셋
     with engine.connect() as reset_conn:
-        for table in ("conversations", "guide_chunks", "guide_documents", "messages", "orders", "products"):
+        for table in ("conversations", "guide_chunks", "guide_documents", "messages", "orders", "products", "sellers"):
             reset_conn.execute(
                 text(
                     f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), "
