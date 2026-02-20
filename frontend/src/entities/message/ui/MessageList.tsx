@@ -2,8 +2,9 @@ import { Fragment, useEffect, useRef } from 'react';
 
 import { ScrollArea } from '@/shared/ui/scroll-area';
 
-import MessageItem from './MessageItem';
+import AssistantMessage from './AssistantMessage';
 import StreamingStatus from './StreamingStatus';
+import UserMessage from './UserMessage';
 
 import type { Message } from '../model/types';
 
@@ -29,7 +30,12 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
           <Fragment key={message.id}>
             {message.status === 'streaming' && message.content === '' ? null : (
               <>
-                {message.content && <MessageItem message={message} />}
+                {message.content &&
+                  (message.role === 'user' ? (
+                    <UserMessage content={message.content} />
+                  ) : (
+                    <AssistantMessage content={message.content} />
+                  ))}
                 {message.status === 'aborted' && (
                   <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
                 )}

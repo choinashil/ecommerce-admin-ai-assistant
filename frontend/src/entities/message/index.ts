@@ -6,7 +6,8 @@ export type {
   MessageDetail,
 } from './model/types';
 export { messageQueries } from './api/message.queries';
-export { default as MessageItem } from './ui/MessageItem';
+export { default as AssistantMessage } from './ui/AssistantMessage';
 export { default as MessageList } from './ui/MessageList';
+export { default as UserMessage } from './ui/UserMessage';
 export { default as MessageTimeline } from './ui/MessageTimeline';
 export { default as StreamingStatus } from './ui/StreamingStatus';
