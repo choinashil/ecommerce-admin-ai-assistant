@@ -9,11 +9,7 @@ interface ConversationItemProps {
   onClick: () => void;
 }
 
-const ConversationItem = ({
-  conversation,
-  isActive,
-  onClick,
-}: ConversationItemProps) => {
+const ConversationItem = ({ conversation, isActive, onClick }: ConversationItemProps) => {
   return (
     <button
       type='button'

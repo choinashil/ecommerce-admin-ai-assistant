@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import AdminPage from '@/pages/admin/AdminPage';
 import ConversationDetailPage from '@/pages/conversations/ConversationDetailPage';
 import ConversationsPage from '@/pages/conversations/ConversationsPage';
+import SellerDetailPage from '@/pages/sellers/SellerDetailPage';
 import { ROUTES } from '@/shared/config/routes';
 
 import DefaultLayout from './layouts/DefaultLayout';
@@ -14,6 +15,7 @@ const AppRoutes = () => {
         <Route path={ROUTES.HOME} element={<AdminPage />} />
         <Route path={ROUTES.CONVERSATIONS} element={<ConversationsPage />} />
         <Route path={`${ROUTES.CONVERSATIONS}/:id`} element={<ConversationDetailPage />} />
+        <Route path={`${ROUTES.SELLERS}/:id`} element={<SellerDetailPage />} />
       </Route>
     </Routes>
   );
