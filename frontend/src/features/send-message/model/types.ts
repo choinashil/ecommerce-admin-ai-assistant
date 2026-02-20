@@ -16,4 +16,6 @@ export type ChatAction =
   | { type: 'SET_CONVERSATION_ID'; payload: { id: string } }
   | { type: 'SET_STREAMING'; payload: { isStreaming: boolean } }
   | { type: 'SET_STATUS'; payload: { statusMessage: string | null } }
-  | { type: 'SET_ERROR'; payload: { error: string | null } };
+  | { type: 'SET_ERROR'; payload: { error: string | null } }
+  | { type: 'LOAD_CONVERSATION'; payload: { conversationId: string; messages: Message[] } }
+  | { type: 'RESET' };

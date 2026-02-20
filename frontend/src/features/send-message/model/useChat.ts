@@ -1,5 +1,7 @@
 import { useCallback, useReducer, useRef } from 'react';
 
+import type { Message } from '@/entities/message';
+
 import { streamChat } from '../api/chat.api';
 
 import type { ChatAction, ChatState } from './types';
@@ -94,6 +96,16 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
     case 'SET_ERROR':
       return { ...state, error: action.payload.error };
 
+    case 'LOAD_CONVERSATION':
+      return {
+        ...initialState,
+        messages: action.payload.messages,
+        conversationId: action.payload.conversationId,
+      };
+
+    case 'RESET':
+      return { ...initialState };
+
     default:
       return state;
   }
@@ -172,6 +184,16 @@ export const useChat = (options?: UseChatOptions) => {
     }
   }, [state.messages, options]);
 
+  const loadConversation = useCallback((conversationId: string, messages: Message[]) => {
+    abortControllerRef.current?.abort();
+    dispatch({ type: 'LOAD_CONVERSATION', payload: { conversationId, messages } });
+  }, []);
+
+  const resetChat = useCallback(() => {
+    abortControllerRef.current?.abort();
+    dispatch({ type: 'RESET' });
+  }, []);
+
   return {
     messages: state.messages,
     isStreaming: state.isStreaming,
@@ -180,5 +202,7 @@ export const useChat = (options?: UseChatOptions) => {
     conversationId: state.conversationId,
     sendMessage,
     stopStreaming,
+    loadConversation,
+    resetChat,
   };
 };
