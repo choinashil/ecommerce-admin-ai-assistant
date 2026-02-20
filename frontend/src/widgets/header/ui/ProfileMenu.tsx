@@ -1,19 +1,23 @@
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, Settings, User } from 'lucide-react';
 
-import type { User } from '@/entities/user';
-import { USERS, useSwitchUser } from '@/entities/user';
+import { useSessionStore } from '@/entities/seller';
 import { cn } from '@/shared/lib/utils';
 import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 
 const ProfileMenu = () => {
-  const { currentUser, switchUser } = useSwitchUser();
+  const nickname = useSessionStore((state) => state.session?.nickname) ?? '';
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (user: User) => {
-    switchUser(user);
+  const isAdmin = pathname.startsWith('/conversations');
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
     setIsOpen(false);
   };
 
@@ -22,33 +26,46 @@ const ProfileMenu = () => {
       <PopoverTrigger asChild>
         <button className='flex items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-muted'>
           <Avatar size='sm'>
-            <AvatarFallback>{currentUser.name[0]}</AvatarFallback>
+            <AvatarFallback>
+              {isAdmin ? <Settings className='h-3.5 w-3.5' /> : <User className='h-3.5 w-3.5' />}
+            </AvatarFallback>
           </Avatar>
-          <span className='text-sm font-medium'>{currentUser.name}</span>
+          <span className='text-sm font-medium'>{isAdmin ? '관리자' : nickname}</span>
           <ChevronDown className='h-3 w-3 text-muted-foreground' />
         </button>
       </PopoverTrigger>
-      <PopoverContent align='end' className='w-52'>
+      <PopoverContent align='end' className='w-auto gap-0'>
         <div className='space-y-1'>
-          {USERS.map((user) => {
-            const isSelected = currentUser.id === user.id;
-            return (
-              <button
-                key={user.id}
-                onClick={() => handleSelect(user)}
-                className={cn(
-                  'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
-                  isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
-                )}
-              >
-                <Avatar size='sm'>
-                  <AvatarFallback>{user.name[0]}</AvatarFallback>
-                </Avatar>
-                <span className='flex-1 text-left'>{user.name}</span>
-                {isSelected && <Check className='h-4 w-4' />}
-              </button>
-            );
-          })}
+          <button
+            onClick={() => handleNavigate('/')}
+            className={cn(
+              'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+              !isAdmin ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
+            )}
+          >
+            <Avatar size='sm'>
+              <AvatarFallback>
+                <User className='h-3.5 w-3.5' />
+              </AvatarFallback>
+            </Avatar>
+            <span className='flex-1 whitespace-nowrap text-left'>판매자 ({nickname})</span>
+            {!isAdmin && <Check className='h-4 w-4' />}
+          </button>
+          <button
+            onClick={() => handleNavigate('/conversations')}
+            className={cn(
+              'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+              isAdmin ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
+            )}
+          >
+            <Avatar size='sm'>
+              <AvatarFallback>
+                <Settings className='h-3.5 w-3.5' />
+              </AvatarFallback>
+            </Avatar>
+            <span className='flex-1 whitespace-nowrap text-left'>관리자</span>
+            {isAdmin && <Check className='h-4 w-4' />}
+          </button>
         </div>
       </PopoverContent>
     </Popover>

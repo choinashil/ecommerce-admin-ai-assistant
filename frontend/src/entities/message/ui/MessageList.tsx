@@ -31,7 +31,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
               <>
                 {message.content && <MessageItem message={message} />}
                 {message.status === 'aborted' && (
-                  <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요</p>
+                  <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
                 )}
               </>
             )}

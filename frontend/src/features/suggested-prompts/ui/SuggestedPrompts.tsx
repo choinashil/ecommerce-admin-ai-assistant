@@ -16,7 +16,7 @@ const SuggestedPrompts = ({ onSelect, isDisabled }: SuggestedPromptsProps) => {
 
   return (
     <div className='flex flex-col gap-1 border-t px-4 py-2'>
-      <div className='flex items-center gap-1'>
+      <div className='flex items-center'>
         <span className='text-[0.6875rem] text-muted-foreground'>추천 프롬프트</span>
         <Button
           variant='ghost'
