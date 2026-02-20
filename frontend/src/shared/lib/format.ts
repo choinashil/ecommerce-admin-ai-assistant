@@ -2,16 +2,21 @@ export const formatPrice = (price: number) => {
   return price.toLocaleString('ko-KR');
 };
 
+const dateFormatter = new Intl.DateTimeFormat('ko-KR', {
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});
+
 export const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleString('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const parts = dateFormatter.formatToParts(new Date(dateStr));
+  const get = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value;
+
+  return `${get('year')}.${get('month')}.${get('day')} ${get('hour')}:${get('minute')}`;
 };
 
 export const formatRelativeTime = (dateStr: string): string => {
