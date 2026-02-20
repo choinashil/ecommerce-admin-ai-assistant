@@ -1,10 +1,9 @@
 import enum
-import uuid
 from datetime import datetime
 
 from sqlalchemy import Integer, Text, Enum, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import JSONB
 
 from app.shared.database import Base
 
@@ -15,9 +14,6 @@ class Conversation(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     seller_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("sellers.id"), nullable=True
-    )
-    session_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), default=uuid.uuid4
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
