@@ -1,20 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { useUserStore } from '@/entities/user';
-import { applyTheme } from '@/shared/lib/theme';
+import { useSessionStore } from '@/entities/seller';
+import { createSeller } from '@/features/create-seller';
 
 import AppRoutes from './routes';
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const role = useUserStore((state) => state.currentUser.role);
+  const { session, setSession } = useSessionStore();
+  const [isReady, setIsReady] = useState(session !== null);
 
   useEffect(() => {
-    applyTheme(role);
-  }, [role]);
+    if (session) {
+      return;
+    }
+
+    createSeller().then((newSession) => {
+      setSession(newSession);
+      setIsReady(true);
+    });
+  }, [session, setSession]);
+
+  if (!isReady) {
+    return null;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

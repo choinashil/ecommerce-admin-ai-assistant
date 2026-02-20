@@ -1,3 +1,4 @@
+import { getToken } from '@/entities/seller';
 import type { components } from '@/shared/api/schema';
 import { streamSSE } from '@/shared/api/sse-client';
 import env from '@/shared/config/env';
@@ -20,10 +21,12 @@ export const streamChat = async (
 ): Promise<void> => {
   let isDoneReceived = false;
 
+  const token = getToken();
   await streamSSE({
     url: `${env.API_BASE_URL}/api/chat`,
     body: request,
     signal,
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     onEvent: (event) => {
       switch (event.type) {
         case 'conversation_id':

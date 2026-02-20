@@ -7,6 +7,7 @@ export interface SSERequestOptions {
   url: string;
   body: unknown;
   signal?: AbortSignal;
+  headers?: Record<string, string>;
   onEvent: (event: SSEEvent) => void;
   onError: (error: Error) => void;
 }
@@ -18,6 +19,7 @@ export const streamSSE = async ({
   url,
   body,
   signal,
+  headers: extraHeaders,
   onEvent,
   onError,
 }: SSERequestOptions): Promise<void> => {
@@ -26,7 +28,7 @@ export const streamSSE = async ({
   try {
     response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...extraHeaders },
       body: JSON.stringify(body),
       signal,
     });

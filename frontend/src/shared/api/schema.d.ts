@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/sellers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register Seller */
+        post: operations["register_seller_api_sellers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/chat": {
         parameters: {
             query?: never;
@@ -166,6 +183,8 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Seller Nickname */
+            seller_nickname?: string | null;
         };
         /** ErrorResponse */
         ErrorResponse: {
@@ -225,6 +244,13 @@ export interface components {
              */
             created_at: string;
         };
+        /** SellerResponse */
+        SellerResponse: {
+            /** Token */
+            token: string;
+            /** Nickname */
+            nickname: string;
+        };
         /** ToolCallDetail */
         ToolCallDetail: {
             /** Name */
@@ -260,10 +286,41 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    chat_api_chat_post: {
+    register_seller_api_sellers_post: {
         parameters: {
             query?: never;
             header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SellerResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    chat_api_chat_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
