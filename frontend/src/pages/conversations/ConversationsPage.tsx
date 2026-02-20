@@ -1,23 +1,7 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react';
-import { SuspenseQuery } from '@suspensive/react-query';
-
-import { ConversationTable, conversationQueries } from '@/entities/conversation';
+import { ConversationListPanel } from '@/widgets/conversation-panel';
 
 const ConversationsPage = () => {
-  return (
-    <div className='flex-1 overflow-auto p-6'>
-      <h2 className='text-2xl font-bold'>LLM 로그</h2>
-      <p className='mt-2 mb-6 text-muted-foreground'>대화 내역 및 LLM 호출 메타데이터</p>
-
-      <ErrorBoundary fallback={({ error }) => <p className='text-destructive'>{error.message}</p>}>
-        <Suspense fallback={<p className='text-muted-foreground'>로딩 중...</p>}>
-          <SuspenseQuery {...conversationQueries.list()}>
-            {({ data: conversations }) => <ConversationTable conversations={conversations} />}
-          </SuspenseQuery>
-        </Suspense>
-      </ErrorBoundary>
-    </div>
-  );
+  return <ConversationListPanel />;
 };
 
 export default ConversationsPage;
