@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { Bot, SquarePen } from 'lucide-react';
+import { Bot, Plus } from 'lucide-react';
 
 import type { Message } from '@/entities/message';
 import MessageList from '@/entities/message/ui/MessageList';
@@ -62,14 +62,8 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
         <Bot className='h-5 w-5 text-primary' />
         <h2 className='font-semibold'>AI 어시스턴트</h2>
         <div className='ml-auto flex items-center gap-1'>
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={handleNewChat}
-            disabled={isStreaming}
-            aria-label='새 대화 시작'
-          >
-            <SquarePen className='size-4' />
+          <Button variant='ghost' size='icon' onClick={handleNewChat} aria-label='새 대화 시작'>
+            <Plus className='size-4' />
           </Button>
           <ChatHistoryPopover
             currentConversationId={conversationId}
@@ -85,10 +79,10 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
       )}
 
       {messages.length === 0 ? (
-        <div className='flex flex-1 flex-col items-center justify-center gap-4 px-4'>
+        <div className='flex flex-1 flex-col items-center justify-center gap-6 px-4'>
           <div className='flex flex-col items-center gap-1'>
-            <p className='text-sm font-medium text-foreground'>판매자님, 안녕하세요.</p>
-            <p className='text-base font-medium text-foreground'>무엇을 도와드릴까요?</p>
+            <p className='text-base font-medium text-foreground'>판매자님, 안녕하세요.</p>
+            <p className='text-lg font-medium text-foreground'>무엇을 도와드릴까요?</p>
           </div>
           <SuggestedPrompts
             variant='centered'
