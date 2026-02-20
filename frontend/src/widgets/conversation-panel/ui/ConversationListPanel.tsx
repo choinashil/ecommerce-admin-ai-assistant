@@ -5,7 +5,7 @@ import { ConversationTable, conversationQueries } from '@/entities/conversation'
 
 const ConversationListPanel = () => {
   return (
-    <div className='flex-1 overflow-auto p-6'>
+    <div className='flex-1 overflow-auto rounded-t-2xl bg-background p-6 shadow-sm'>
       <h2 className='text-2xl font-bold'>LLM 로그</h2>
       <p className='mt-2text-muted-foreground'>대화 내역 및 LLM 호출 메타데이터</p>
 

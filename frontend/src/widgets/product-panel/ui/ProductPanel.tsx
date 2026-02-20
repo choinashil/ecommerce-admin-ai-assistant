@@ -5,7 +5,7 @@ import { ProductTable, productQueries } from '@/entities/product';
 
 const ProductPanel = () => {
   return (
-    <div className='flex-1 overflow-auto p-6'>
+    <div className='flex-1 overflow-auto rounded-t-2xl bg-background p-6 shadow-sm'>
       <h2 className='text-2xl font-bold'>상품 관리</h2>
 
       <div className='mt-6'>

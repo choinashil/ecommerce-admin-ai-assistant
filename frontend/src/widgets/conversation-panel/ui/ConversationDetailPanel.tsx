@@ -11,7 +11,7 @@ interface ConversationDetailPanelProps {
 
 const ConversationDetailPanel = ({ id, onBack }: ConversationDetailPanelProps) => {
   return (
-    <div className='flex-1 overflow-auto p-6'>
+    <div className='flex-1 overflow-auto rounded-t-2xl bg-background p-6 shadow-sm'>
       <button
         className='mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground'
         onClick={onBack}

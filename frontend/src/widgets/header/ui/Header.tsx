@@ -4,11 +4,13 @@ import ProfileMenu from './ProfileMenu';
 
 const Header = () => {
   return (
-    <header className='flex h-14 items-center justify-between border-b bg-background px-6'>
-      <Link to='/' className='text-2xl font-black'>
-        SixPro
-      </Link>
-      <ProfileMenu />
+    <header className='flex h-14 items-center px-6'>
+      <div className='mx-auto flex w-full max-w-7xl items-center justify-between'>
+        <Link to='/' className='text-2xl font-black'>
+          SixPro
+        </Link>
+        <ProfileMenu />
+      </div>
     </header>
   );
 };

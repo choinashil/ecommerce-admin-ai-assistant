@@ -40,7 +40,7 @@ const ConversationTable = ({ conversations }: ConversationTableProps) => {
             onClick={() => navigate(ROUTES.CONVERSATION_DETAIL(conv.id))}
           >
             <TableCell className='font-mono'>{conv.id}</TableCell>
-            <TableCell className='text-muted-foreground'>{conv.seller_nickname ?? '-'}</TableCell>
+            <TableCell>{conv.seller_nickname ?? '-'}</TableCell>
             <TableCell className='max-w-xs truncate'>{conv.first_message}</TableCell>
             <TableCell className='text-right'>{conv.message_count}</TableCell>
             <TableCell className='text-right'>{formatTokens(conv.total_tokens)}</TableCell>

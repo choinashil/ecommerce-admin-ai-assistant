@@ -57,7 +57,7 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
   }, [resetChat]);
 
   return (
-    <aside className='flex w-100 flex-col overflow-hidden border-l bg-background'>
+    <aside className='flex w-100 flex-col overflow-hidden rounded-t-2xl bg-background shadow-sm'>
       <header className='flex items-center gap-2 border-b px-4 py-3'>
         <Bot className='h-5 w-5 text-primary' />
         <h2 className='font-semibold'>AI 어시스턴트</h2>
