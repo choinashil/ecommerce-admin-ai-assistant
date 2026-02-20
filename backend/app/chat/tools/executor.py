@@ -28,6 +28,8 @@ def _handle_create_product(db: Session, arguments: dict) -> dict:
         "name": product.name,
         "price": product.price,
         "status": product.status.value,
+        "created_at": product.created_at.isoformat(),
+        "updated_at": product.updated_at.isoformat(),
     }
 
 
@@ -41,6 +43,8 @@ def _handle_list_products(db: Session, arguments: dict) -> dict:
                 "name": p.name,
                 "price": p.price,
                 "status": p.status.value,
+                "created_at": p.created_at.isoformat(),
+                "updated_at": p.updated_at.isoformat(),
             }
             for p in products
         ],
