@@ -10,3 +10,13 @@ export const fetchConversations = async () => {
 
   return data;
 };
+
+export const fetchMyConversations = async () => {
+  const { data, error, response } = await client.GET('/api/my/conversations');
+
+  if (error) {
+    throw new ApiError(response.status, error, '대화 목록을 불러오는데 실패했습니다.');
+  }
+
+  return data;
+};
