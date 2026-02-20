@@ -64,11 +64,7 @@ const ChatHistoryPopover = ({
               <p className='py-4 text-center text-destructive'>{error.message}</p>
             )}
           >
-            <Suspense
-              fallback={
-                <p className='py-4 text-center text-muted-foreground'>불러오는 중...</p>
-              }
-            >
+            <Suspense fallback={<ConversationList.Skeleton />}>
               <SuspenseQuery {...conversationQueries.myList()}>
                 {({ data: conversations }) => (
                   <ConversationList

@@ -1,6 +1,8 @@
 import { ConversationItem } from '@/entities/conversation';
 import type { ConversationSummary } from '@/entities/conversation';
 
+import ConversationListSkeleton from './ConversationListSkeleton';
+
 interface ConversationListProps {
   conversations: ConversationSummary[];
   currentConversationId: string | null;
@@ -29,5 +31,7 @@ const ConversationList = ({
     </div>
   );
 };
+
+ConversationList.Skeleton = ConversationListSkeleton;
 
 export default ConversationList;

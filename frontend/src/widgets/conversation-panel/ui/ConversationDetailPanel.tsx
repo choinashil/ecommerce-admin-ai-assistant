@@ -25,7 +25,7 @@ const ConversationDetailPanel = ({ id, onBack }: ConversationDetailPanelProps) =
         <ErrorBoundary
           fallback={({ error }) => <p className='text-destructive'>{error.message}</p>}
         >
-          <Suspense fallback={<p className='text-muted-foreground'>로딩 중...</p>}>
+          <Suspense fallback={<MessageTimeline.Skeleton />}>
             <SuspenseQuery {...messageQueries.list(id)}>
               {({ data: messages }) => <MessageTimeline messages={messages} />}
             </SuspenseQuery>

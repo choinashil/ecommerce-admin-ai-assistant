@@ -12,7 +12,7 @@ const ProductPanel = () => {
         <ErrorBoundary
           fallback={({ error }) => <p className='text-destructive'>{error.message}</p>}
         >
-          <Suspense fallback={<p className='text-muted-foreground'>로딩 중...</p>}>
+          <Suspense fallback={<ProductTable.Skeleton />}>
             <SuspenseQuery {...productQueries.list()}>
               {({ data: products }) => <ProductTable products={products} />}
             </SuspenseQuery>

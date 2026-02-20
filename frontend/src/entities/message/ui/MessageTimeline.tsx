@@ -8,6 +8,7 @@ import MarkdownContent from '@/shared/ui/markdown-content';
 import { isSearchGuideToolCall } from '../model/tool-calls';
 
 import GuideSearchResult from './GuideSearchResult';
+import MessageTimelineSkeleton from './MessageTimelineSkeleton';
 import SystemPromptCard from './SystemPromptCard';
 import ToolCallDefaultResult from './ToolCallDefaultResult';
 
@@ -91,5 +92,7 @@ const MessageTimeline = ({ messages }: MessageTimelineProps) => {
     </div>
   );
 };
+
+MessageTimeline.Skeleton = MessageTimelineSkeleton;
 
 export default MessageTimeline;

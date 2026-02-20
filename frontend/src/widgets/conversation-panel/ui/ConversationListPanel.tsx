@@ -13,7 +13,7 @@ const ConversationListPanel = () => {
         <ErrorBoundary
           fallback={({ error }) => <p className='text-destructive'>{error.message}</p>}
         >
-          <Suspense fallback={<p className='text-muted-foreground'>로딩 중...</p>}>
+          <Suspense fallback={<ConversationTable.Skeleton />}>
             <SuspenseQuery {...conversationQueries.list()}>
               {({ data: conversations }) => <ConversationTable conversations={conversations} />}
             </SuspenseQuery>
