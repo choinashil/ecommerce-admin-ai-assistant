@@ -1,1 +1,1 @@
-export { createSeller } from './api/createSeller';
+export { createSeller } from './api/seller.api';

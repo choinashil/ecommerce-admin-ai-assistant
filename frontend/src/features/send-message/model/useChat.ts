@@ -1,6 +1,6 @@
 import { useCallback, useReducer, useRef } from 'react';
 
-import { streamChat } from '../api/chat-api';
+import { streamChat } from '../api/chat.api';
 
 import type { ChatAction, ChatState } from './types';
 
