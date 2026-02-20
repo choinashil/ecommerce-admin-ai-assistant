@@ -16,6 +16,9 @@ class TestToDisplayId:
     def test_orders(self):
         assert to_display_id("orders", 7) == "ORD-7"
 
+    def test_sellers(self):
+        assert to_display_id("sellers", 3) == "SLR-3"
+
     def test_unknown_table(self):
         with pytest.raises(KeyError):
             to_display_id("unknown", 1)
@@ -33,6 +36,9 @@ class TestFromDisplayId:
 
     def test_orders(self):
         assert from_display_id("ORD-7") == ("orders", 7)
+
+    def test_sellers(self):
+        assert from_display_id("SLR-3") == ("sellers", 3)
 
     def test_large_number(self):
         assert from_display_id("CON-99999") == ("conversations", 99999)

@@ -10,6 +10,7 @@ PREFIXES = {
     "messages": "MSG",
     "products": "PRD",
     "orders": "ORD",
+    "sellers": "SLR",
 }
 
 

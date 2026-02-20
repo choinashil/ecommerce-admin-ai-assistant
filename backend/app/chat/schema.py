@@ -40,4 +40,5 @@ class ConversationSummary(BaseModel):
     total_tokens: int
     created_at: datetime
     updated_at: datetime
+    seller_id: str | None = None
     seller_nickname: str | None = None

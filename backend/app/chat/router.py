@@ -33,8 +33,12 @@ async def chat(
 
 
 @router.get("/api/conversations", response_model=list[ConversationSummary])
-def list_conversations(db: Session = Depends(get_db)):
-    return get_conversations(db)
+def list_conversations(
+    seller_id: str | None = None,
+    db: Session = Depends(get_db),
+):
+    seller_pk = parse_pk(seller_id, "sellers") if seller_id else None
+    return get_conversations(db, seller_id=seller_pk)
 
 
 @router.get(

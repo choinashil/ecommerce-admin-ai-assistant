@@ -1,8 +1,11 @@
 import random
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.chat.model import Conversation, Message, MessageRole
 from app.seller.model import Seller
+from app.shared.display_id import to_display_id
 
 ADJECTIVES = [
     "행복한", "용감한", "빠른", "조용한", "밝은",
@@ -49,3 +52,48 @@ def create_seller(db: Session) -> Seller:
 
 def get_seller_by_token(db: Session, token: str) -> Seller | None:
     return db.query(Seller).filter(Seller.token == token).first()
+
+
+def get_seller_detail(db: Session, seller_pk: int) -> dict | None:
+    seller = db.get(Seller, seller_pk)
+    if not seller:
+        return None
+
+    stats = (
+        db.query(
+            func.count(func.distinct(Conversation.id)).label("total_conversations"),
+            func.count(Message.id).label("total_messages"),
+            func.max(Conversation.updated_at).label("last_active_at"),
+        )
+        .select_from(Conversation)
+        .outerjoin(Message, Message.conversation_id == Conversation.id)
+        .filter(Conversation.seller_id == seller_pk)
+        .one()
+    )
+
+    token_rows = (
+        db.query(Message.metadata_)
+        .join(Conversation, Message.conversation_id == Conversation.id)
+        .filter(
+            Conversation.seller_id == seller_pk,
+            Message.role == MessageRole.ASSISTANT,
+            Message.metadata_.isnot(None),
+        )
+        .all()
+    )
+    total_tokens = 0
+    for (metadata,) in token_rows:
+        if metadata:
+            total_tokens += (metadata.get("input_tokens") or 0) + (
+                metadata.get("output_tokens") or 0
+            )
+
+    return {
+        "id": to_display_id("sellers", seller.id),
+        "nickname": seller.nickname,
+        "created_at": seller.created_at,
+        "last_active_at": stats.last_active_at,
+        "total_conversations": stats.total_conversations,
+        "total_messages": stats.total_messages,
+        "total_tokens": total_tokens,
+    }

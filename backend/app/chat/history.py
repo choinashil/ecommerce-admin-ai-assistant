@@ -10,7 +10,7 @@ def get_conversations(
     db: Session, seller_id: int | None = None
 ) -> list[ConversationSummary]:
     query = (
-        db.query(Conversation, Seller.nickname)
+        db.query(Conversation, Seller.nickname, Seller.id)
         .outerjoin(Seller, Conversation.seller_id == Seller.id)
     )
     if seller_id is not None:
@@ -18,7 +18,7 @@ def get_conversations(
     rows = query.order_by(Conversation.updated_at.desc()).all()
 
     results = []
-    for conv, seller_nickname in rows:
+    for conv, seller_nickname, seller_pk in rows:
         messages = (
             db.query(Message)
             .filter(Message.conversation_id == conv.id)
@@ -46,6 +46,7 @@ def get_conversations(
                 total_tokens=total_tokens,
                 created_at=conv.created_at,
                 updated_at=conv.updated_at,
+                seller_id=to_display_id("sellers", seller_pk) if seller_pk else None,
                 seller_nickname=seller_nickname,
             )
         )
