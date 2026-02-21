@@ -14,6 +14,7 @@ class Settings(BaseSettings):
         if v.startswith("postgres://"):
             return v.replace("postgres://", "postgresql://", 1)
         return v
+    cors_origins: str = "http://localhost:5173"
     openai_api_key: str
     openai_model: str = "gpt-4o-mini"
     openai_embedding_model: str = "text-embedding-3-small"
