@@ -13,11 +13,17 @@ const AdminPage = () => {
   const queryClient = useQueryClient();
 
   const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSelectPrompt = (prompt: string) => {
-    setInputValue(prompt);
-    inputRef.current?.focus();
+    setInputValue((prev) => (prev.trim() ? `${prev} ${prompt}` : prompt));
+    setTimeout(() => {
+      const el = inputRef.current;
+      if (el) {
+        el.focus();
+        el.setSelectionRange(el.value.length, el.value.length);
+      }
+    }, 0);
   };
 
   const handleToolResult = useCallback(

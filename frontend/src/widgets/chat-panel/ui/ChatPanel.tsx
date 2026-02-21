@@ -15,7 +15,7 @@ interface ChatPanelProps {
   onToolResult?: (toolName: string) => void;
   inputValue: string;
   onInputChange: (value: string) => void;
-  inputRef: React.RefObject<HTMLInputElement | null>;
+  inputRef: React.RefObject<HTMLTextAreaElement | null>;
   onSelectPrompt: (prompt: string) => void;
 }
 
@@ -116,7 +116,7 @@ const ChatPanel = ({
         <>
           <div className='relative flex flex-1 flex-col overflow-hidden'>
             <MessageList messages={messages} statusMessage={statusMessage} />
-            <div className='pointer-events-none absolute bottom-0 left-0 right-2.5 h-8 bg-linear-to-t from-background to-transparent' />
+            <div className='pointer-events-none absolute right-2.5 bottom-0 left-0 h-8 bg-linear-to-t from-background to-transparent' />
           </div>
           <SuggestedPrompts onSelect={onSelectPrompt} isDisabled={isStreaming} />
         </>
