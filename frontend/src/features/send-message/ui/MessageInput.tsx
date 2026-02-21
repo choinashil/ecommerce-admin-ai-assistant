@@ -45,25 +45,27 @@ const MessageInput = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className='flex items-center gap-2 border-t px-4 py-3'>
-      <Input
-        ref={inputRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder='메시지를 입력하세요...'
-        disabled={isStreaming}
-        className='flex-1'
-      />
-      {isStreaming ? (
-        <Button key='stop' type='button' size='icon' variant='destructive' onClick={onStop}>
-          <Square className='h-3 w-3' />
-        </Button>
-      ) : (
-        <Button key='send' type='submit' size='icon' disabled={!value.trim()}>
-          <Send className='h-4 w-4' />
-        </Button>
-      )}
+    <form onSubmit={handleSubmit} className='px-4 py-3'>
+      <div className='flex items-center gap-1 rounded-md border border-input bg-input/20 px-2 focus-within:border-ring/50'>
+        <Input
+          ref={inputRef}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder='메시지를 입력하세요...'
+          disabled={isStreaming}
+          className='h-10 flex-1 border-0 bg-transparent focus-visible:ring-0 md:text-sm'
+        />
+        {isStreaming ? (
+          <Button key='stop' type='button' size='icon' variant='destructive' onClick={onStop}>
+            <Square className='h-3 w-3' />
+          </Button>
+        ) : (
+          <Button key='send' type='submit' size='icon' variant='ghost' disabled={!value.trim()}>
+            <Send className='h-4 w-4' />
+          </Button>
+        )}
+      </div>
     </form>
   );
 };

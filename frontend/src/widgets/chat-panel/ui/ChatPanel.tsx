@@ -77,7 +77,7 @@ const ChatPanel = ({
 
   return (
     <aside className='flex w-100 flex-col overflow-hidden rounded-t-2xl bg-background shadow-sm'>
-      <header className='flex items-center gap-2 border-b px-4 py-3'>
+      <header className='flex items-center gap-2 px-4 py-3'>
         <Bot className='h-5 w-5 text-primary' />
         <h2 className='font-semibold'>AI 어시스턴트</h2>
         <div className='ml-auto flex items-center gap-1'>
@@ -114,7 +114,10 @@ const ChatPanel = ({
         </div>
       ) : (
         <>
-          <MessageList messages={messages} statusMessage={statusMessage} />
+          <div className='relative flex flex-1 flex-col overflow-hidden'>
+            <MessageList messages={messages} statusMessage={statusMessage} />
+            <div className='pointer-events-none absolute bottom-0 left-0 right-2.5 h-8 bg-linear-to-t from-background to-transparent' />
+          </div>
           <SuggestedPrompts onSelect={onSelectPrompt} isDisabled={isStreaming} />
         </>
       )}

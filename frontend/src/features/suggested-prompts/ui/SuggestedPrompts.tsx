@@ -29,7 +29,7 @@ const SuggestedPrompts = ({
     <div
       className={cn(
         'flex flex-col gap-1',
-        isCentered ? 'items-center text-muted-foreground' : 'border-t px-4 py-2',
+        isCentered ? 'items-center text-muted-foreground' : 'px-4 py-2',
       )}
     >
       {!isCentered && (
