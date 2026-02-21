@@ -12,6 +12,7 @@
     "generate-api": "openapi-typescript http://localhost:8000/openapi.json -o src/shared/api/schema.d.ts"
   },
   "dependencies": {
+    "@floating-ui/react-dom": "^2.1.7",
     "@suspensive/react": "^3.19.0",
     "@suspensive/react-query": "^3.19.0",
     "@tailwindcss/typography": "^0.5.19",

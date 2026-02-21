@@ -10,10 +10,6 @@ interface ProductTableProps {
 }
 
 const ProductTable = ({ products }: ProductTableProps) => {
-  if (products.length === 0) {
-    return <p className='text-muted-foreground'>등록된 상품이 없습니다.</p>;
-  }
-
   return (
     <Table>
       <TableHeader>

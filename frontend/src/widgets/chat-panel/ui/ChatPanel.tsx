@@ -1,10 +1,11 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { Bot, Plus } from 'lucide-react';
 
 import type { Message } from '@/entities/message';
 import MessageList from '@/entities/message/ui/MessageList';
 import { ChatHistoryPopover } from '@/features/chat-history';
+import { useOnboardingStore } from '@/features/onboarding';
 import { useChat } from '@/features/send-message';
 import MessageInput from '@/features/send-message/ui/MessageInput';
 import { SuggestedPrompts } from '@/features/suggested-prompts';
@@ -12,16 +13,22 @@ import { Button } from '@/shared/ui/Button';
 
 interface ChatPanelProps {
   onToolResult?: (toolName: string) => void;
+  inputValue: string;
+  onInputChange: (value: string) => void;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  onSelectPrompt: (prompt: string) => void;
 }
 
-const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
-  const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleSelectPrompt = (prompt: string) => {
-    setInputValue(prompt);
-    inputRef.current?.focus();
-  };
+const ChatPanel = ({
+  onToolResult,
+  inputValue,
+  onInputChange,
+  inputRef,
+  onSelectPrompt,
+}: ChatPanelProps) => {
+  const isGuideCompleted = useOnboardingStore((s) =>
+    s.completedMilestones.includes('guide_searched'),
+  );
 
   const {
     messages,
@@ -35,26 +42,38 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
     resetChat,
   } = useChat({
     onToolResult,
-    onAbort: setInputValue,
+    onAbort: onInputChange,
   });
+
+  useEffect(() => {
+    if (isStreaming) {
+      useOnboardingStore.getState().lock();
+    } else {
+      useOnboardingStore.getState().unlock();
+    }
+  }, [isStreaming]);
 
   const handleSend = (message: string) => {
     sendMessage(message);
-    setInputValue('');
+    onInputChange('');
+
+    if (!isGuideCompleted) {
+      useOnboardingStore.getState().completeMilestone('guide_searched');
+    }
   };
 
   const handleSelectConversation = useCallback(
     (selectedConversationId: string, selectedMessages: Message[]) => {
       loadConversation(selectedConversationId, selectedMessages);
-      setInputValue('');
+      onInputChange('');
     },
-    [loadConversation],
+    [loadConversation, onInputChange],
   );
 
   const handleNewChat = useCallback(() => {
     resetChat();
-    setInputValue('');
-  }, [resetChat]);
+    onInputChange('');
+  }, [resetChat, onInputChange]);
 
   return (
     <aside className='flex w-100 flex-col overflow-hidden rounded-t-2xl bg-background shadow-sm'>
@@ -79,26 +98,29 @@ const ChatPanel = ({ onToolResult }: ChatPanelProps) => {
       )}
 
       {messages.length === 0 ? (
-        <div className='flex flex-1 flex-col items-center justify-center gap-6 px-4'>
-          <div className='flex flex-col items-center gap-1'>
-            <p className='text-base font-medium text-foreground'>판매자님, 안녕하세요.</p>
-            <p className='text-lg font-medium text-foreground'>무엇을 도와드릴까요?</p>
+        <div className='flex flex-1 items-center justify-center pb-[15%]'>
+          <div data-onboarding='chat-empty-state' className='flex flex-col gap-6 px-4'>
+            <div className='flex flex-col items-center'>
+              <p className='text-sm text-muted-foreground'>판매자님, 안녕하세요.</p>
+              <p className='text-lg font-medium text-foreground'>무엇을 도와드릴까요?</p>
+            </div>
+            <SuggestedPrompts
+              variant='centered'
+              onSelect={onSelectPrompt}
+              isDisabled={isStreaming}
+              categoryFilter={isGuideCompleted ? undefined : 'guide'}
+            />
           </div>
-          <SuggestedPrompts
-            variant='centered'
-            onSelect={handleSelectPrompt}
-            isDisabled={isStreaming}
-          />
         </div>
       ) : (
         <>
           <MessageList messages={messages} statusMessage={statusMessage} />
-          <SuggestedPrompts onSelect={handleSelectPrompt} isDisabled={isStreaming} />
+          <SuggestedPrompts onSelect={onSelectPrompt} isDisabled={isStreaming} />
         </>
       )}
       <MessageInput
         value={inputValue}
-        onChange={setInputValue}
+        onChange={onInputChange}
         onSend={handleSend}
         onStop={stopStreaming}
         isStreaming={isStreaming}

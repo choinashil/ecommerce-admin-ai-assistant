@@ -5,20 +5,24 @@ import { Button } from '@/shared/ui/Button';
 
 import { useRandomPrompts } from '../model/useRandomPrompts';
 
+import type { PromptCategory } from '../model/types';
+
 const PROMPT_COUNT = 3;
 
 interface SuggestedPromptsProps {
   onSelect: (prompt: string) => void;
   isDisabled: boolean;
   variant?: 'centered' | 'inline';
+  categoryFilter?: PromptCategory;
 }
 
 const SuggestedPrompts = ({
   onSelect,
   isDisabled,
   variant = 'inline',
+  categoryFilter,
 }: SuggestedPromptsProps) => {
-  const { prompts, shuffle } = useRandomPrompts(PROMPT_COUNT);
+  const { prompts, shuffle } = useRandomPrompts(PROMPT_COUNT, categoryFilter);
   const isCentered = variant === 'centered';
 
   return (

@@ -27,12 +27,13 @@ const FRUIT_NAMES = [
 ] as const;
 
 const REGISTER_TEMPLATES = [
-  (name: string, price: number) => `${name} ${price.toLocaleString()}원에 등록해줘`,
-  (name: string, price: number) => `${name} 상품 등록해줘, 가격은 ${price.toLocaleString()}원`,
+  (name: string, price: number) => `${name} ${price.toLocaleString()}원에 등록해주세요`,
+  (name: string, price: number) => `${name} 상품 추가해줘, 가격은 ${price.toLocaleString()}원`,
   (name: string, price: number) => `새 상품 등록 - ${name} ${price.toLocaleString()}원`,
   (name: string, price: number) => `${name} ${price.toLocaleString()}원짜리 만들어줘`,
   (name: string, price: number) => `${name} 하나 올려줘 ${price.toLocaleString()}원으로`,
-  (name: string, price: number) => `${name} ${price.toLocaleString()}원으로 상품 생성해줘`,
+  (name: string, price: number) => `${name} ${price.toLocaleString()}원으로 상품 생성해주세요`,
+  (name: string, price: number) => `${name} ${price.toLocaleString()}원으로 추가해줘`,
 ];
 
 const randomInt = (min: number, max: number): number =>
