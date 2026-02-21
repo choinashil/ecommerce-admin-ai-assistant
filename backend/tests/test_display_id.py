@@ -13,9 +13,6 @@ class TestToDisplayId:
     def test_products(self):
         assert to_display_id("products", 100) == "PRD-100"
 
-    def test_orders(self):
-        assert to_display_id("orders", 7) == "ORD-7"
-
     def test_sellers(self):
         assert to_display_id("sellers", 3) == "SLR-3"
 
@@ -33,9 +30,6 @@ class TestFromDisplayId:
 
     def test_products(self):
         assert from_display_id("PRD-100") == ("products", 100)
-
-    def test_orders(self):
-        assert from_display_id("ORD-7") == ("orders", 7)
 
     def test_sellers(self):
         assert from_display_id("SLR-3") == ("sellers", 3)
@@ -62,7 +56,7 @@ class TestParsePk:
 
     def test_table_mismatch(self):
         with pytest.raises(ValueError, match="잘못된 ID 타입"):
-            parse_pk("CON-1", "orders")
+            parse_pk("CON-1", "products")
 
     def test_msg_correct(self):
         assert parse_pk("MSG-10", "messages") == 10
