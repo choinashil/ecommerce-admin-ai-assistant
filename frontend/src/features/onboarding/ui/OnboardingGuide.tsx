@@ -47,6 +47,10 @@ const OnboardingGuide = () => {
     return null;
   }
 
+  if (targetElement.dataset.onboarding !== activeStep.targetSelector) {
+    return null;
+  }
+
   return <OnboardingTooltip step={activeStep} targetElement={targetElement} />;
 };
 

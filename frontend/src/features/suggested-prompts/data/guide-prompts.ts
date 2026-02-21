@@ -951,4 +951,4 @@ export const GUIDE_NEGATIVE_PROMPTS: string[] = [
   '장바구니 이탈 후 몇 시간 뒤에 리마인드 이메일 보내는 기능',
 ];
 
-export const GUIDE_PROMPTS: string[] = [...GUIDE_POSITIVE_PROMPTS, ...GUIDE_NEGATIVE_PROMPTS];
+export const GUIDE_PROMPTS: string[] = [...GUIDE_POSITIVE_PROMPTS];

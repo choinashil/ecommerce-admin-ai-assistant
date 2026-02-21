@@ -47,11 +47,8 @@ const OnboardingTooltip = ({ step, targetElement }: OnboardingTooltipProps) => {
             backgroundSize: '100% 100%, 200% 100%',
           }}
         >
-          <div className='flex items-start justify-between gap-2'>
-            <div>
-              <p className='text-sm font-medium'>{step.title}</p>
-              <p className='mt-1 text-xs text-muted-foreground'>{step.description}</p>
-            </div>
+          <div className='flex items-center justify-between gap-2'>
+            <p className='text-sm font-medium'>{step.title}</p>
             <Button
               variant='ghost'
               size='icon-xs'
@@ -61,6 +58,9 @@ const OnboardingTooltip = ({ step, targetElement }: OnboardingTooltipProps) => {
               <X className='h-3 w-3' />
             </Button>
           </div>
+          {step.description && (
+            <p className='mt-1 whitespace-pre-line text-xs text-muted-foreground'>{step.description}</p>
+          )}
         </div>
       </div>
     </div>

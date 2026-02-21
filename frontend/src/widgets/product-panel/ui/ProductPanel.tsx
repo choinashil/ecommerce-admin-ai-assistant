@@ -32,14 +32,9 @@ const ProductPanel = ({ onSelectPrompt }: ProductPanelProps) => {
                         className='flex flex-col gap-6 px-4'
                       >
                         <div className='flex flex-col items-center'>
-                          <p className='text-sm text-muted-foreground'>
+                          <p className='text-lg font-medium text-foreground'>
                             아직 등록된 상품이 없어요.
                           </p>
-                          {isProductStepReady && (
-                            <p className='text-lg font-medium text-foreground'>
-                              AI 채팅으로 간편하게 등록해보세요.
-                            </p>
-                          )}
                         </div>
                         {isProductStepReady && (
                           <SuggestedPrompts

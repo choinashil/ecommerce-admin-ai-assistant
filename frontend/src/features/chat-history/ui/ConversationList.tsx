@@ -15,7 +15,7 @@ const ConversationList = ({
   onSelectConversation,
 }: ConversationListProps) => {
   if (conversations.length === 0) {
-    return <p className='py-4 text-center text-muted-foreground'>아직 대화가 없어요</p>;
+    return <p className='py-4 text-center text-muted-foreground'>아직 대화가 없어요.</p>;
   }
 
   return (
