@@ -3,7 +3,6 @@ import time
 
 import markdownify
 from bs4 import BeautifulSoup
-from playwright.async_api import async_playwright
 
 from app.shared.crawling.parsers.base import BaseParser, ContentFormat, ParseResult
 
@@ -23,6 +22,8 @@ class OopyParser(BaseParser):
     @staticmethod
     async def _expand_toggles(url: str) -> str:
         """Playwright로 페이지를 열고 모든 토글을 펼친 뒤 HTML을 반환한다."""
+        from playwright.async_api import async_playwright
+
         _TOGGLE_EXPAND_DELAY_MS = 800
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
