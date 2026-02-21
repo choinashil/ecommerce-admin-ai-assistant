@@ -22,16 +22,18 @@ const OnboardingGuide = () => {
   }
 
   useEffect(() => {
-    if (!selector || targetElement) {
+    if (!selector) {
       return;
     }
 
     const observer = new MutationObserver(() => {
       const el = document.querySelector<HTMLElement>(selector);
-      if (el) {
-        setTargetElement(el);
-        observer.disconnect();
-      }
+      setTargetElement((prev) => {
+        if (el === prev) {
+          return prev;
+        }
+        return el;
+      });
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
@@ -39,7 +41,7 @@ const OnboardingGuide = () => {
     return () => {
       observer.disconnect();
     };
-  }, [selector, targetElement]);
+  }, [selector]);
 
   if (!activeStep || !targetElement || isLocked) {
     return null;
