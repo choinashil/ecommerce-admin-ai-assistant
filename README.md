@@ -1,4 +1,4 @@
-# [SixPro AI Assistant](<(https://sixpro-ai-assistant.vercel.app)>)
+# [SixPro AI Assistant](https://sixpro-ai-assistant.vercel.app)
 
 자연어로 상품을 관리하고 가이드를 검색하는 이커머스 어드민 AI 어시스턴트
 
