@@ -4,6 +4,11 @@ from sqlalchemy.orm import sessionmaker
 
 from app.shared.config import settings
 from app.shared.database import Base
+import app.seller.model  # noqa: F401
+import app.product.model  # noqa: F401
+import app.order.model  # noqa: F401
+import app.chat.model  # noqa: F401
+import app.guide.model  # noqa: F401
 
 
 @pytest.fixture()
