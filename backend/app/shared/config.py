@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 APP_NAME = "E-commerce Admin AI Assistant"
@@ -6,6 +7,13 @@ APP_NAME = "E-commerce Admin AI Assistant"
 class Settings(BaseSettings):
     debug: bool = False
     database_url: str
+
+    @field_validator("database_url")
+    @classmethod
+    def fix_postgres_scheme(cls, v: str) -> str:
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v
     openai_api_key: str
     openai_model: str = "gpt-4o-mini"
     openai_embedding_model: str = "text-embedding-3-small"
