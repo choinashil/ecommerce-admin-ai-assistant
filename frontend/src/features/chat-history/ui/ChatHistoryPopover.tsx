@@ -16,7 +16,6 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@/shared/ui/Popover';
-import { ScrollArea } from '@/shared/ui/ScrollArea';
 
 import ConversationList from './ConversationList';
 
@@ -58,7 +57,7 @@ const ChatHistoryPopover = ({
         <PopoverHeader className='px-1.5 pt-0.5'>
           <PopoverTitle>대화 기록</PopoverTitle>
         </PopoverHeader>
-        <ScrollArea className='max-h-80'>
+        <div className='max-h-80 overflow-y-auto'>
           <ErrorBoundary
             fallback={({ error }) => (
               <p className='py-4 text-center text-destructive'>{error.message}</p>
@@ -76,7 +75,7 @@ const ChatHistoryPopover = ({
               </SuspenseQuery>
             </Suspense>
           </ErrorBoundary>
-        </ScrollArea>
+        </div>
       </PopoverContent>
     </Popover>
   );
