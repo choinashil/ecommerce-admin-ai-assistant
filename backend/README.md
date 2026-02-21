@@ -11,8 +11,8 @@ python -m venv venv
 # 2. 가상환경 활성화
 source venv/bin/activate
 
-# 3. 의존성 설치
-pip install -r requirements.txt
+# 3. 의존성 설치 (개발용)
+pip install -r requirements-dev.txt
 ```
 
 ## 실행
