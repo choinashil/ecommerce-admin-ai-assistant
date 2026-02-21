@@ -1,5 +1,5 @@
 import { ErrorBoundary, Suspense } from '@suspensive/react';
-import { SuspenseQuery } from '@suspensive/react-query';
+import { SuspenseQuery } from '@suspensive/react-query-5';
 import { ArrowLeft } from 'lucide-react';
 
 import { ConversationTable, conversationQueries } from '@/entities/conversation';

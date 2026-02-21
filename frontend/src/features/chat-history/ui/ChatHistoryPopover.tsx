@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { ErrorBoundary, Suspense } from '@suspensive/react';
-import { SuspenseQuery } from '@suspensive/react-query';
+import { SuspenseQuery } from '@suspensive/react-query-5';
 import { useQueryClient } from '@tanstack/react-query';
 import { History } from 'lucide-react';
 
