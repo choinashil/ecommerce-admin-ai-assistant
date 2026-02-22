@@ -3,7 +3,7 @@ TOOL_DEFINITIONS = [
         "type": "function",
         "function": {
             "name": "search_guide",
-            "description": "쇼핑몰 운영 방법, 기능 사용법 등에 대한 도움말을 검색한다.",
+            "description": "식스샵 프로 플랫폼에 관한 도움말을 검색한다. 기능 사용법, 용어 설명, 운영 방법 등 플랫폼과 관련된 모든 질문에 활용한다.",
             "parameters": {
                 "type": "object",
                 "properties": {
