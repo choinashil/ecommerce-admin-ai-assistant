@@ -1,5 +1,10 @@
 import { GUIDE_PROMPTS } from '../data/guide-prompts';
-import { generateProductCreatePrompt, PRODUCT_QUERY_PROMPTS } from '../data/product-prompts';
+import {
+  generateProductCreatePrompt,
+  generateProductDeletePrompt,
+  generateProductUpdatePrompt,
+  PRODUCT_QUERY_PROMPTS,
+} from '../data/product-prompts';
 
 import type { PromptCategory } from '../model/types';
 
@@ -7,6 +12,8 @@ const WEIGHTED_CATEGORIES: { category: PromptCategory; weight: number }[] = [
   { category: 'guide', weight: 3 },
   { category: 'product_create', weight: 1 },
   { category: 'product_query', weight: 1 },
+  { category: 'product_update', weight: 1 },
+  { category: 'product_delete', weight: 1 },
 ];
 
 const totalWeight = WEIGHTED_CATEGORIES.reduce((sum, c) => sum + c.weight, 0);
@@ -34,6 +41,10 @@ const pickFromCategory = (category: PromptCategory): string => {
       const index = Math.floor(Math.random() * PRODUCT_QUERY_PROMPTS.length);
       return PRODUCT_QUERY_PROMPTS[index];
     }
+    case 'product_update':
+      return generateProductUpdatePrompt();
+    case 'product_delete':
+      return generateProductDeletePrompt();
   }
 };
 

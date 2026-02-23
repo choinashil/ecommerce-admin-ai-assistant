@@ -62,5 +62,38 @@ export const PRODUCT_QUERY_PROMPTS: string[] = [
   '바나나 등록되어 있어?',
   '5천원짜리 상품 있어?',
   '최근에 등록한 상품 보여줘',
-  '오렌지 판매 상태 알려줘'
+  '오렌지 판매 상태 알려줘',
 ];
+
+const UPDATE_TEMPLATES = [
+  (name: string) => `${name} "[인기] ${name}"로 바꿔줘`,
+  (name: string, price: number) => `${name} "${name} 2"로 바꾸고, 가격도 ${price.toLocaleString()}원으로 수정해줘`,
+  (name: string, price: number) => `${name} 가격 ${price.toLocaleString()}원으로 변경해줘`,
+  (name: string, price: number) => `${name} 가격을 ${price.toLocaleString()}원으로 바꿔줘`,
+  (name: string, price: number) => `${name} ${price.toLocaleString()}원으로 수정해주세요`,
+  (name: string) => `${name} 판매중지 해줘`,
+  (name: string) => `${name} 판매중지로 바꿔줘`,
+  (name: string) => `${name} 다시 판매 시작해줘`,
+  (name: string) => `${name} 판매중으로 바꿔줘`,
+];
+
+export const generateProductUpdatePrompt = (): string => {
+  const fruit = FRUIT_NAMES[randomInt(0, FRUIT_NAMES.length - 1)];
+  const price = randomInt(1, 50) * 1000;
+  const template = UPDATE_TEMPLATES[randomInt(0, UPDATE_TEMPLATES.length - 1)];
+  return template(fruit, price);
+};
+
+const DELETE_TEMPLATES = [
+  (name: string) => `${name} 삭제해줘`,
+  (name: string) => `${name} 상품 지워주세요`,
+  (name: string) => `${name} 상품 목록에서 제거해줘`,
+  (name: string) => `${name} 안 팔거야, 삭제해줘`,
+  (name: string) => `${name} 상품 삭제해주세요`,
+];
+
+export const generateProductDeletePrompt = (): string => {
+  const fruit = FRUIT_NAMES[randomInt(0, FRUIT_NAMES.length - 1)];
+  const template = DELETE_TEMPLATES[randomInt(0, DELETE_TEMPLATES.length - 1)];
+  return template(fruit);
+};

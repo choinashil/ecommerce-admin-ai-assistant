@@ -1,1 +1,1 @@
-export type PromptCategory = 'guide' | 'product_create' | 'product_query';
+export type PromptCategory = 'guide' | 'product_create' | 'product_query' | 'product_update' | 'product_delete';
