@@ -17,7 +17,7 @@ const ProductTable = ({ products }: ProductTableProps) => {
           <TableHead>ID</TableHead>
           <TableHead className='w-1/4'>상품명</TableHead>
           <TableHead>가격</TableHead>
-          <TableHead>상태</TableHead>
+          <TableHead>판매상태</TableHead>
           <TableHead>등록일시</TableHead>
         </TableRow>
       </TableHeader>
@@ -31,7 +31,7 @@ const ProductTable = ({ products }: ProductTableProps) => {
               {product.status === 'active' ? (
                 <Badge variant='default'>판매중</Badge>
               ) : (
-                <Badge variant='secondary'>비활성</Badge>
+                <Badge variant='secondary'>판매중지</Badge>
               )}
             </TableCell>
             <TableCell>{formatDate(product.created_at)}</TableCell>
