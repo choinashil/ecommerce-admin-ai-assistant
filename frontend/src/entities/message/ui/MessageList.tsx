@@ -1,6 +1,5 @@
-import { Fragment, useEffect, useRef } from 'react';
-
-import { ScrollArea } from '@/shared/ui/ScrollArea';
+import { useRef } from 'react';
+import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 
 import AssistantMessage from './AssistantMessage';
 import StreamingStatus from './StreamingStatus';
@@ -14,39 +13,51 @@ interface MessageListProps {
 }
 
 const MessageList = ({ messages, statusMessage }: MessageListProps) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
 
   const lastMessage = messages[messages.length - 1];
   const isWaitingForResponse = lastMessage?.status === 'streaming' && lastMessage?.content === '';
 
   return (
-    <ScrollArea className='flex-1 overflow-hidden px-4'>
-      <div className='flex flex-col gap-4 py-4'>
-        {messages.map((message) => (
-          <Fragment key={message.id}>
-            {message.status === 'streaming' && message.content === '' ? null : (
-              <>
-                {message.content &&
-                  (message.role === 'user' ? (
-                    <UserMessage content={message.content} />
-                  ) : (
-                    <AssistantMessage content={message.content} />
-                  ))}
-                {message.status === 'aborted' && (
-                  <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
-                )}
-              </>
+    <Virtuoso
+      key={messages[0]?.id ?? 'empty'}
+      ref={virtuosoRef}
+      data={messages}
+      className='flex-1'
+      followOutput='smooth'
+      initialTopMostItemIndex={messages.length - 1}
+      itemContent={(_, message) => {
+        if (message.status === 'streaming' && message.content === '') {
+          return null;
+        }
+
+        return (
+          <div className='px-4 pt-4'>
+            {message.content &&
+              (message.role === 'user' ? (
+                <UserMessage content={message.content} />
+              ) : (
+                <AssistantMessage content={message.content} />
+              ))}
+            {message.status === 'aborted' && (
+              <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
             )}
-          </Fragment>
-        ))}
-        {isWaitingForResponse && statusMessage && <StreamingStatus statusMessage={statusMessage} />}
-        <div ref={bottomRef} />
-      </div>
-    </ScrollArea>
+          </div>
+        );
+      }}
+      components={{
+        Footer: () => {
+          if (isWaitingForResponse && statusMessage) {
+            return (
+              <div className='px-4 pt-4 pb-4'>
+                <StreamingStatus statusMessage={statusMessage} />
+              </div>
+            );
+          }
+          return <div className='h-4' />;
+        },
+      }}
+    />
   );
 };
 
