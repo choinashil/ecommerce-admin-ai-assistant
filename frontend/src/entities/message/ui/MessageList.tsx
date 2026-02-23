@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 
 import AssistantMessage from './AssistantMessage';
@@ -14,17 +14,33 @@ interface MessageListProps {
 
 const MessageList = ({ messages, statusMessage }: MessageListProps) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const scrollerRef = useRef<HTMLElement | null>(null);
+  const isAtBottomRef = useRef(true);
 
   const lastMessage = messages[messages.length - 1];
-  const isWaitingForResponse = lastMessage?.status === 'streaming' && lastMessage?.content === '';
+  const isStreaming = lastMessage?.status === 'streaming';
+  const isWaitingForResponse = isStreaming && lastMessage?.content === '';
+
+  useEffect(() => {
+    if (isAtBottomRef.current && scrollerRef.current) {
+      const el = scrollerRef.current;
+      el.scrollTop = el.scrollHeight;
+    }
+  });
 
   return (
     <Virtuoso
       key={messages[0]?.id ?? 'empty'}
       ref={virtuosoRef}
+      scrollerRef={(ref) => {
+        scrollerRef.current = ref as HTMLElement;
+      }}
       data={messages}
       className='flex-1'
-      followOutput='smooth'
+      atBottomStateChange={(atBottom) => {
+        isAtBottomRef.current = atBottom;
+      }}
+      atBottomThreshold={100}
       initialTopMostItemIndex={messages.length - 1}
       itemContent={(_, message) => {
         if (message.status === 'streaming' && message.content === '') {
@@ -49,12 +65,12 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
         Footer: () => {
           if (isWaitingForResponse && statusMessage) {
             return (
-              <div className='px-4 pt-4 pb-4'>
+              <div className='px-4 pt-4 pb-10'>
                 <StreamingStatus statusMessage={statusMessage} />
               </div>
             );
           }
-          return <div className='h-4' />;
+          return <div className='h-10' />;
         },
       }}
     />
