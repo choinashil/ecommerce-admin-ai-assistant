@@ -9,6 +9,12 @@ import {
 import type { ProductInfo, PromptCategory } from '../model/types';
 
 const MAX_RETRY_ATTEMPTS = 10;
+const PRODUCT_REQUIRED_CATEGORIES: Set<PromptCategory> = new Set([
+  'product_query',
+  'product_update',
+  'product_delete',
+]);
+
 const WEIGHTED_CATEGORIES: { category: PromptCategory; weight: number }[] = [
   { category: 'guide', weight: 3 },
   { category: 'product_create', weight: 1 },
@@ -17,17 +23,19 @@ const WEIGHTED_CATEGORIES: { category: PromptCategory; weight: number }[] = [
   { category: 'product_delete', weight: 1 },
 ];
 
-const totalWeight = WEIGHTED_CATEGORIES.reduce((sum, c) => sum + c.weight, 0);
-
-const pickCategory = (): PromptCategory => {
-  let random = Math.random() * totalWeight;
-  for (const { category, weight } of WEIGHTED_CATEGORIES) {
+const pickCategory = (hasProducts: boolean): PromptCategory => {
+  const categories = hasProducts
+    ? WEIGHTED_CATEGORIES
+    : WEIGHTED_CATEGORIES.filter((c) => !PRODUCT_REQUIRED_CATEGORIES.has(c.category));
+  const total = categories.reduce((sum, c) => sum + c.weight, 0);
+  let random = Math.random() * total;
+  for (const { category, weight } of categories) {
     random -= weight;
     if (random <= 0) {
       return category;
     }
   }
-  return WEIGHTED_CATEGORIES[0].category;
+  return categories[0].category;
 };
 
 const pickFromCategory = (category: PromptCategory, products: ProductInfo[]): string => {
@@ -56,7 +64,7 @@ export const pickRandomPrompts = (
   const seen = new Set<string>();
 
   for (let i = 0; i < count; i++) {
-    const category = categoryFilter ?? pickCategory();
+    const category = categoryFilter ?? pickCategory(products.length > 0);
     let prompt = pickFromCategory(category, products);
 
     let attempts = 0;
