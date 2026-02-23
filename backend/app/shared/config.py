@@ -1,7 +1,7 @@
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-APP_NAME = "E-commerce Admin AI Assistant"
+APP_NAME = "SixPro AI Assistant"
 
 
 class Settings(BaseSettings):
