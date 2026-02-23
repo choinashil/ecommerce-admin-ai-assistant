@@ -8,6 +8,7 @@ import { History } from 'lucide-react';
 import { conversationQueries } from '@/entities/conversation';
 import type { Message } from '@/entities/message';
 import { convertToMessages, messageQueries } from '@/entities/message';
+import { GA_EVENTS, trackEvent } from '@/shared/lib/analytics';
 import { Button } from '@/shared/ui/Button';
 import {
   Popover,
@@ -35,6 +36,7 @@ const ChatHistoryPopover = ({
     setIsOpen(open);
 
     if (open) {
+      trackEvent(GA_EVENTS.OPEN_CONVERSATION_HISTORY);
       queryClient.invalidateQueries({ queryKey: conversationQueries.myLists() });
     }
   };

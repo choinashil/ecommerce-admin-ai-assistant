@@ -1,6 +1,7 @@
 import { useCallback, useReducer, useRef } from 'react';
 
 import type { Message } from '@/entities/message';
+import { GA_EVENTS, trackEvent } from '@/shared/lib/analytics';
 
 import { streamChat } from '../api/chat.api';
 
@@ -119,6 +120,8 @@ export const useChat = (options?: UseChatOptions) => {
 
   const sendMessage = useCallback(
     async (content: string) => {
+      trackEvent(GA_EVENTS.SEND_MESSAGE);
+
       const userMsgId = crypto.randomUUID();
       dispatch({
         type: 'ADD_USER_MESSAGE',
