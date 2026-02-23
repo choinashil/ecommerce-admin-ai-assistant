@@ -107,6 +107,9 @@ def _sse_event(event_type: str, data: str) -> str:
     return f"data: {payload}\n\n"
 
 
+MAX_TOOL_ITERATIONS = 5
+
+
 async def stream_chat(
     db: Session, message: str, conversation_display_id: str | None, seller_id: int | None = None
 ) -> AsyncGenerator[str, None]:
@@ -120,56 +123,61 @@ async def stream_chat(
     openai_messages = [{"role": "system", "content": SYSTEM_PROMPT}] + history
 
     full_response = ""
-    usage = None
-    first_usage = None
-    tool_calls_metadata = None
+    total_input_tokens = 0
+    total_output_tokens = 0
+    all_tool_calls_metadata = []
     start_time = time.time()
     is_done = False
 
     try:
-        # --- 1차 LLM 호출 (tools 포함) ---
-        stream = await client.chat.completions.create(
-            model=settings.openai_model,
-            messages=openai_messages,
-            tools=TOOL_DEFINITIONS,
-            stream=True,
-            stream_options={"include_usage": True},
-        )
+        for _iteration in range(MAX_TOOL_ITERATIONS):
+            stream = await client.chat.completions.create(
+                model=settings.openai_model,
+                messages=openai_messages,
+                tools=TOOL_DEFINITIONS,
+                stream=True,
+                stream_options={"include_usage": True},
+            )
 
-        tool_calls_chunks = {}
+            tool_calls_chunks = {}
+            usage = None
 
-        async for chunk in stream:
-            if chunk.usage:
-                usage = chunk.usage
+            async for chunk in stream:
+                if chunk.usage:
+                    usage = chunk.usage
 
-            if not chunk.choices:
-                continue
+                if not chunk.choices:
+                    continue
 
-            delta = chunk.choices[0].delta
+                delta = chunk.choices[0].delta
 
-            # Case A: 일반 content 스트리밍
-            if delta.content:
-                full_response += delta.content
-                yield _sse_event("content", delta.content)
+                if delta.content:
+                    full_response += delta.content
+                    yield _sse_event("content", delta.content)
 
-            # Case B: tool_call chunk 누적
-            if delta.tool_calls:
-                for tc in delta.tool_calls:
-                    idx = tc.index
-                    if idx not in tool_calls_chunks:
-                        tool_calls_chunks[idx] = {"id": "", "name": "", "arguments": ""}
-                    if tc.id:
-                        tool_calls_chunks[idx]["id"] = tc.id
-                    if tc.function and tc.function.name:
-                        tool_calls_chunks[idx]["name"] += tc.function.name
-                    if tc.function and tc.function.arguments:
-                        tool_calls_chunks[idx]["arguments"] += tc.function.arguments
+                if delta.tool_calls:
+                    for tc in delta.tool_calls:
+                        idx = tc.index
+                        if idx not in tool_calls_chunks:
+                            tool_calls_chunks[idx] = {"id": "", "name": "", "arguments": ""}
+                        if tc.id:
+                            tool_calls_chunks[idx]["id"] = tc.id
+                        if tc.function and tc.function.name:
+                            tool_calls_chunks[idx]["name"] += tc.function.name
+                        if tc.function and tc.function.arguments:
+                            tool_calls_chunks[idx]["arguments"] += tc.function.arguments
 
-        # --- tool call이 있으면 실행 후 2차 LLM 호출 ---
-        if tool_calls_chunks:
-            tool_results = []
-            tool_calls_metadata = []
+            if usage:
+                total_input_tokens += usage.prompt_tokens
+                total_output_tokens += usage.completion_tokens
+
+            # tool call이 없으면 텍스트 응답 완료 → 루프 종료
+            if not tool_calls_chunks:
+                break
+
+            # tool 실행 후 messages에 추가하여 다음 iteration 준비
             assistant_tool_calls = []
+            tool_results = []
 
             for idx in sorted(tool_calls_chunks.keys()):
                 tc_data = tool_calls_chunks[idx]
@@ -180,12 +188,6 @@ async def stream_chat(
                 result = execute_tool(ctx, tc_data["name"], arguments)
                 yield _sse_event("tool_result", tc_data["name"])
 
-                tool_results.append({
-                    "tool_call_id": tc_data["id"],
-                    "role": "tool",
-                    "content": json.dumps(result, ensure_ascii=False),
-                })
-
                 assistant_tool_calls.append({
                     "id": tc_data["id"],
                     "type": "function",
@@ -195,48 +197,30 @@ async def stream_chat(
                     },
                 })
 
-                tool_calls_metadata.append({
+                tool_results.append({
+                    "tool_call_id": tc_data["id"],
+                    "role": "tool",
+                    "content": json.dumps(result, ensure_ascii=False),
+                })
+
+                all_tool_calls_metadata.append({
                     "name": tc_data["name"],
                     "arguments": arguments,
                     "result": result,
                 })
 
-            # 2차 요청 메시지 구성
-            second_messages = openai_messages + [
-                {"role": "assistant", "tool_calls": assistant_tool_calls},
-                *tool_results,
-            ]
-
-            # 2차 LLM 호출 (tools 제외 — 재귀 방지)
-            first_usage = usage
-            usage = None
-            second_stream = await client.chat.completions.create(
-                model=settings.openai_model,
-                messages=second_messages,
-                stream=True,
-                stream_options={"include_usage": True},
-            )
-
-            async for chunk in second_stream:
-                if chunk.usage:
-                    usage = chunk.usage
-                if chunk.choices and chunk.choices[0].delta.content:
-                    full_response += chunk.choices[0].delta.content
-                    yield _sse_event("content", chunk.choices[0].delta.content)
-
-        # 토큰 합산 (tool call 시 1차 + 2차)
-        input_tokens = (usage.prompt_tokens if usage else 0) + (first_usage.prompt_tokens if first_usage else 0) if (usage or first_usage) else None
-        output_tokens = (usage.completion_tokens if usage else 0) + (first_usage.completion_tokens if first_usage else 0) if (usage or first_usage) else None
+            openai_messages.append({"role": "assistant", "tool_calls": assistant_tool_calls})
+            openai_messages.extend(tool_results)
 
         elapsed_ms = int((time.time() - start_time) * 1000)
         metadata = {
             "model": settings.openai_model,
-            "input_tokens": input_tokens,
-            "output_tokens": output_tokens,
+            "input_tokens": total_input_tokens or None,
+            "output_tokens": total_output_tokens or None,
             "response_time_ms": elapsed_ms,
             "system_prompt": SYSTEM_PROMPT,
             "error": None,
-            "tool_calls": tool_calls_metadata,
+            "tool_calls": all_tool_calls_metadata or None,
         }
         save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
         is_done = True
@@ -250,7 +234,7 @@ async def stream_chat(
             "response_time_ms": elapsed_ms,
             "system_prompt": SYSTEM_PROMPT,
             "error": str(e),
-            "tool_calls": tool_calls_metadata,
+            "tool_calls": all_tool_calls_metadata or None,
         }
         save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
         is_done = True
@@ -266,6 +250,6 @@ async def stream_chat(
                 "system_prompt": SYSTEM_PROMPT,
                 "error": None,
                 "aborted": True,
-                "tool_calls": tool_calls_metadata,
+                "tool_calls": all_tool_calls_metadata or None,
             }
             save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
