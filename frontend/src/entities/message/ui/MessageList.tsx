@@ -1,11 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
+
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
+import { cn } from '@/shared/lib/utils';
+import { Button } from '@/shared/ui/Button';
 
 import AssistantMessage from './AssistantMessage';
 import StreamingStatus from './StreamingStatus';
 import UserMessage from './UserMessage';
 
 import type { Message } from '../model/types';
+
+const SCROLL_TOP_THRESHOLD = 10;
+const SCROLL_BOTTOM_THRESHOLD = 30;
 
 interface MessageListProps {
   messages: Message[];
@@ -15,65 +23,135 @@ interface MessageListProps {
 const MessageList = ({ messages, statusMessage }: MessageListProps) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const scrollerRef = useRef<HTMLElement | null>(null);
-  const isAtBottomRef = useRef(true);
+
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [isAtTop, setIsAtTop] = useState(true);
 
   const lastMessage = messages[messages.length - 1];
   const isStreaming = lastMessage?.status === 'streaming';
   const isWaitingForResponse = isStreaming && lastMessage?.content === '';
 
   useEffect(() => {
-    if (isAtBottomRef.current && scrollerRef.current) {
+    if (isStreaming && isAtBottom && scrollerRef.current) {
       const el = scrollerRef.current;
       el.scrollTop = el.scrollHeight;
     }
   });
 
-  return (
-    <Virtuoso
-      key={messages[0]?.id ?? 'empty'}
-      ref={virtuosoRef}
-      scrollerRef={(ref) => {
-        scrollerRef.current = ref as HTMLElement;
-      }}
-      data={messages}
-      className='flex-1'
-      atBottomStateChange={(atBottom) => {
-        isAtBottomRef.current = atBottom;
-      }}
-      atBottomThreshold={100}
-      initialTopMostItemIndex={messages.length - 1}
-      itemContent={(_, message) => {
-        if (message.status === 'streaming' && message.content === '') {
-          return null;
-        }
+  const handleScroll = () => {
+    const el = scrollerRef.current;
+    if (!el) {
+      return;
+    }
 
-        return (
-          <div className='px-4 pt-4'>
-            {message.content &&
-              (message.role === 'user' ? (
-                <UserMessage content={message.content} />
-              ) : (
-                <AssistantMessage content={message.content} />
-              ))}
-            {message.status === 'aborted' && (
-              <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
-            )}
-          </div>
-        );
-      }}
-      components={{
-        Footer: () => {
-          if (isWaitingForResponse && statusMessage) {
-            return (
-              <div className='px-4 pt-4 pb-10'>
-                <StreamingStatus statusMessage={statusMessage} />
-              </div>
-            );
+    setIsAtTop(el.scrollTop <= SCROLL_TOP_THRESHOLD);
+  };
+
+  useEffect(() => {
+    return () => {
+      scrollerRef.current?.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleScrollToBottom = () => {
+    // atBottomStateChange로 setIsBottom 설정
+    virtuosoRef.current?.scrollToIndex({
+      index: messages.length - 1,
+      behavior: 'smooth',
+    });
+  };
+
+  const handleScrollToTop = () => {
+    setIsAtBottom(false);
+    virtuosoRef.current?.scrollToIndex({
+      index: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  return (
+    <div className='relative flex-1 overflow-hidden'>
+      <Virtuoso
+        key={messages[0]?.id ?? 'empty'}
+        ref={virtuosoRef}
+        scrollerRef={(ref) => {
+          const el = ref as HTMLElement;
+
+          if (el !== scrollerRef.current) {
+            scrollerRef.current?.removeEventListener('scroll', handleScroll);
+
+            if (el) {
+              el.addEventListener('scroll', handleScroll, { passive: true });
+            }
           }
-          return <div className='h-10' />;
-        },
-      }}
-    />
+
+          scrollerRef.current = el;
+        }}
+        data={messages}
+        className='h-full'
+        atBottomStateChange={setIsAtBottom}
+        atBottomThreshold={SCROLL_BOTTOM_THRESHOLD}
+        initialTopMostItemIndex={messages.length - 1}
+        itemContent={(_, message) => {
+          if (message.status === 'streaming' && message.content === '') {
+            return null;
+          }
+
+          return (
+            <div className='px-4 pt-4'>
+              {message.content &&
+                (message.role === 'user' ? (
+                  <UserMessage content={message.content} />
+                ) : (
+                  <AssistantMessage content={message.content} />
+                ))}
+              {message.status === 'aborted' && (
+                <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
+              )}
+            </div>
+          );
+        }}
+        components={{
+          Footer: () => {
+            if (isWaitingForResponse && statusMessage) {
+              return (
+                <div className='px-4 pt-4 pb-10'>
+                  <StreamingStatus statusMessage={statusMessage} />
+                </div>
+              );
+            }
+            return <div className='h-10' />;
+          },
+        }}
+      />
+
+      <div className='absolute right-4 bottom-2 z-10 flex flex-col gap-1'>
+        <Button
+          variant='outline'
+          size='icon'
+          className={cn(
+            'h-8 w-8 rounded-full bg-background shadow-md transition-opacity duration-200 hover:bg-accent',
+            isAtTop ? 'pointer-events-none opacity-0' : 'opacity-100',
+          )}
+          onClick={handleScrollToTop}
+          aria-label='맨 위로 이동'
+        >
+          <ChevronUp className='h-4 w-4' />
+        </Button>
+        <Button
+          variant='outline'
+          size='icon'
+          className={cn(
+            'h-8 w-8 rounded-full bg-background shadow-md transition-opacity duration-200 hover:bg-accent',
+            isAtBottom ? 'pointer-events-none opacity-0' : 'opacity-100',
+          )}
+          onClick={handleScrollToBottom}
+          aria-label='맨 아래로 이동'
+        >
+          <ChevronDown className='h-4 w-4' />
+        </Button>
+      </div>
+    </div>
   );
 };
 
