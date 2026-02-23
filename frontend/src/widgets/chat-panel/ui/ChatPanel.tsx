@@ -66,14 +66,16 @@ const ChatPanel = ({
     (selectedConversationId: string, selectedMessages: Message[]) => {
       loadConversation(selectedConversationId, selectedMessages);
       onInputChange('');
+      inputRef.current?.focus();
     },
-    [loadConversation, onInputChange],
+    [loadConversation, onInputChange, inputRef],
   );
 
   const handleNewChat = useCallback(() => {
     resetChat();
     onInputChange('');
-  }, [resetChat, onInputChange]);
+    inputRef.current?.focus();
+  }, [resetChat, onInputChange, inputRef]);
 
   return (
     <aside className='flex w-100 flex-col overflow-hidden rounded-t-2xl bg-background shadow-sm'>
