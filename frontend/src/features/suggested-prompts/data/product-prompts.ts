@@ -1,3 +1,5 @@
+import type { ProductInfo } from '../model/types';
+
 const FRUIT_NAMES = [
   '사과',
   '배',
@@ -39,6 +41,14 @@ const REGISTER_TEMPLATES = [
 const randomInt = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
+const pickProduct = (products: ProductInfo[]): ProductInfo => {
+  if (products.length > 0) {
+    return products[randomInt(0, products.length - 1)];
+  }
+  const name = FRUIT_NAMES[randomInt(0, FRUIT_NAMES.length - 1)];
+  return { name, status: 'active' };
+};
+
 export const generateProductCreatePrompt = (): string => {
   const fruit = FRUIT_NAMES[randomInt(0, FRUIT_NAMES.length - 1)];
   const price = randomInt(1, 50) * 1000;
@@ -46,12 +56,10 @@ export const generateProductCreatePrompt = (): string => {
   return template(fruit, price);
 };
 
-export const PRODUCT_QUERY_PROMPTS: string[] = [
+const GENERIC_QUERY_PROMPTS = [
   '등록된 상품 목록 보여줘',
   '현재 판매 중인 상품 알려줘',
   '판매중지된 상품 있어?',
-  '포도는 얼마야?',
-  '사과 가격 알려줘',
   '지금 상품 몇 개 등록되어 있어?',
   '가장 비싼 상품이 뭐야?',
   '1만원 이하 상품 보여줘',
@@ -59,41 +67,64 @@ export const PRODUCT_QUERY_PROMPTS: string[] = [
   '상품 전체 조회해줘',
   '활성 상태인 상품만 알려줘',
   '상품 목록 좀 볼 수 있을까?',
-  '바나나 등록되어 있어?',
   '5천원짜리 상품 있어?',
   '최근에 등록한 상품 보여줘',
-  '오렌지 판매 상태 알려줘',
 ];
 
-const UPDATE_TEMPLATES = [
+const QUERY_NAME_TEMPLATES = [
+  (name: string) => `${name}는 얼마야?`,
+  (name: string) => `${name} 가격 알려줘`,
+  (name: string) => `${name} 등록되어 있어?`,
+  (name: string) => `${name} 판매 상태 알려줘`,
+];
+
+export const generateProductQueryPrompt = (products: ProductInfo[]): string => {
+  const { name } = pickProduct(products);
+  const allOptions = [
+    ...GENERIC_QUERY_PROMPTS,
+    ...QUERY_NAME_TEMPLATES.map((t) => t(name)),
+  ];
+  return allOptions[randomInt(0, allOptions.length - 1)];
+};
+
+const GENERAL_UPDATE_TEMPLATES = [
   (name: string) => `${name} "[인기] ${name}"로 바꿔줘`,
-  (name: string, price: number) => `${name} "${name} 2"로 바꾸고, 가격도 ${price.toLocaleString()}원으로 수정해줘`,
+  (name: string, price: number) =>
+    `${name} "${name} 2"로 바꾸고, 가격도 ${price.toLocaleString()}원으로 수정해줘`,
   (name: string, price: number) => `${name} 가격 ${price.toLocaleString()}원으로 변경해줘`,
   (name: string, price: number) => `${name} 가격을 ${price.toLocaleString()}원으로 바꿔줘`,
   (name: string, price: number) => `${name} ${price.toLocaleString()}원으로 수정해주세요`,
+];
+
+const DEACTIVATE_TEMPLATES = [
   (name: string) => `${name} 판매중지 해줘`,
   (name: string) => `${name} 판매중지로 바꿔줘`,
+];
+
+const ACTIVATE_TEMPLATES = [
   (name: string) => `${name} 다시 판매 시작해줘`,
   (name: string) => `${name} 판매중으로 바꿔줘`,
 ];
 
-export const generateProductUpdatePrompt = (): string => {
-  const fruit = FRUIT_NAMES[randomInt(0, FRUIT_NAMES.length - 1)];
+export const generateProductUpdatePrompt = (products: ProductInfo[]): string => {
+  const product = pickProduct(products);
+  const statusTemplates =
+    product.status === 'active' ? DEACTIVATE_TEMPLATES : ACTIVATE_TEMPLATES;
+  const allTemplates = [...GENERAL_UPDATE_TEMPLATES, ...statusTemplates];
+  const template = allTemplates[randomInt(0, allTemplates.length - 1)];
   const price = randomInt(1, 50) * 1000;
-  const template = UPDATE_TEMPLATES[randomInt(0, UPDATE_TEMPLATES.length - 1)];
-  return template(fruit, price);
+  return template(product.name, price);
 };
 
 const DELETE_TEMPLATES = [
   (name: string) => `${name} 삭제해줘`,
   (name: string) => `${name} 상품 지워주세요`,
   (name: string) => `${name} 상품 목록에서 제거해줘`,
-  (name: string) => `${name} 안 팔거야, 삭제해줘`,
   (name: string) => `${name} 상품 삭제해주세요`,
 ];
 
-export const generateProductDeletePrompt = (): string => {
-  const fruit = FRUIT_NAMES[randomInt(0, FRUIT_NAMES.length - 1)];
+export const generateProductDeletePrompt = (products: ProductInfo[]): string => {
+  const { name } = pickProduct(products);
   const template = DELETE_TEMPLATES[randomInt(0, DELETE_TEMPLATES.length - 1)];
-  return template(fruit);
+  return template(name);
 };

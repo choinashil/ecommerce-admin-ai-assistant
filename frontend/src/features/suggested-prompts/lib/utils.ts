@@ -2,12 +2,13 @@ import { GUIDE_PROMPTS } from '../data/guide-prompts';
 import {
   generateProductCreatePrompt,
   generateProductDeletePrompt,
+  generateProductQueryPrompt,
   generateProductUpdatePrompt,
-  PRODUCT_QUERY_PROMPTS,
 } from '../data/product-prompts';
 
-import type { PromptCategory } from '../model/types';
+import type { ProductInfo, PromptCategory } from '../model/types';
 
+const MAX_RETRY_ATTEMPTS = 10;
 const WEIGHTED_CATEGORIES: { category: PromptCategory; weight: number }[] = [
   { category: 'guide', weight: 3 },
   { category: 'product_create', weight: 1 },
@@ -29,7 +30,7 @@ const pickCategory = (): PromptCategory => {
   return WEIGHTED_CATEGORIES[0].category;
 };
 
-const pickFromCategory = (category: PromptCategory): string => {
+const pickFromCategory = (category: PromptCategory, products: ProductInfo[]): string => {
   switch (category) {
     case 'guide': {
       const index = Math.floor(Math.random() * GUIDE_PROMPTS.length);
@@ -37,29 +38,30 @@ const pickFromCategory = (category: PromptCategory): string => {
     }
     case 'product_create':
       return generateProductCreatePrompt();
-    case 'product_query': {
-      const index = Math.floor(Math.random() * PRODUCT_QUERY_PROMPTS.length);
-      return PRODUCT_QUERY_PROMPTS[index];
-    }
+    case 'product_query':
+      return generateProductQueryPrompt(products);
     case 'product_update':
-      return generateProductUpdatePrompt();
+      return generateProductUpdatePrompt(products);
     case 'product_delete':
-      return generateProductDeletePrompt();
+      return generateProductDeletePrompt(products);
   }
 };
 
-export const pickRandomPrompts = (count: number, categoryFilter?: PromptCategory): string[] => {
+export const pickRandomPrompts = (
+  count: number,
+  categoryFilter?: PromptCategory,
+  products: ProductInfo[] = [],
+): string[] => {
   const results: string[] = [];
   const seen = new Set<string>();
 
   for (let i = 0; i < count; i++) {
     const category = categoryFilter ?? pickCategory();
-    let prompt = pickFromCategory(category);
+    let prompt = pickFromCategory(category, products);
 
-    // 중복 방지: 같은 프롬프트가 나오면 재추출 (최대 10회)
     let attempts = 0;
-    while (seen.has(prompt) && attempts < 10) {
-      prompt = pickFromCategory(category);
+    while (seen.has(prompt) && attempts < MAX_RETRY_ATTEMPTS) {
+      prompt = pickFromCategory(category, products);
       attempts++;
     }
 
