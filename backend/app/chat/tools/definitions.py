@@ -41,7 +41,7 @@ TOOL_DEFINITIONS = [
         "type": "function",
         "function": {
             "name": "list_products",
-            "description": "등록된 상품 목록을 조회한다.",
+            "description": "등록된 상품 목록을 조회한다. 특정 상품을 찾을 때는 name으로 검색한다.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -49,6 +49,10 @@ TOOL_DEFINITIONS = [
                         "type": "string",
                         "enum": ["active", "inactive"],
                         "description": "상품 상태 필터 (미지정 시 전체 조회)",
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "상품명 검색 키워드 (부분 일치)",
                     },
                 },
             },

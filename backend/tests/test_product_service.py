@@ -84,6 +84,26 @@ class TestListProducts:
         assert result[0].name == "나중에"
         assert result[1].name == "먼저"
 
+    def test_filters_by_name(self, db):
+        seller = create_seller(db)
+        create_product(db, name="바나나", price=1000, seller_id=seller.id)
+        create_product(db, name="바나나 우유", price=2000, seller_id=seller.id)
+        create_product(db, name="딸기", price=3000, seller_id=seller.id)
+
+        result = list_products(db, seller_id=seller.id, name="바나나")
+
+        assert len(result) == 2
+        assert all("바나나" in p.name for p in result)
+
+    def test_filters_by_name_case_insensitive(self, db):
+        seller = create_seller(db)
+        create_product(db, name="Banana", price=1000, seller_id=seller.id)
+        create_product(db, name="banana juice", price=2000, seller_id=seller.id)
+
+        result = list_products(db, seller_id=seller.id, name="banana")
+
+        assert len(result) == 2
+
     def test_excludes_deleted_products(self, db):
         seller = create_seller(db)
         create_product(db, name="정상 상품", price=1000, seller_id=seller.id)

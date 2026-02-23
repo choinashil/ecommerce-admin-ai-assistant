@@ -44,7 +44,10 @@ def delete_product(db: Session, seller_id: int, product_id: int) -> Product:
 
 
 def list_products(
-    db: Session, seller_id: int | None = None, status: str | None = None
+    db: Session,
+    seller_id: int | None = None,
+    status: str | None = None,
+    name: str | None = None,
 ) -> list[Product]:
     """상품 목록을 조회한다. 삭제된 상품은 제외."""
     query = db.query(Product).filter(Product.is_deleted == False)  # noqa: E712
@@ -54,6 +57,9 @@ def list_products(
 
     if status is not None:
         query = query.filter(Product.status == ProductStatus(status))
+
+    if name is not None:
+        query = query.filter(Product.name.ilike(f"%{name}%"))
 
     return query.order_by(Product.id.desc()).all()
 
