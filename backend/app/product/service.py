@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 
 from app.product.model import Product, ProductStatus
 
+_UPDATABLE_FIELDS = {"name", "price", "status"}
+
 
 def create_product(db: Session, seller_id: int, name: str, price: int) -> Product:
     """상품을 생성한다."""
@@ -16,11 +18,36 @@ def create_product(db: Session, seller_id: int, name: str, price: int) -> Produc
     return product
 
 
+def update_product(db: Session, seller_id: int, product_id: int, **fields) -> Product:
+    """상품 정보를 수정한다. name, price, status만 변경 가능."""
+    product = _get_product_or_raise(db, seller_id, product_id)
+
+    for key, value in fields.items():
+        if key not in _UPDATABLE_FIELDS:
+            raise ValueError(f"수정할 수 없는 필드: {key}")
+        if key == "status":
+            value = ProductStatus(value)
+        setattr(product, key, value)
+
+    db.commit()
+    db.refresh(product)
+    return product
+
+
+def delete_product(db: Session, seller_id: int, product_id: int) -> Product:
+    """상품을 삭제한다. (soft delete: is_deleted = True)"""
+    product = _get_product_or_raise(db, seller_id, product_id)
+    product.is_deleted = True
+    db.commit()
+    db.refresh(product)
+    return product
+
+
 def list_products(
     db: Session, seller_id: int | None = None, status: str | None = None
 ) -> list[Product]:
-    """상품 목록을 조회한다. status, seller_id 필터 선택."""
-    query = db.query(Product)
+    """상품 목록을 조회한다. 삭제된 상품은 제외."""
+    query = db.query(Product).filter(Product.is_deleted == False)  # noqa: E712
 
     if seller_id is not None:
         query = query.filter(Product.seller_id == seller_id)
@@ -29,3 +56,21 @@ def list_products(
         query = query.filter(Product.status == ProductStatus(status))
 
     return query.order_by(Product.id.desc()).all()
+
+
+def _get_product_or_raise(db: Session, seller_id: int, product_id: int) -> Product:
+    """seller_id에 속한 삭제되지 않은 상품을 조회한다. 없으면 ValueError."""
+    product = (
+        db.query(Product)
+        .filter(
+            Product.id == product_id,
+            Product.seller_id == seller_id,
+            Product.is_deleted == False,  # noqa: E712
+        )
+        .first()
+    )
+
+    if product is None:
+        raise ValueError(f"상품을 찾을 수 없습니다 (id={product_id})")
+
+    return product

@@ -7,7 +7,7 @@ import { useOnboardingStore } from '@/features/onboarding';
 import { ChatPanel } from '@/widgets/chat-panel';
 import { ProductPanel } from '@/widgets/product-panel';
 
-const PRODUCT_TOOLS = ['create_product', 'list_products'];
+const PRODUCT_TOOLS = ['create_product', 'list_products', 'update_product', 'delete_product'];
 
 const AdminPage = () => {
   const queryClient = useQueryClient();

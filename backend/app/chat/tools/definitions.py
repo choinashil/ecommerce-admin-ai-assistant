@@ -54,4 +54,51 @@ TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_product",
+            "description": "기존 상품의 정보를 수정한다.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "상품 ID (예: PRD-1)",
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "변경할 상품명",
+                    },
+                    "price": {
+                        "type": "integer",
+                        "description": "변경할 가격 (원)",
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": ["active", "inactive"],
+                        "description": "변경할 상태",
+                    },
+                },
+                "required": ["id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_product",
+            "description": "상품을 삭제한다.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "삭제할 상품 ID (예: PRD-1)",
+                    },
+                },
+                "required": ["id"],
+            },
+        },
+    },
 ]

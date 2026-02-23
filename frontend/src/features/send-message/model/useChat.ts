@@ -20,6 +20,8 @@ const TOOL_STATUS_MAP: Record<string, string> = {
   search_guide: '가이드 검색 중...',
   create_product: '상품 등록 중...',
   list_products: '상품 목록 조회 중...',
+  update_product: '상품 수정 중...',
+  delete_product: '상품 삭제 중...',
 };
 
 const initialState: ChatState = {
