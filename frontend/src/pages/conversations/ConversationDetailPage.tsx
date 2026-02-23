@@ -12,7 +12,12 @@ const ConversationDetailPage = () => {
     return <Navigate to={ROUTES.CONVERSATIONS} replace />;
   }
 
-  return <ConversationDetailPanel id={id} onBack={() => goBack(ROUTES.CONVERSATIONS)} />;
+  return (
+    <>
+      <title>LLM 로그 상세 | SixPro AI Assistant</title>
+      <ConversationDetailPanel id={id} onBack={() => goBack(ROUTES.CONVERSATIONS)} />
+    </>
+  );
 };
 
 export default ConversationDetailPage;

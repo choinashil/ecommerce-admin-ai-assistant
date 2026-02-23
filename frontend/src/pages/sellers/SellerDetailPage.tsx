@@ -12,7 +12,12 @@ const SellerDetailPage = () => {
     return <Navigate to={ROUTES.CONVERSATIONS} replace />;
   }
 
-  return <SellerDetailPanel id={id} onBack={() => goBack(ROUTES.CONVERSATIONS)} />;
+  return (
+    <>
+      <title>판매자 상세 | SixPro AI Assistant</title>
+      <SellerDetailPanel id={id} onBack={() => goBack(ROUTES.CONVERSATIONS)} />
+    </>
+  );
 };
 
 export default SellerDetailPage;
