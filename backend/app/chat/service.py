@@ -42,6 +42,7 @@ SYSTEM_PROMPT = """당신의 이름은 '식식이'이고, '식스샵 프로' 쇼
 - 도구를 호출하지 않은 작업을 수행한 것처럼 답변하지 마세요.
 - 할 수 없는 작업의 우회 방법을 제안하지 마세요.
 - 상품명으로 해석될 수 있는 질문은 거절하지 말고, list_products로 먼저 조회하세요.
+- 여러 작업이 요청되면 필요한 도구를 모두 호출하여 전부 처리하세요. 일부만 처리하고 끝내지 마세요.
 
 **search_guide:**
 - 쇼핑몰 기능, 설정, 용어 관련 질문은 search_guide로 먼저 검색하세요. 확실히 범위 밖이 아니라면 검색 결과가 없을 때만 거절하세요.
@@ -182,6 +183,7 @@ async def stream_chat(
             )
 
             tool_calls_chunks = {}
+            iteration_content = ""
             usage = None
 
             async for chunk in stream:
@@ -194,6 +196,7 @@ async def stream_chat(
                 delta = chunk.choices[0].delta
 
                 if delta.content:
+                    iteration_content += delta.content
                     full_response += delta.content
                     yield _sse_event("content", delta.content)
 
@@ -243,7 +246,10 @@ async def stream_chat(
                     "result": result,
                 })
 
-            openai_messages.append({"role": "assistant", "tool_calls": assistant_tool_calls})
+            assistant_msg = {"role": "assistant", "tool_calls": assistant_tool_calls}
+            if iteration_content:
+                assistant_msg["content"] = iteration_content
+            openai_messages.append(assistant_msg)
             openai_messages.extend(tool_results)
 
         metadata = _build_metadata(
