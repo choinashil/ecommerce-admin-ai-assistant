@@ -110,6 +110,41 @@ def _sse_event(event_type: str, data: str) -> str:
 MAX_TOOL_ITERATIONS = 5
 
 
+def _accumulate_tool_call_chunk(tool_calls_chunks: dict, tc) -> None:
+    """스트리밍 tool_call 청크를 누적한다."""
+    idx = tc.index
+    if idx not in tool_calls_chunks:
+        tool_calls_chunks[idx] = {"id": "", "name": "", "arguments": ""}
+    if tc.id:
+        tool_calls_chunks[idx]["id"] = tc.id
+    if tc.function and tc.function.name:
+        tool_calls_chunks[idx]["name"] += tc.function.name
+    if tc.function and tc.function.arguments:
+        tool_calls_chunks[idx]["arguments"] += tc.function.arguments
+
+
+def _build_metadata(
+    start_time: float,
+    total_input_tokens: int,
+    total_output_tokens: int,
+    tool_calls: list,
+    error: str | None = None,
+    aborted: bool = False,
+) -> dict:
+    metadata = {
+        "model": settings.openai_model,
+        "input_tokens": total_input_tokens or None,
+        "output_tokens": total_output_tokens or None,
+        "response_time_ms": int((time.time() - start_time) * 1000),
+        "system_prompt": SYSTEM_PROMPT,
+        "error": error,
+        "tool_calls": tool_calls or None,
+    }
+    if aborted:
+        metadata["aborted"] = True
+    return metadata
+
+
 async def stream_chat(
     db: Session, message: str, conversation_display_id: str | None, seller_id: int | None = None
 ) -> AsyncGenerator[str, None]:
@@ -157,15 +192,7 @@ async def stream_chat(
 
                 if delta.tool_calls:
                     for tc in delta.tool_calls:
-                        idx = tc.index
-                        if idx not in tool_calls_chunks:
-                            tool_calls_chunks[idx] = {"id": "", "name": "", "arguments": ""}
-                        if tc.id:
-                            tool_calls_chunks[idx]["id"] = tc.id
-                        if tc.function and tc.function.name:
-                            tool_calls_chunks[idx]["name"] += tc.function.name
-                        if tc.function and tc.function.arguments:
-                            tool_calls_chunks[idx]["arguments"] += tc.function.arguments
+                        _accumulate_tool_call_chunk(tool_calls_chunks, tc)
 
             if usage:
                 total_input_tokens += usage.prompt_tokens
@@ -212,44 +239,24 @@ async def stream_chat(
             openai_messages.append({"role": "assistant", "tool_calls": assistant_tool_calls})
             openai_messages.extend(tool_results)
 
-        elapsed_ms = int((time.time() - start_time) * 1000)
-        metadata = {
-            "model": settings.openai_model,
-            "input_tokens": total_input_tokens or None,
-            "output_tokens": total_output_tokens or None,
-            "response_time_ms": elapsed_ms,
-            "system_prompt": SYSTEM_PROMPT,
-            "error": None,
-            "tool_calls": all_tool_calls_metadata or None,
-        }
+        metadata = _build_metadata(
+            start_time, total_input_tokens, total_output_tokens, all_tool_calls_metadata
+        )
         save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
         is_done = True
         yield _sse_event("done", "")
     except Exception as e:
-        elapsed_ms = int((time.time() - start_time) * 1000)
-        metadata = {
-            "model": settings.openai_model,
-            "input_tokens": None,
-            "output_tokens": None,
-            "response_time_ms": elapsed_ms,
-            "system_prompt": SYSTEM_PROMPT,
-            "error": str(e),
-            "tool_calls": all_tool_calls_metadata or None,
-        }
+        metadata = _build_metadata(
+            start_time, total_input_tokens, total_output_tokens, all_tool_calls_metadata,
+            error=str(e),
+        )
         save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
         is_done = True
         yield _sse_event("error", str(e))
     finally:
         if not is_done:
-            elapsed_ms = int((time.time() - start_time) * 1000)
-            metadata = {
-                "model": settings.openai_model,
-                "input_tokens": None,
-                "output_tokens": None,
-                "response_time_ms": elapsed_ms,
-                "system_prompt": SYSTEM_PROMPT,
-                "error": None,
-                "aborted": True,
-                "tool_calls": all_tool_calls_metadata or None,
-            }
+            metadata = _build_metadata(
+                start_time, total_input_tokens, total_output_tokens, all_tool_calls_metadata,
+                aborted=True,
+            )
             save_message(db, conversation.id, MessageRole.ASSISTANT, full_response, metadata)
