@@ -5,8 +5,14 @@ from app.product.model import Product, ProductStatus
 _UPDATABLE_FIELDS = {"name", "price", "status"}
 
 
+def _validate_price(price: int) -> None:
+    if price < 0:
+        raise ValueError("가격은 0원 이상이어야 합니다")
+
+
 def create_product(db: Session, seller_id: int, name: str, price: int) -> Product:
     """상품을 생성한다."""
+    _validate_price(price)
     product = Product(
         name=name,
         price=price,
@@ -25,6 +31,8 @@ def update_product(db: Session, seller_id: int, product_id: int, **fields) -> Pr
     for key, value in fields.items():
         if key not in _UPDATABLE_FIELDS:
             raise ValueError(f"수정할 수 없는 필드: {key}")
+        if key == "price":
+            _validate_price(value)
         if key == "status":
             value = ProductStatus(value)
         setattr(product, key, value)
