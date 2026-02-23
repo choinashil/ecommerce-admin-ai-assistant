@@ -1,9 +1,11 @@
 import { ErrorBoundary, Suspense } from '@suspensive/react';
 import { SuspenseQuery } from '@suspensive/react-query-5';
+import { CircleHelp } from 'lucide-react';
 
 import { ProductTable, productQueries } from '@/entities/product';
 import { useOnboardingStore } from '@/features/onboarding';
 import { SuggestedPrompts } from '@/features/suggested-prompts';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/Tooltip';
 
 interface ProductPanelProps {
   onSelectPrompt: (prompt: string) => void;
@@ -16,7 +18,15 @@ const ProductPanel = ({ onSelectPrompt }: ProductPanelProps) => {
 
   return (
     <div className='flex flex-1 flex-col overflow-auto rounded-t-2xl bg-background p-6 shadow-sm'>
-      <h2 className='text-2xl font-bold'>상품 관리</h2>
+      <div className='flex items-center gap-1.5'>
+        <h2 className='text-2xl font-bold'>상품 관리</h2>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <CircleHelp className='size-4 cursor-help text-muted-foreground' />
+          </TooltipTrigger>
+          <TooltipContent side='right'>AI 채팅으로 상품을 관리해보세요</TooltipContent>
+        </Tooltip>
+      </div>
       <div className='mt-6 flex flex-1 flex-col'>
         <ErrorBoundary
           fallback={({ error }) => <p className='text-destructive'>{error.message}</p>}
