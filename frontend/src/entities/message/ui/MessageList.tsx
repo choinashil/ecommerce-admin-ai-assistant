@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/Button';
@@ -12,7 +12,6 @@ import UserMessage from './UserMessage';
 
 import type { Message } from '../model/types';
 
-const SCROLL_TOP_THRESHOLD = 10;
 const SCROLL_BOTTOM_THRESHOLD = 30;
 const FOOTER_HEIGHT = 40;
 
@@ -27,7 +26,6 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
   const lastUserHeightRef = useRef(0);
 
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const [isAtTop, setIsAtTop] = useState(true);
 
   const lastMessage = messages[messages.length - 1];
   const isStreaming = lastMessage?.status === 'streaming';
@@ -49,33 +47,10 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
     return () => clearTimeout(timer);
   }, [isWaitingForResponse, messages.length]);
 
-  const handleScroll = () => {
-    const el = scrollerRef.current;
-    if (!el) {
-      return;
-    }
-
-    setIsAtTop(el.scrollTop <= SCROLL_TOP_THRESHOLD);
-  };
-
-  useEffect(() => {
-    return () => {
-      scrollerRef.current?.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   const handleScrollToBottom = () => {
     // atBottomStateChange로 setIsBottom 설정
     virtuosoRef.current?.scrollToIndex({
       index: messages.length - 1,
-      behavior: 'smooth',
-    });
-  };
-
-  const handleScrollToTop = () => {
-    setIsAtBottom(false);
-    virtuosoRef.current?.scrollToIndex({
-      index: 0,
       behavior: 'smooth',
     });
   };
@@ -85,19 +60,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
       <Virtuoso
         key={messages[0]?.id ?? 'empty'}
         ref={virtuosoRef}
-        scrollerRef={(ref) => {
-          const el = ref as HTMLElement;
-
-          if (el !== scrollerRef.current) {
-            scrollerRef.current?.removeEventListener('scroll', handleScroll);
-
-            if (el) {
-              el.addEventListener('scroll', handleScroll, { passive: true });
-            }
-          }
-
-          scrollerRef.current = el;
-        }}
+        scrollerRef={(ref) => (scrollerRef.current = ref as HTMLElement)}
         data={messages}
         className='h-full'
         atBottomStateChange={setIsAtBottom}
@@ -160,19 +123,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
         }}
       />
 
-      <div className='absolute right-4 bottom-2 z-10 flex flex-col gap-1'>
-        <Button
-          variant='outline'
-          size='icon'
-          className={cn(
-            'h-8 w-8 rounded-full bg-background shadow-md transition-opacity duration-200 hover:bg-accent',
-            isAtTop ? 'pointer-events-none opacity-0' : 'opacity-100',
-          )}
-          onClick={handleScrollToTop}
-          aria-label='맨 위로 이동'
-        >
-          <ChevronUp className='h-4 w-4' />
-        </Button>
+      <div className='absolute right-4 bottom-2 z-10'>
         <Button
           variant='outline'
           size='icon'
