@@ -12,7 +12,7 @@ import UserMessage from './UserMessage';
 
 import type { Message } from '../model/types';
 
-const SCROLL_BOTTOM_THRESHOLD = 30;
+const SCROLL_BOTTOM_THRESHOLD = 20;
 const FOOTER_HEIGHT = 40;
 
 interface MessageListProps {
@@ -24,6 +24,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const scrollerRef = useRef<HTMLElement | null>(null);
   const lastUserHeightRef = useRef(0);
+  const shouldFollowRef = useRef(true);
 
   const [isAtBottom, setIsAtBottom] = useState(true);
 
@@ -31,10 +32,13 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
   const isStreaming = lastMessage?.status === 'streaming';
   const isWaitingForResponse = isStreaming && lastMessage?.content === '';
 
+  // Pin mode: 새 메시지 전송 시 유저 메시지를 상단에 고정
   useEffect(() => {
     if (!isWaitingForResponse || messages.length < 2) {
       return;
     }
+
+    shouldFollowRef.current = false;
 
     // Virtuoso가 새 아이템(min-height 포함)을 렌더링/측정한 뒤 스크롤
     const timer = setTimeout(() => {
@@ -47,12 +51,30 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
     return () => clearTimeout(timer);
   }, [isWaitingForResponse, messages.length]);
 
+  // 바닥에서 스트리밍 따라가기
+  useEffect(() => {
+    if (scrollerRef.current && isStreaming && shouldFollowRef.current && !isWaitingForResponse) {
+      scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight;
+    }
+  });
+
+  const handleAtBottomStateChange = (atBottom: boolean) => {
+    setIsAtBottom(atBottom);
+
+    if (!isStreaming || isWaitingForResponse) {
+      return;
+    }
+
+    // 바닥 도달 → auto-scroll 활성화, 바닥 이탈 → 비활성화
+    shouldFollowRef.current = atBottom;
+  };
+
   const handleScrollToBottom = () => {
-    // atBottomStateChange로 setIsBottom 설정
-    virtuosoRef.current?.scrollToIndex({
-      index: messages.length - 1,
-      behavior: 'smooth',
-    });
+    const el = scrollerRef.current;
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      shouldFollowRef.current = true;
+    }
   };
 
   return (
@@ -63,7 +85,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
         scrollerRef={(ref) => (scrollerRef.current = ref as HTMLElement)}
         data={messages}
         className='h-full'
-        atBottomStateChange={setIsAtBottom}
+        atBottomStateChange={handleAtBottomStateChange}
         atBottomThreshold={SCROLL_BOTTOM_THRESHOLD}
         initialTopMostItemIndex={messages.length - 1}
         itemContent={(index, message) => {
