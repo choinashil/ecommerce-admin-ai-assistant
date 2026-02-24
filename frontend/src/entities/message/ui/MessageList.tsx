@@ -14,6 +14,7 @@ import type { Message } from '../model/types';
 
 const SCROLL_TOP_THRESHOLD = 10;
 const SCROLL_BOTTOM_THRESHOLD = 30;
+const FOOTER_HEIGHT = 40;
 
 interface MessageListProps {
   messages: Message[];
@@ -23,6 +24,7 @@ interface MessageListProps {
 const MessageList = ({ messages, statusMessage }: MessageListProps) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const scrollerRef = useRef<HTMLElement | null>(null);
+  const lastUserHeightRef = useRef(0);
 
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [isAtTop, setIsAtTop] = useState(true);
@@ -32,11 +34,20 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
   const isWaitingForResponse = isStreaming && lastMessage?.content === '';
 
   useEffect(() => {
-    if (isStreaming && isAtBottom && scrollerRef.current) {
-      const el = scrollerRef.current;
-      el.scrollTop = el.scrollHeight;
+    if (!isWaitingForResponse || messages.length < 2) {
+      return;
     }
-  });
+
+    // Virtuoso가 새 아이템(min-height 포함)을 렌더링/측정한 뒤 스크롤
+    const timer = setTimeout(() => {
+      virtuosoRef.current?.scrollToIndex({
+        index: messages.length - 2,
+        align: 'start',
+      });
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [isWaitingForResponse, messages.length]);
 
   const handleScroll = () => {
     const el = scrollerRef.current;
@@ -92,18 +103,51 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
         atBottomStateChange={setIsAtBottom}
         atBottomThreshold={SCROLL_BOTTOM_THRESHOLD}
         initialTopMostItemIndex={messages.length - 1}
-        itemContent={(_, message) => {
+        itemContent={(index, message) => {
+          const isLastAssistantMessage = index === messages.length - 1;
+          const isLastUserMessage = index === messages.length - 2;
+          const assistantMinHeight =
+            isLastAssistantMessage && scrollerRef.current?.clientHeight
+              ? Math.max(
+                  0,
+                  scrollerRef.current.clientHeight - lastUserHeightRef.current - FOOTER_HEIGHT,
+                )
+              : undefined;
+
+          // 응답 대기 중: min-height 공간 + StreamingStatus
           if (message.status === 'streaming' && message.content === '') {
-            return null;
+            return (
+              <div style={{ minHeight: assistantMinHeight }}>
+                {statusMessage && (
+                  <div className='px-4 pt-4'>
+                    <StreamingStatus statusMessage={statusMessage} />
+                  </div>
+                )}
+              </div>
+            );
           }
 
           return (
-            <div className='px-4 pt-4'>
+            <div
+              className='px-4 pt-4'
+              ref={
+                isLastUserMessage
+                  ? (el) => {
+                      if (el) {
+                        lastUserHeightRef.current = el.offsetHeight;
+                      }
+                    }
+                  : undefined
+              }
+            >
               {message.content &&
                 (message.role === 'user' ? (
                   <UserMessage content={message.content} />
                 ) : (
-                  <AssistantMessage content={message.content} />
+                  <AssistantMessage
+                    content={message.content}
+                    style={{ minHeight: assistantMinHeight }}
+                  />
                 ))}
               {message.status === 'aborted' && (
                 <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
@@ -112,16 +156,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
           );
         }}
         components={{
-          Footer: () => {
-            if (isWaitingForResponse && statusMessage) {
-              return (
-                <div className='px-4 pt-4 pb-10'>
-                  <StreamingStatus statusMessage={statusMessage} />
-                </div>
-              );
-            }
-            return <div className='h-10' />;
-          },
+          Footer: () => <div style={{ height: FOOTER_HEIGHT }} />,
         }}
       />
 
