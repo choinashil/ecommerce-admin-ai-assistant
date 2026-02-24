@@ -45,6 +45,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
       virtuosoRef.current?.scrollToIndex({
         index: messages.length - 2,
         align: 'start',
+        behavior: 'smooth',
       });
     }, 50);
 
