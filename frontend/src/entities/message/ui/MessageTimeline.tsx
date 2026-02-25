@@ -1,4 +1,4 @@
-import { Bot, ChevronDown, ChevronRight, Clock, Cpu, User, Wrench, Zap } from 'lucide-react';
+import { Bot, ChevronDown, ChevronRight, Clock, Coins, Cpu, User, Wrench } from 'lucide-react';
 
 import type { MessageDetail } from '@/entities/message';
 import { formatDate } from '@/shared/lib/format';
@@ -50,8 +50,9 @@ const MessageTimeline = ({ messages }: MessageTimelineProps) => {
               </Badge>
               {message.metadata.input_tokens != null && message.metadata.output_tokens != null && (
                 <Badge variant='secondary'>
-                  <Zap data-icon='inline-start' />
-                  {message.metadata.input_tokens}→{message.metadata.output_tokens}
+                  <Coins data-icon='inline-start' />
+                  IN {message.metadata.input_tokens.toLocaleString()} · OUT{' '}
+                  {message.metadata.output_tokens.toLocaleString()}
                 </Badge>
               )}
               {message.metadata.response_time_ms != null && (
