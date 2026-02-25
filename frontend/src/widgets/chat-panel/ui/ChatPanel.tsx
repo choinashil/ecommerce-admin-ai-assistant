@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 
-import { Bot, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 import type { Message } from '@/entities/message';
 import MessageList from '@/entities/message/ui/MessageList';
@@ -79,9 +79,8 @@ const ChatPanel = ({
 
   return (
     <aside className='flex w-100 flex-col overflow-hidden rounded-t-2xl bg-background shadow-sm'>
-      <header className='flex items-center gap-2 px-4 py-3'>
-        <Bot className='h-5 w-5 text-primary' />
-        <h2 className='font-semibold'>AI 어시스턴트</h2>
+      <header className='flex items-center gap-2 pl-5 pr-4 pt-4 pb-3'>
+        <h2 className='text-xl font-semibold'>AI 채팅</h2>
         <div className='ml-auto flex items-center gap-1'>
           <Button variant='ghost' size='icon' onClick={handleNewChat} aria-label='새 대화 시작'>
             <Plus className='size-4' />

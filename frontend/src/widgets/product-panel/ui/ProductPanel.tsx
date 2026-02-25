@@ -17,17 +17,17 @@ const ProductPanel = ({ onSelectPrompt }: ProductPanelProps) => {
   );
 
   return (
-    <div className='flex flex-1 flex-col overflow-auto rounded-t-2xl bg-background p-6 shadow-sm'>
-      <div className='flex items-center gap-1.5'>
-        <h2 className='text-2xl font-bold'>상품 관리</h2>
+    <div className='flex flex-1 flex-col overflow-auto rounded-t-2xl bg-background shadow-sm'>
+      <header className='flex items-center gap-2 px-5 pt-4 pb-3'>
+        <h2 className='text-xl font-semibold'>상품 관리</h2>
         <Tooltip>
           <TooltipTrigger asChild>
             <CircleHelp className='size-4 cursor-help text-muted-foreground' />
           </TooltipTrigger>
           <TooltipContent side='right'>AI 채팅으로 상품을 관리해보세요</TooltipContent>
         </Tooltip>
-      </div>
-      <div className='mt-6 flex flex-1 flex-col'>
+      </header>
+      <div className='flex flex-1 flex-col px-4 pb-3'>
         <ErrorBoundary
           fallback={({ error }) => <p className='text-destructive'>{error.message}</p>}
         >
