@@ -116,6 +116,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
           return (
             <div
               className='px-4 pt-4'
+              style={message.role !== 'user' ? { minHeight: assistantMinHeight } : undefined}
               ref={
                 isLastUserMessage
                   ? (el) => {
@@ -130,10 +131,7 @@ const MessageList = ({ messages, statusMessage }: MessageListProps) => {
                 (message.role === 'user' ? (
                   <UserMessage content={message.content} />
                 ) : (
-                  <AssistantMessage
-                    content={message.content}
-                    style={{ minHeight: assistantMinHeight }}
-                  />
+                  <AssistantMessage content={message.content} />
                 ))}
               {message.status === 'aborted' && (
                 <p className='text-center text-xs text-muted-foreground'>응답이 중단되었어요.</p>
