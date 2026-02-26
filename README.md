@@ -1,21 +1,45 @@
-# [SixPro AI Assistant](https://sixpro-ai-assistant.vercel.app)
+# SixPro AI Assistant
 
-자연어로 상품을 관리하고 가이드를 검색하는 이커머스 어드민 AI 어시스턴트
+[Demo](https://sixpro-ai-assistant.vercel.app) | [Blog](https://nashu.vercel.app/posts/sixpro-ai-assistant/)
+
+[식스샵 프로](https://www.sixshop.com/)를 기반으로 만든 이커머스 어드민 AI 어시스턴트입니다. <br/>
+Function Calling, RAG, SSE 스트리밍을 활용하여 채팅으로 상품 관리와 CS 응대를 할 수 있습니다.
+
+https://github.com/user-attachments/assets/demo.mp4
 
 ## 주요 기능
 
-- **가이드 검색 답변**: [식스샵 프로 가이드 문서](https://help.pro.sixshop.com/)를 RAG로 검색해 질문에 답변
-- **자연어 업무 처리**: Function Calling으로 상품 관리 (CRUD)
-- **실시간 스트리밍**: SSE 기반으로 LLM 응답을 스트리밍
-- **AI 파이프라인 로그**: 대화별 tool 호출 내역, 검색 결과 시각화
+### Function Calling 기반 상품 관리
+
+Agent Loop(최대 5회)으로 상품 CRUD와 멀티쿼리를 처리합니다.
+
+### RAG 파이프라인
+
+가이드 문서 231페이지를 크롤링 → 임베딩하여 pgvector에 저장하고, LLM이 필요시 검색합니다.
+
+### SSE 스트리밍
+
+LLM 응답과 Function Calling 진행 상태를 실시간으로 스트리밍합니다.
+
+### 채팅 UX
+
+React Virtuoso 가상화, 질문 상단 고정, AI 채팅에 맞는 스크롤 패턴을 적용했습니다.
+
+### LLM 로그
+
+대화별 시스템 프롬프트, 토큰 사용량, 툴 호출 내역을 확인할 수 있는 관리자 페이지입니다.
+
+### 온보딩 가이드 / 추천 프롬프트
+
+순차적 툴팁으로 핵심 기능을 안내하고, 추천 프롬프트로 진입 허들을 낮췄습니다.
 
 ## 기술 스택
 
 ### Backend
 
 - **FastAPI** (Python)
-- **PostgreSQL + pgvector** (RAG)
-- **OpenAI API**
+- **PostgreSQL + pgvector**
+- **OpenAI API** (gpt-4o-mini, text-embedding-3-small)
 - **SQLAlchemy**
 
 ### Frontend
@@ -33,17 +57,20 @@
 ## 아키텍처
 
 ```
-사용자 입력
+React (FE)
+    │
+    │  SSE
+    ▼
+FastAPI (BE)
     │
     ▼
-FastAPI (SSE 스트리밍)
+OpenAI API ──── Agent Loop (최대 5회)
     │
-    ▼
-OpenAI Function Calling
-    │
-    ├── search_guide  →  pgvector 유사도 검색  →  컨텍스트로 주입
+    ├── search_guide    → RAG 검색
     ├── create_product
-    └── list_products
+    ├── list_products
+    ├── update_product
+    └── delete_product
 ```
 
 ## 로컬 실행
@@ -54,13 +81,13 @@ OpenAI Function Calling
 - Node.js 18+ / pnpm
 - Docker
 
-### 1. DB 실행
+### 1. DB
 
 ```bash
 docker-compose up -d
 ```
 
-### 2. Backend
+### 2. BE
 
 ```bash
 cd backend
@@ -76,7 +103,7 @@ cp .env.example .env
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 3. Frontend
+### 3. FE
 
 ```bash
 cd frontend
