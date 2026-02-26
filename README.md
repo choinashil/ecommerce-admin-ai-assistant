@@ -2,11 +2,10 @@
 
 [Demo](https://sixpro-ai-assistant.vercel.app) | [Blog](https://nashu.vercel.app/posts/sixpro-ai-assistant/)
 
-[식스샵 프로](https://www.sixshop.com/)를 기반으로 만든 이커머스 어드민 AI 어시스턴트입니다. <br/>
+**[식스샵 프로](https://www.sixshop.com/)를 기반으로 만든 이커머스 어드민 AI 어시스턴트**입니다. <br/>
 Function Calling, RAG, SSE 스트리밍을 활용하여 채팅으로 상품 관리와 CS 응대를 할 수 있습니다.
 
 https://github.com/user-attachments/assets/dde68707-161c-46ac-b178-bc8a8a5cb7be
-
 
 ## 주요 기능
 
@@ -16,7 +15,7 @@ Agent Loop(최대 5회)으로 상품 CRUD와 멀티쿼리를 처리합니다.
 
 ### RAG 파이프라인
 
-가이드 문서 231페이지를 크롤링 → 임베딩하여 pgvector에 저장하고, LLM이 필요시 검색합니다.
+[식스샵 프로 가이드](https://help.pro.sixshop.com/) 문서 231페이지를 크롤링 → 임베딩하여 pgvector에 저장하고, LLM이 필요시 검색합니다.
 
 ### SSE 스트리밍
 
@@ -38,22 +37,22 @@ React Virtuoso 가상화, 질문 상단 고정, AI 채팅에 맞는 스크롤 �
 
 ### Backend
 
-- **FastAPI** (Python)
-- **PostgreSQL + pgvector**
-- **OpenAI API** (gpt-4o-mini, text-embedding-3-small)
-- **SQLAlchemy**
+- FastAPI (Python)
+- PostgreSQL + pgvector
+- OpenAI API (gpt-4o-mini, text-embedding-3-small)
+- SQLAlchemy
 
 ### Frontend
 
-- **React + TypeScript + Vite**
-- **TanStack Query**
-- **shadcn/ui + Tailwind CSS**
-- **FSD (Feature-Sliced Design)**
+- React + TypeScript + Vite
+- TanStack Query
+- shadcn/ui + Tailwind CSS
+- FSD (Feature-Sliced Design)
 
 ### 인프라
 
-- **Railway** (BE)
-- **Vercel** (FE)
+- Railway (BE)
+- Vercel (FE)
 
 ## 아키텍처
 
