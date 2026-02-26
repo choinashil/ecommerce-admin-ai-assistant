@@ -20,11 +20,12 @@ export const initGA = () => {
   }
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: [GtagCommand, string | Date, ...unknown[]]) => {
-    window.dataLayer!.push(args);
-  };
-  window.gtag('js', new Date());
-  window.gtag('config', GA_MEASUREMENT_ID);
+  window.gtag = function () {
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer?.push(arguments);
+  } as Window['gtag'];
+  window.gtag?.('js', new Date());
+  window.gtag?.('config', GA_MEASUREMENT_ID);
 
   const script = document.createElement('script');
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
