@@ -5,7 +5,8 @@
 [식스샵 프로](https://www.sixshop.com/)를 기반으로 만든 이커머스 어드민 AI 어시스턴트입니다. <br/>
 Function Calling, RAG, SSE 스트리밍을 활용하여 채팅으로 상품 관리와 CS 응대를 할 수 있습니다.
 
-https://github.com/user-attachments/assets/demo.mp4
+https://github.com/user-attachments/assets/dde68707-161c-46ac-b178-bc8a8a5cb7be
+
 
 ## 주요 기능
 
